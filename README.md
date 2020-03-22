@@ -1,7 +1,5 @@
 # intel_8080_emulator
 A Windows emulator for the Intel 8080 processor written in C
-# intel_8080_emulator
-A Windows emulator for the Intel 8080 processor written in C
 
 # Build
 The project uses a makefile to compile the C source files. 

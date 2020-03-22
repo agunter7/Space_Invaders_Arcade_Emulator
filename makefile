@@ -2,5 +2,5 @@ CC=gcc
 CFLAGS=-I.
 #DEPS =   # Dependencies go here when needed
 
-disassemblerMake: disassembler.o
-	$(CC) -o bin/disassembler disassembler.o 
+disassemblerMake: src/disassembler.c
+	$(CC) -o bin/disassembler src/disassembler.c
