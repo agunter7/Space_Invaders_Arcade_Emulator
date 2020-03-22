@@ -4,3 +4,7 @@ CFLAGS=-I.
 
 disassemblerMake: src/disassembler.c
 	$(CC) -o bin/disassembler src/disassembler.c
+
+clean:
+	rm output.txt
+	rm assembly.txt

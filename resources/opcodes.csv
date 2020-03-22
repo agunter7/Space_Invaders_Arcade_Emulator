@@ -1,188 +1,188 @@
 ID,Opcode,Opcode (Unformatted),Instruction,Size,Flags,Function
 1,0x00,0,NOP,1,,
-2,0x01,1,LXI B;D16,3,,B &lt;- byte 3; C &lt;- byte 2
-3,0x02,2,STAX B,1,,(BC) &lt;- A
-4,0x03,3,INX B,1,,BC &lt;- BC+1
-5,0x04,4,INR B,1,Z; S; P; AC,B &lt;- B+1
-6,0x05,5,DCR B,1,Z; S; P; AC,B &lt;- B-1
-7,0x06,6,MVI B; D8,2,,B &lt;- byte 2
-8,0x07,7,RLC,1,CY,A = A &lt;&lt; 1; bit 0 = prev bit 7; CY = prev bit 7
+2,0x01,1,LXI B;D16,3,,B <- byte 3; C <- byte 2
+3,0x02,2,STAX B,1,,(BC) <- A
+4,0x03,3,INX B,1,,BC <- BC+1
+5,0x04,4,INR B,1,Z; S; P; AC,B <- B+1
+6,0x05,5,DCR B,1,Z; S; P; AC,B <- B-1
+7,0x06,6,MVI B; D8,2,,B <- byte 2
+8,0x07,7,RLC,1,CY,A = A << 1; bit 0 = prev bit 7; CY = prev bit 7
 9,0x08,8,-,0,,
 10,0x09,9,DAD B,1,CY,HL = HL + BC
-11,0x0a,0a,LDAX B,1,,A &lt;- (BC)
+11,0x0a,0a,LDAX B,1,,A <- (BC)
 12,0x0b,0b,DCX B,1,,BC = BC-1
-13,0x0c,0c,INR C,1,Z; S; P; AC,C &lt;- C+1
-14,0x0d,0d,DCR C,1,Z; S; P; AC,C &lt;-C-1
-15,0x0e,0e,MVI C;D8,2,,C &lt;- byte 2
+13,0x0c,0c,INR C,1,Z; S; P; AC,C <- C+1
+14,0x0d,0d,DCR C,1,Z; S; P; AC,C <-C-1
+15,0x0e,0e,MVI C;D8,2,,C <- byte 2
 16,0x0f,0f,RRC,1,CY,A = A &gt;&gt; 1; bit 7 = prev bit 0; CY = prev bit 0
 17,0x10,10,-,0,,
-18,0x11,11,LXI D;D16,3,,D &lt;- byte 3; E &lt;- byte 2
-19,0x12,12,STAX D,1,,(DE) &lt;- A
-20,0x13,13,INX D,1,,DE &lt;- DE + 1
-21,0x14,14,INR D,1,Z; S; P; AC,D &lt;- D+1
-22,0x15,15,DCR D,1,Z; S; P; AC,D &lt;- D-1
-23,0x16,16,MVI D; D8,2,,D &lt;- byte 2
-24,0x17,17,RAL,1,CY,A = A &lt;&lt; 1; bit 0 = prev CY; CY = prev bit 7
+18,0x11,11,LXI D;D16,3,,D <- byte 3; E <- byte 2
+19,0x12,12,STAX D,1,,(DE) <- A
+20,0x13,13,INX D,1,,DE <- DE + 1
+21,0x14,14,INR D,1,Z; S; P; AC,D <- D+1
+22,0x15,15,DCR D,1,Z; S; P; AC,D <- D-1
+23,0x16,16,MVI D; D8,2,,D <- byte 2
+24,0x17,17,RAL,1,CY,A = A << 1; bit 0 = prev CY; CY = prev bit 7
 25,0x18,18,-,0,,
 26,0x19,19,DAD D,1,CY,HL = HL + DE
-27,0x1a,1a,LDAX D,1,,A &lt;- (DE)
+27,0x1a,1a,LDAX D,1,,A <- (DE)
 28,0x1b,1b,DCX D,1,,DE = DE-1
-29,0x1c,1c,INR E,1,Z; S; P; AC,E &lt;-E+1
-30,0x1d,1d,DCR E,1,Z; S; P; AC,E &lt;- E-1
-31,0x1e,1e,MVI E;D8,2,,E &lt;- byte 2
+29,0x1c,1c,INR E,1,Z; S; P; AC,E <-E+1
+30,0x1d,1d,DCR E,1,Z; S; P; AC,E <- E-1
+31,0x1e,1e,MVI E;D8,2,,E <- byte 2
 32,0x1f,1f,RAR,1,CY,A = A &gt;&gt; 1; bit 7 = prev bit 7; CY = prev bit 0
 33,0x20,20,RIM,1,,special
-34,0x21,21,LXI H;D16,3,,H &lt;- byte 3; L &lt;- byte 2
-35,0x22,22,SHLD adr,3,,(adr) &lt;-L; (adr+1)&lt;-H
-36,0x23,23,INX H,1,,HL &lt;- HL + 1
-37,0x24,24,INR H,1,Z; S; P; AC,H &lt;- H+1
-38,0x25,25,DCR H,1,Z; S; P; AC,H &lt;- H-1
-39,0x26,26,MVI H;D8,2,,L &lt;- byte 2
+34,0x21,21,LXI H;D16,3,,H <- byte 3; L <- byte 2
+35,0x22,22,SHLD adr,3,,(adr) <-L; (adr+1)<-H
+36,0x23,23,INX H,1,,HL <- HL + 1
+37,0x24,24,INR H,1,Z; S; P; AC,H <- H+1
+38,0x25,25,DCR H,1,Z; S; P; AC,H <- H-1
+39,0x26,26,MVI H;D8,2,,L <- byte 2
 40,0x27,27,DAA,1,,special
 41,0x28,28,-,0,,
 42,0x29,29,DAD H,1,CY,HL = HL + HI
-43,0x2a,2a,LHLD adr,3,,L &lt;- (adr); H&lt;-(adr+1)
+43,0x2a,2a,LHLD adr,3,,L <- (adr); H<-(adr+1)
 44,0x2b,2b,DCX H,1,,HL = HL-1
-45,0x2c,2c,INR L,1,Z; S; P; AC,L &lt;- L+1
-46,0x2d,2d,DCR L,1,Z; S; P; AC,L &lt;- L-1
-47,0x2e,2e,MVI L; D8,2,,L &lt;- byte 2
-48,0x2f,2f,CMA,1,,A &lt;- !A
+45,0x2c,2c,INR L,1,Z; S; P; AC,L <- L+1
+46,0x2d,2d,DCR L,1,Z; S; P; AC,L <- L-1
+47,0x2e,2e,MVI L; D8,2,,L <- byte 2
+48,0x2f,2f,CMA,1,,A <- !A
 49,0x30,30,SIM,1,,special
-50,0x31,31,LXI SP; D16,3,,SP.hi &lt;- byte 3; SP.lo &lt;- byte 2
-51,0x32,32,STA adr,3,,(adr) &lt;- A
+50,0x31,31,LXI SP; D16,3,,SP.hi <- byte 3; SP.lo <- byte 2
+51,0x32,32,STA adr,3,,(adr) <- A
 52,0x33,33,INX SP,1,,SP = SP + 1
-53,0x34,34,INR M,1,Z; S; P; AC,(HL) &lt;- (HL)+1
-54,0x35,35,DCR M,1,Z; S; P; AC,(HL) &lt;- (HL)-1
-55,0x36,36,MVI M;D8,2,,(HL) &lt;- byte 2
+53,0x34,34,INR M,1,Z; S; P; AC,(HL) <- (HL)+1
+54,0x35,35,DCR M,1,Z; S; P; AC,(HL) <- (HL)-1
+55,0x36,36,MVI M;D8,2,,(HL) <- byte 2
 56,0x37,37,STC,1,CY,CY = 1
 57,0x38,38,-,0,,
 58,0x39,39,DAD SP,1,CY,HL = HL + SP
-59,0x3a,3a,LDA adr,3,,A &lt;- (adr)
+59,0x3a,3a,LDA adr,3,,A <- (adr)
 60,0x3b,3b,DCX SP,1,,SP = SP-1
-61,0x3c,3c,INR A,1,Z; S; P; AC,A &lt;- A+1
-62,0x3d,3d,DCR A,1,Z; S; P; AC,A &lt;- A-1
-63,0x3e,3e,MVI A;D8,2,,A &lt;- byte 2
+61,0x3c,3c,INR A,1,Z; S; P; AC,A <- A+1
+62,0x3d,3d,DCR A,1,Z; S; P; AC,A <- A-1
+63,0x3e,3e,MVI A;D8,2,,A <- byte 2
 64,0x3f,3f,CMC,1,CY,CY=!CY
-65,0x40,40,MOV B;B,1,,B &lt;- B
-66,0x41,41,MOV B;C,1,,B &lt;- C
-67,0x42,42,MOV B;D,1,,B &lt;- D
-68,0x43,43,MOV B;E,1,,B &lt;- E
-69,0x44,44,MOV B;H,1,,B &lt;- H
-70,0x45,45,MOV B;L,1,,B &lt;- L
-71,0x46,46,MOV B;M,1,,B &lt;- (HL)
-72,0x47,47,MOV B;A,1,,B &lt;- A
-73,0x48,48,MOV C;B,1,,C &lt;- B
-74,0x49,49,MOV C;C,1,,C &lt;- C
-75,0x4a,4a,MOV C;D,1,,C &lt;- D
-76,0x4b,4b,MOV C;E,1,,C &lt;- E
-77,0x4c,4c,MOV C;H,1,,C &lt;- H
-78,0x4d,4d,MOV C;L,1,,C &lt;- L
-79,0x4e,4e,MOV C;M,1,,C &lt;- (HL)
-80,0x4f,4f,MOV C;A,1,,C &lt;- A
-81,0x50,50,MOV D;B,1,,D &lt;- B
-82,0x51,51,MOV D;C,1,,D &lt;- C
-83,0x52,52,MOV D;D,1,,D &lt;- D
-84,0x53,53,MOV D;E,1,,D &lt;- E
-85,0x54,54,MOV D;H,1,,D &lt;- H
-86,0x55,55,MOV D;L,1,,D &lt;- L
-87,0x56,56,MOV D;M,1,,D &lt;- (HL)
-88,0x57,57,MOV D;A,1,,D &lt;- A
-89,0x58,58,MOV E;B,1,,E &lt;- B
-90,0x59,59,MOV E;C,1,,E &lt;- C
-91,0x5a,5a,MOV E;D,1,,E &lt;- D
-92,0x5b,5b,MOV E;E,1,,E &lt;- E
-93,0x5c,5c,MOV E;H,1,,E &lt;- H
-94,0x5d,5d,MOV E;L,1,,E &lt;- L
-95,0x5e,5e,MOV E;M,1,,E &lt;- (HL)
-96,0x5f,5f,MOV E;A,1,,E &lt;- A
-97,0x60,60,MOV H;B,1,,H &lt;- B
-98,0x61,61,MOV H;C,1,,H &lt;- C
-99,0x62,62,MOV H;D,1,,H &lt;- D
-100,0x63,63,MOV H;E,1,,H &lt;- E
-101,0x64,64,MOV H;H,1,,H &lt;- H
-102,0x65,65,MOV H;L,1,,H &lt;- L
-103,0x66,66,MOV H;M,1,,H &lt;- (HL)
-104,0x67,67,MOV H;A,1,,H &lt;- A
-105,0x68,68,MOV L;B,1,,L &lt;- B
-106,0x69,69,MOV L;C,1,,L &lt;- C
-107,0x6a,6a,MOV L;D,1,,L &lt;- D
-108,0x6b,6b,MOV L;E,1,,L &lt;- E
-109,0x6c,6c,MOV L;H,1,,L &lt;- H
-110,0x6d,6d,MOV L;L,1,,L &lt;- L
-111,0x6e,6e,MOV L;M,1,,L &lt;- (HL)
-112,0x6f,6f,MOV L;A,1,,L &lt;- A
-113,0x70,70,MOV M;B,1,,(HL) &lt;- B
-114,0x71,71,MOV M;C,1,,(HL) &lt;- C
-115,0x72,72,MOV M;D,1,,(HL) &lt;- D
-116,0x73,73,MOV M;E,1,,(HL) &lt;- E
-117,0x74,74,MOV M;H,1,,(HL) &lt;- H
-118,0x75,75,MOV M;L,1,,(HL) &lt;- L
+65,0x40,40,MOV B;B,1,,B <- B
+66,0x41,41,MOV B;C,1,,B <- C
+67,0x42,42,MOV B;D,1,,B <- D
+68,0x43,43,MOV B;E,1,,B <- E
+69,0x44,44,MOV B;H,1,,B <- H
+70,0x45,45,MOV B;L,1,,B <- L
+71,0x46,46,MOV B;M,1,,B <- (HL)
+72,0x47,47,MOV B;A,1,,B <- A
+73,0x48,48,MOV C;B,1,,C <- B
+74,0x49,49,MOV C;C,1,,C <- C
+75,0x4a,4a,MOV C;D,1,,C <- D
+76,0x4b,4b,MOV C;E,1,,C <- E
+77,0x4c,4c,MOV C;H,1,,C <- H
+78,0x4d,4d,MOV C;L,1,,C <- L
+79,0x4e,4e,MOV C;M,1,,C <- (HL)
+80,0x4f,4f,MOV C;A,1,,C <- A
+81,0x50,50,MOV D;B,1,,D <- B
+82,0x51,51,MOV D;C,1,,D <- C
+83,0x52,52,MOV D;D,1,,D <- D
+84,0x53,53,MOV D;E,1,,D <- E
+85,0x54,54,MOV D;H,1,,D <- H
+86,0x55,55,MOV D;L,1,,D <- L
+87,0x56,56,MOV D;M,1,,D <- (HL)
+88,0x57,57,MOV D;A,1,,D <- A
+89,0x58,58,MOV E;B,1,,E <- B
+90,0x59,59,MOV E;C,1,,E <- C
+91,0x5a,5a,MOV E;D,1,,E <- D
+92,0x5b,5b,MOV E;E,1,,E <- E
+93,0x5c,5c,MOV E;H,1,,E <- H
+94,0x5d,5d,MOV E;L,1,,E <- L
+95,0x5e,5e,MOV E;M,1,,E <- (HL)
+96,0x5f,5f,MOV E;A,1,,E <- A
+97,0x60,60,MOV H;B,1,,H <- B
+98,0x61,61,MOV H;C,1,,H <- C
+99,0x62,62,MOV H;D,1,,H <- D
+100,0x63,63,MOV H;E,1,,H <- E
+101,0x64,64,MOV H;H,1,,H <- H
+102,0x65,65,MOV H;L,1,,H <- L
+103,0x66,66,MOV H;M,1,,H <- (HL)
+104,0x67,67,MOV H;A,1,,H <- A
+105,0x68,68,MOV L;B,1,,L <- B
+106,0x69,69,MOV L;C,1,,L <- C
+107,0x6a,6a,MOV L;D,1,,L <- D
+108,0x6b,6b,MOV L;E,1,,L <- E
+109,0x6c,6c,MOV L;H,1,,L <- H
+110,0x6d,6d,MOV L;L,1,,L <- L
+111,0x6e,6e,MOV L;M,1,,L <- (HL)
+112,0x6f,6f,MOV L;A,1,,L <- A
+113,0x70,70,MOV M;B,1,,(HL) <- B
+114,0x71,71,MOV M;C,1,,(HL) <- C
+115,0x72,72,MOV M;D,1,,(HL) <- D
+116,0x73,73,MOV M;E,1,,(HL) <- E
+117,0x74,74,MOV M;H,1,,(HL) <- H
+118,0x75,75,MOV M;L,1,,(HL) <- L
 119,0x76,76,HLT,1,,special
-120,0x77,77,MOV M;A,1,,(HL) &lt;- C
-121,0x78,78,MOV A;B,1,,A &lt;- B
-122,0x79,79,MOV A;C,1,,A &lt;- C
-123,0x7a,7a,MOV A;D,1,,A &lt;- D
-124,0x7b,7b,MOV A;E,1,,A &lt;- E
-125,0x7c,7c,MOV A;H,1,,A &lt;- H
-126,0x7d,7d,MOV A;L,1,,A &lt;- L
-127,0x7e,7e,MOV A;M,1,,A &lt;- (HL)
-128,0x7f,7f,MOV A;A,1,,A &lt;- A
-129,0x80,80,ADD B,1,Z; S; P; CY; AC,A &lt;- A + B
-130,0x81,81,ADD C,1,Z; S; P; CY; AC,A &lt;- A + C
-131,0x82,82,ADD D,1,Z; S; P; CY; AC,A &lt;- A + D
-132,0x83,83,ADD E,1,Z; S; P; CY; AC,A &lt;- A + E
-133,0x84,84,ADD H,1,Z; S; P; CY; AC,A &lt;- A + H
-134,0x85,85,ADD L,1,Z; S; P; CY; AC,A &lt;- A + L
-135,0x86,86,ADD M,1,Z; S; P; CY; AC,A &lt;- A + (HL)
-136,0x87,87,ADD A,1,Z; S; P; CY; AC,A &lt;- A + A
-137,0x88,88,ADC B,1,Z; S; P; CY; AC,A &lt;- A + B + CY
-138,0x89,89,ADC C,1,Z; S; P; CY; AC,A &lt;- A + C + CY
-139,0x8a,8a,ADC D,1,Z; S; P; CY; AC,A &lt;- A + D + CY
-140,0x8b,8b,ADC E,1,Z; S; P; CY; AC,A &lt;- A + E + CY
-141,0x8c,8c,ADC H,1,Z; S; P; CY; AC,A &lt;- A + H + CY
-142,0x8d,8d,ADC L,1,Z; S; P; CY; AC,A &lt;- A + L + CY
-143,0x8e,8e,ADC M,1,Z; S; P; CY; AC,A &lt;- A + (HL) + CY
-144,0x8f,8f,ADC A,1,Z; S; P; CY; AC,A &lt;- A + A + CY
-145,0x90,90,SUB B,1,Z; S; P; CY; AC,A &lt;- A - B
-146,0x91,91,SUB C,1,Z; S; P; CY; AC,A &lt;- A - C
-147,0x92,92,SUB D,1,Z; S; P; CY; AC,A &lt;- A + D
-148,0x93,93,SUB E,1,Z; S; P; CY; AC,A &lt;- A - E
-149,0x94,94,SUB H,1,Z; S; P; CY; AC,A &lt;- A + H
-150,0x95,95,SUB L,1,Z; S; P; CY; AC,A &lt;- A - L
-151,0x96,96,SUB M,1,Z; S; P; CY; AC,A &lt;- A + (HL)
-152,0x97,97,SUB A,1,Z; S; P; CY; AC,A &lt;- A - A
-153,0x98,98,SBB B,1,Z; S; P; CY; AC,A &lt;- A - B - CY
-154,0x99,99,SBB C,1,Z; S; P; CY; AC,A &lt;- A - C - CY
-155,0x9a,9a,SBB D,1,Z; S; P; CY; AC,A &lt;- A - D - CY
-156,0x9b,9b,SBB E,1,Z; S; P; CY; AC,A &lt;- A - E - CY
-157,0x9c,9c,SBB H,1,Z; S; P; CY; AC,A &lt;- A - H - CY
-158,0x9d,9d,SBB L,1,Z; S; P; CY; AC,A &lt;- A - L - CY
-159,0x9e,9e,SBB M,1,Z; S; P; CY; AC,A &lt;- A - (HL) - CY
-160,0x9f,9f,SBB A,1,Z; S; P; CY; AC,A &lt;- A - A - CY
-161,0xa0,a0,ANA B,1,Z; S; P; CY; AC,A &lt;- A &amp; B
-162,0xa1,a1,ANA C,1,Z; S; P; CY; AC,A &lt;- A &amp; C
-163,0xa2,a2,ANA D,1,Z; S; P; CY; AC,A &lt;- A &amp; D
-164,0xa3,a3,ANA E,1,Z; S; P; CY; AC,A &lt;- A &amp; E
-165,0xa4,a4,ANA H,1,Z; S; P; CY; AC,A &lt;- A &amp; H
-166,0xa5,a5,ANA L,1,Z; S; P; CY; AC,A &lt;- A &amp; L
-167,0xa6,a6,ANA M,1,Z; S; P; CY; AC,A &lt;- A &amp; (HL)
-168,0xa7,a7,ANA A,1,Z; S; P; CY; AC,A &lt;- A &amp; A
-169,0xa8,a8,XRA B,1,Z; S; P; CY; AC,A &lt;- A ^ B
-170,0xa9,a9,XRA C,1,Z; S; P; CY; AC,A &lt;- A ^ C
-171,0xaa,aa,XRA D,1,Z; S; P; CY; AC,A &lt;- A ^ D
-172,0xab,ab,XRA E,1,Z; S; P; CY; AC,A &lt;- A ^ E
-173,0xac,ac,XRA H,1,Z; S; P; CY; AC,A &lt;- A ^ H
-174,0xad,ad,XRA L,1,Z; S; P; CY; AC,A &lt;- A ^ L
-175,0xae,ae,XRA M,1,Z; S; P; CY; AC,A &lt;- A ^ (HL)
-176,0xaf,af,XRA A,1,Z; S; P; CY; AC,A &lt;- A ^ A
-177,0xb0,b0,ORA B,1,Z; S; P; CY; AC,A &lt;- A | B
-178,0xb1,b1,ORA C,1,Z; S; P; CY; AC,A &lt;- A | C
-179,0xb2,b2,ORA D,1,Z; S; P; CY; AC,A &lt;- A | D
-180,0xb3,b3,ORA E,1,Z; S; P; CY; AC,A &lt;- A | E
-181,0xb4,b4,ORA H,1,Z; S; P; CY; AC,A &lt;- A | H
-182,0xb5,b5,ORA L,1,Z; S; P; CY; AC,A &lt;- A | L
-183,0xb6,b6,ORA M,1,Z; S; P; CY; AC,A &lt;- A | (HL)
-184,0xb7,b7,ORA A,1,Z; S; P; CY; AC,A &lt;- A | A
+120,0x77,77,MOV M;A,1,,(HL) <- C
+121,0x78,78,MOV A;B,1,,A <- B
+122,0x79,79,MOV A;C,1,,A <- C
+123,0x7a,7a,MOV A;D,1,,A <- D
+124,0x7b,7b,MOV A;E,1,,A <- E
+125,0x7c,7c,MOV A;H,1,,A <- H
+126,0x7d,7d,MOV A;L,1,,A <- L
+127,0x7e,7e,MOV A;M,1,,A <- (HL)
+128,0x7f,7f,MOV A;A,1,,A <- A
+129,0x80,80,ADD B,1,Z; S; P; CY; AC,A <- A + B
+130,0x81,81,ADD C,1,Z; S; P; CY; AC,A <- A + C
+131,0x82,82,ADD D,1,Z; S; P; CY; AC,A <- A + D
+132,0x83,83,ADD E,1,Z; S; P; CY; AC,A <- A + E
+133,0x84,84,ADD H,1,Z; S; P; CY; AC,A <- A + H
+134,0x85,85,ADD L,1,Z; S; P; CY; AC,A <- A + L
+135,0x86,86,ADD M,1,Z; S; P; CY; AC,A <- A + (HL)
+136,0x87,87,ADD A,1,Z; S; P; CY; AC,A <- A + A
+137,0x88,88,ADC B,1,Z; S; P; CY; AC,A <- A + B + CY
+138,0x89,89,ADC C,1,Z; S; P; CY; AC,A <- A + C + CY
+139,0x8a,8a,ADC D,1,Z; S; P; CY; AC,A <- A + D + CY
+140,0x8b,8b,ADC E,1,Z; S; P; CY; AC,A <- A + E + CY
+141,0x8c,8c,ADC H,1,Z; S; P; CY; AC,A <- A + H + CY
+142,0x8d,8d,ADC L,1,Z; S; P; CY; AC,A <- A + L + CY
+143,0x8e,8e,ADC M,1,Z; S; P; CY; AC,A <- A + (HL) + CY
+144,0x8f,8f,ADC A,1,Z; S; P; CY; AC,A <- A + A + CY
+145,0x90,90,SUB B,1,Z; S; P; CY; AC,A <- A - B
+146,0x91,91,SUB C,1,Z; S; P; CY; AC,A <- A - C
+147,0x92,92,SUB D,1,Z; S; P; CY; AC,A <- A + D
+148,0x93,93,SUB E,1,Z; S; P; CY; AC,A <- A - E
+149,0x94,94,SUB H,1,Z; S; P; CY; AC,A <- A + H
+150,0x95,95,SUB L,1,Z; S; P; CY; AC,A <- A - L
+151,0x96,96,SUB M,1,Z; S; P; CY; AC,A <- A + (HL)
+152,0x97,97,SUB A,1,Z; S; P; CY; AC,A <- A - A
+153,0x98,98,SBB B,1,Z; S; P; CY; AC,A <- A - B - CY
+154,0x99,99,SBB C,1,Z; S; P; CY; AC,A <- A - C - CY
+155,0x9a,9a,SBB D,1,Z; S; P; CY; AC,A <- A - D - CY
+156,0x9b,9b,SBB E,1,Z; S; P; CY; AC,A <- A - E - CY
+157,0x9c,9c,SBB H,1,Z; S; P; CY; AC,A <- A - H - CY
+158,0x9d,9d,SBB L,1,Z; S; P; CY; AC,A <- A - L - CY
+159,0x9e,9e,SBB M,1,Z; S; P; CY; AC,A <- A - (HL) - CY
+160,0x9f,9f,SBB A,1,Z; S; P; CY; AC,A <- A - A - CY
+161,0xa0,a0,ANA B,1,Z; S; P; CY; AC,A <- A &amp; B
+162,0xa1,a1,ANA C,1,Z; S; P; CY; AC,A <- A &amp; C
+163,0xa2,a2,ANA D,1,Z; S; P; CY; AC,A <- A &amp; D
+164,0xa3,a3,ANA E,1,Z; S; P; CY; AC,A <- A &amp; E
+165,0xa4,a4,ANA H,1,Z; S; P; CY; AC,A <- A &amp; H
+166,0xa5,a5,ANA L,1,Z; S; P; CY; AC,A <- A &amp; L
+167,0xa6,a6,ANA M,1,Z; S; P; CY; AC,A <- A &amp; (HL)
+168,0xa7,a7,ANA A,1,Z; S; P; CY; AC,A <- A &amp; A
+169,0xa8,a8,XRA B,1,Z; S; P; CY; AC,A <- A ^ B
+170,0xa9,a9,XRA C,1,Z; S; P; CY; AC,A <- A ^ C
+171,0xaa,aa,XRA D,1,Z; S; P; CY; AC,A <- A ^ D
+172,0xab,ab,XRA E,1,Z; S; P; CY; AC,A <- A ^ E
+173,0xac,ac,XRA H,1,Z; S; P; CY; AC,A <- A ^ H
+174,0xad,ad,XRA L,1,Z; S; P; CY; AC,A <- A ^ L
+175,0xae,ae,XRA M,1,Z; S; P; CY; AC,A <- A ^ (HL)
+176,0xaf,af,XRA A,1,Z; S; P; CY; AC,A <- A ^ A
+177,0xb0,b0,ORA B,1,Z; S; P; CY; AC,A <- A | B
+178,0xb1,b1,ORA C,1,Z; S; P; CY; AC,A <- A | C
+179,0xb2,b2,ORA D,1,Z; S; P; CY; AC,A <- A | D
+180,0xb3,b3,ORA E,1,Z; S; P; CY; AC,A <- A | E
+181,0xb4,b4,ORA H,1,Z; S; P; CY; AC,A <- A | H
+182,0xb5,b5,ORA L,1,Z; S; P; CY; AC,A <- A | L
+183,0xb6,b6,ORA M,1,Z; S; P; CY; AC,A <- A | (HL)
+184,0xb7,b7,ORA A,1,Z; S; P; CY; AC,A <- A | A
 185,0xb8,b8,CMP B,1,Z; S; P; CY; AC,A - B
 186,0xb9,b9,CMP C,1,Z; S; P; CY; AC,A - C
 187,0xba,ba,CMP D,1,Z; S; P; CY; AC,A - D
@@ -192,64 +192,64 @@ ID,Opcode,Opcode (Unformatted),Instruction,Size,Flags,Function
 191,0xbe,be,CMP M,1,Z; S; P; CY; AC,A - (HL)
 192,0xbf,bf,CMP A,1,Z; S; P; CY; AC,A - A
 193,0xc0,c0,RNZ,1,,if NZ; RET
-194,0xc1,c1,POP B,1,,C &lt;- (sp); B &lt;- (sp+1); sp &lt;- sp+2
-195,0xc2,c2,JNZ adr,3,,if NZ; PC &lt;- adr
-196,0xc3,c3,JMP adr,3,,PC &lt;= adr
+194,0xc1,c1,POP B,1,,C <- (sp); B <- (sp+1); sp <- sp+2
+195,0xc2,c2,JNZ adr,3,,if NZ; PC <- adr
+196,0xc3,c3,JMP adr,3,,PC <= adr
 197,0xc4,c4,CNZ adr,3,,if NZ; CALL adr
-198,0xc5,c5,PUSH B,1,,(sp-2)&lt;-C; (sp-1)&lt;-B; sp &lt;- sp - 2
-199,0xc6,c6,ADI D8,2,Z; S; P; CY; AC,A &lt;- A + byte
+198,0xc5,c5,PUSH B,1,,(sp-2)<-C; (sp-1)<-B; sp <- sp - 2
+199,0xc6,c6,ADI D8,2,Z; S; P; CY; AC,A <- A + byte
 200,0xc7,c7,RST 0,1,,CALL $0
 201,0xc8,c8,RZ,1,,if Z; RET
-202,0xc9,c9,RET,1,,PC.lo &lt;- (sp); PC.hi&lt;-(sp+1); SP &lt;- SP+2
-203,0xca,ca,JZ adr,3,,if Z; PC &lt;- adr
+202,0xc9,c9,RET,1,,PC.lo <- (sp); PC.hi<-(sp+1); SP <- SP+2
+203,0xca,ca,JZ adr,3,,if Z; PC <- adr
 204,0xcb,cb,-,0,,
 205,0xcc,cc,CZ adr,3,,if Z; CALL adr
-206,0xcd,cd,CALL adr,3,,(SP-1)&lt;-PC.hi;(SP-2)&lt;-PC.lo;SP&lt;-SP+2;PC=adr
-207,0xce,ce,ACI D8,2,Z; S; P; CY; AC,A &lt;- A + data + CY
+206,0xcd,cd,CALL adr,3,,(SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP+2;PC=adr
+207,0xce,ce,ACI D8,2,Z; S; P; CY; AC,A <- A + data + CY
 208,0xcf,cf,RST 1,1,,CALL $8
 209,0xd0,d0,RNC,1,,if NCY; RET
-210,0xd1,d1,POP D,1,,E &lt;- (sp); D &lt;- (sp+1); sp &lt;- sp+2
-211,0xd2,d2,JNC adr,3,,if NCY; PC&lt;-adr
+210,0xd1,d1,POP D,1,,E <- (sp); D <- (sp+1); sp <- sp+2
+211,0xd2,d2,JNC adr,3,,if NCY; PC<-adr
 212,0xd3,d3,OUT D8,2,,special
 213,0xd4,d4,CNC adr,3,,if NCY; CALL adr
-214,0xd5,d5,PUSH D,1,,(sp-2)&lt;-E; (sp-1)&lt;-D; sp &lt;- sp - 2
-215,0xd6,d6,SUI D8,2,Z; S; P; CY; AC,A &lt;- A - data
+214,0xd5,d5,PUSH D,1,,(sp-2)<-E; (sp-1)<-D; sp <- sp - 2
+215,0xd6,d6,SUI D8,2,Z; S; P; CY; AC,A <- A - data
 216,0xd7,d7,RST 2,1,,CALL $10
 217,0xd8,d8,RC,1,,if CY; RET
 218,0xd9,d9,-,0,,
-219,0xda,da,JC adr,3,,if CY; PC&lt;-adr
+219,0xda,da,JC adr,3,,if CY; PC<-adr
 220,0xdb,db,IN D8,2,,special
 221,0xdc,dc,CC adr,3,,if CY; CALL adr
 222,0xdd,dd,-,0,,
-223,0xde,de,SBI D8,2,Z; S; P; CY; AC,A &lt;- A - data - CY
+223,0xde,de,SBI D8,2,Z; S; P; CY; AC,A <- A - data - CY
 224,0xdf,df,RST 3,1,,CALL $18
 225,0xe0,e0,RPO,1,,if PO; RET
-226,0xe1,e1,POP H,1,,L &lt;- (sp); H &lt;- (sp+1); sp &lt;- sp+2
-227,0xe2,e2,JPO adr,3,,if PO; PC &lt;- adr
-228,0xe3,e3,XTHL,1,,L &lt;-&gt; (SP); H &lt;-&gt; (SP+1) 
+226,0xe1,e1,POP H,1,,L <- (sp); H <- (sp+1); sp <- sp+2
+227,0xe2,e2,JPO adr,3,,if PO; PC <- adr
+228,0xe3,e3,XTHL,1,,L <-&gt; (SP); H <-&gt; (SP+1) 
 229,0xe4,e4,CPO adr,3,,if PO; CALL adr
-230,0xe5,e5,PUSH H,1,,(sp-2)&lt;-L; (sp-1)&lt;-H; sp &lt;- sp - 2
-231,0xe6,e6,ANI D8,2,Z; S; P; CY; AC,A &lt;- A &amp; data
+230,0xe5,e5,PUSH H,1,,(sp-2)<-L; (sp-1)<-H; sp <- sp - 2
+231,0xe6,e6,ANI D8,2,Z; S; P; CY; AC,A <- A &amp; data
 232,0xe7,e7,RST 4,1,,CALL $20
 233,0xe8,e8,RPE,1,,if PE; RET
-234,0xe9,e9,PCHL,1,,PC.hi &lt;- H; PC.lo &lt;- L
-235,0xea,ea,JPE adr,3,,if PE; PC &lt;- adr
-236,0xeb,eb,XCHG,1,,H &lt;-&gt; D; L &lt;-&gt; E
+234,0xe9,e9,PCHL,1,,PC.hi <- H; PC.lo <- L
+235,0xea,ea,JPE adr,3,,if PE; PC <- adr
+236,0xeb,eb,XCHG,1,,H <-&gt; D; L <-&gt; E
 237,0xec,ec,CPE adr,3,,if PE; CALL adr
 238,0xed,ed,-,0,,
-239,0xee,ee,XRI D8,2,Z; S; P; CY; AC,A &lt;- A ^ data
+239,0xee,ee,XRI D8,2,Z; S; P; CY; AC,A <- A ^ data
 240,0xef,ef,RST 5,1,,CALL $28
 241,0xf0,f0,RP,1,,if P; RET
-242,0xf1,ff,POP PSW,1,,flags &lt;- (sp); A &lt;- (sp+1); sp &lt;- sp+2
-243,0xf2,f1,JP adr,3,,if P=1 PC &lt;- adr
+242,0xf1,ff,POP PSW,1,,flags <- (sp); A <- (sp+1); sp <- sp+2
+243,0xf2,f1,JP adr,3,,if P=1 PC <- adr
 244,0xf3,f2,DI,1,,special
-245,0xf4,f3,CP adr,3,,if P; PC &lt;- adr
-246,0xf5,f4,PUSH PSW,1,,(sp-2)&lt;-flags; (sp-1)&lt;-A; sp &lt;- sp - 2
-247,0xf6,f5,ORI D8,2,Z; S; P; CY; AC,A &lt;- A | data
+245,0xf4,f3,CP adr,3,,if P; PC <- adr
+246,0xf5,f4,PUSH PSW,1,,(sp-2)<-flags; (sp-1)<-A; sp <- sp - 2
+247,0xf6,f5,ORI D8,2,Z; S; P; CY; AC,A <- A | data
 248,0xf7,f6,RST 6,1,,CALL $30
 249,0xf8,f7,RM,1,,if M; RET
 250,0xf9,f8,SPHL,1,,SP=HL
-251,0xfa,f9,JM adr,3,,if M; PC &lt;- adr
+251,0xfa,f9,JM adr,3,,if M; PC <- adr
 252,0xfb,fa,EI,1,,special
 253,0xfc,fb,CM adr,3,,if M; CALL adr
 254,0xfd,fc,-,0,,
