@@ -45,12 +45,17 @@ int main(int argc, char **argv)
     
     // Disassemble machine code into Intel 8080 assembly language instructions
     unsigned char operation;
+    unsigned char operands[2] = {'0', '0'};
     char instruction[20];
     int instructionSize;
     char instructionFlag[20];
     char instructionFunction[100];
     int instructionCounter = 0;
     while(pc < romSizeInBytes){
+        // Reset operands
+        operands[0] = '0';
+        operands[1] = '0';
+
         // Get next operation
         operation = romBuffer[pc];
 
@@ -60,13 +65,32 @@ int main(int argc, char **argv)
         memcpy(instructionFlag, instructionFlags[operation], 20);
         memcpy(instructionFunction, instructionFunctions[operation], 100);
 
+        // Get operands depending on instruction size
+        int lastOperandAddress = pc+instructionSize-1;
+        int operandNum;
+        for(int operandAddress = pc; operandAddress < lastOperandAddress; operandAddress++){
+              operandNum = operandAddress-pc;
+              operands[operandNum] = romBuffer[operandAddress];
+		}
+
         // Print disassembled assembly instruction
         printf("Instruction Number %d\n", instructionCounter);
         printf("%s\n", instruction);
+        printf("Operands (memory order): '%x %x'\n", operands[0], operands[1]);
+        printf("'\n'");
         printf("%s\n", instructionFunction);
         printf("%s\n\n", instructionFlag);
 
-        pc += instructionSize;
+        if(instructionSize == 0){
+            /* 
+            Some instructions are placeholders in the opcode list and have a size of 0
+            These would cause infinite loops if ran normally...
+            ... However I doubt any are in the actual ROM, this is a precaution. 
+            */
+            pc++;  
+		}else{
+            pc += instructionSize;
+		}
         instructionCounter++;
 	}
 
@@ -79,7 +103,7 @@ int main(int argc, char **argv)
 * 
 * I do this here because the initializations are about 1000 lines.
 * I could do this elsewhere, but it would clutter the top of the file.
-* Relegate initialization to a function so it can happily remain at the bottom of the file.
+* Delegate initialization to a function so it can happily remain at the bottom of the file.
 * 
 * @return void
 */
