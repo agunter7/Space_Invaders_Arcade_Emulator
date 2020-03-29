@@ -1,3 +1,5 @@
 .vs/
 disassembler.o
 disassembler.exe
+g.exe
+output.txt

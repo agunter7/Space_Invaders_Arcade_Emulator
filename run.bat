@@ -1,2 +1,3 @@
 make
-bin\disassembler.exe src/invaders.h
+bin\disassembler.exe resources/invaders
+make clean

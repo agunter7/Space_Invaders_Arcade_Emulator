@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     initializeGlobals();
 
     // Open Space Invaders ROM file
-    FILE *invadersFile = fopen("../resources/invaders", "rb");  // binary file read-only
+    FILE *invadersFile = fopen(argv[1], "rb");  // binary file read-only
 
     if(invadersFile == NULL){
         printf("Failed to open Space Invaders ROM.");
