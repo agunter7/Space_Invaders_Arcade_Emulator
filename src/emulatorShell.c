@@ -31,8 +31,9 @@ typedef struct ConditionCodes {
 } ConditionCodes;
 
 typedef struct State8080 {
-    // Registers
+    uint8_t *memory;
     ConditionCodes flags;
+    // Registers
     uint8_t    a;    
     uint8_t    b;    
     uint8_t    c;    
@@ -49,55 +50,56 @@ typedef struct State8080 {
 */
 int main(int argc, char **argv)
 {
-    unsigned int pc = 0;  // Program Counter
-    unsigned char *romBuffer;  // Buffer for storing bytes read from Space Invaders ROM
-    int romSizeInBytes = 0;
-    _Bool verbose = false;  // Determines output format. False yields proper assembly code, True is a bit more human-readable.
+    uint8_t *romBuffer;  // Buffer for storing bytes read from Space Invaders ROM
     initializeGlobals();
 
-    // Open Space Invaders ROM file
+    // Open Space Invaders ROM file and store contents in a buffer
     FILE *invadersFile = fopen(argv[1], "rb");  // binary file read-only
-
     if(invadersFile == NULL){
         printf("Failed to open Space Invaders ROM.");
         return -1;
     }
-
-    // Get ROM size
-    fseek(invadersFile, 0, SEEK_END);
-    romSizeInBytes = ftell(invadersFile);
-    fseek(invadersFile, 0, SEEK_SET);
-
-    // Allocate memory for ROM
-    romBuffer = malloc(romSizeInBytes);
-
-    // Read ROM into buffer
-    fread(romBuffer, 1, romSizeInBytes, invadersFile);
+    romBuffer = getRomBuffer(invadersFile);
     
-    // Disassemble machine code into Intel 8080 assembly language instructions
-    unsigned char operation;
-    unsigned char operands[2] = {'0', '0'};
-    char instruction[20];
-    unsigned int instructionSize;
-    unsigned int numOperands;
-    char instructionFlag[20];
-    char instructionFunction[100];
-    unsigned int instructionCounter = 0;
-    while(pc < romSizeInBytes){
-        // Reset operands
-        operands[0] = 0;
-        operands[1] = 0;
+    runCodeFromBuffer(romBuffer);
+
+    free(romBuffer);
+    return 0;
+}
+
+void runCodeFromBuffer(uint8_t *romBuffer)
+{
+    State8080 state = {
+        memory = malloc(2^16);  // Intel 8080 uses 16-bit byte-addressable memory
+        .flags = 0;
+        .a = 0;    
+        .b = 0;    
+        .c = 0;    
+        .d = 0;    
+        .e = 0;    
+        .h = 0;    
+        .l = 0;    
+        .sp;
+        .pc = 0;
+    };  // Intel 8080 CPU state
+
+    // Place ROM buffer data into CPU memory
+    memcpy(state.memory, romBuffer, 0x2000);
+
+    // Get next instruction and execute
+    uint8_t operation = 0;
+    uint8_t operands[2] = {0, 0};
+    unsigned integer instructionSize = 0;
+    while(state.pc < 0x2000){  // Keep within bounds of ROM data for 8080 memory map
+        // Reset operands, 0xff chosen as it will likely standout as a reset value more than 0x00 would
+        operands[0] = 0xff;
+        operands[1] = 0xff;
 
         // Get next operation
         operation = romBuffer[pc];
 
-        // Disassemble operation based on Lookup Tables (arrays indexed by opcode)
-        instructionSize = instructionSizes[operation];
-        memcpy(instruction, instructions[operation], 20);
-        memcpy(instructionFlag, instructionFlags[operation], 20);
-        memcpy(instructionFunction, instructionFunctions[operation], 100);
-
         // Get operands depending on instruction size
+        instructionSize = instructionSizes[operation];  // Array is ordered based on opcode
         numOperands = instructionSize-1;
         int lastOperandAddress = pc+instructionSize-1;
         int operandNum;
@@ -106,35 +108,40 @@ int main(int argc, char **argv)
               operands[operandNum] = romBuffer[operandAddress];
 		}
 
-        // Print disassembled assembly instruction
-        if(verbose){
-            printf("Instruction Number %d\n", instructionCounter);
-            printf("Memory Address: 0x%04x\n", pc);
-            printf("Opcode: 0x%02x\n", operation);
-            printf("%s\n", instruction);
-            printf("Operands (memory order, little endian): '0x%02x 0x%02x'\n", operands[0], operands[1]);
-            printf("%s\n", instructionFunction);
-            printf("%s\n\n", instructionFlag);
-		}else{
-            printf("0x%04x: %s  0x%02x%02x \n", pc, instruction, operands[1], operands[0]);  
-		}
-        
-
-        if(instructionSize == 0){
-            /* 
-            Some instructions are placeholders in the opcode list and have a size of 0
-            These would cause infinite loops if ran normally...
-            ... However I doubt any are in the actual ROM, this is a precaution. 
-            */
-            pc++;  
-		}else{
-            pc += instructionSize;
-		}
-        instructionCounter++;
+        executeInstruction(operation, operands);        
 	}
+}
 
-    free(romBuffer);
-    return 0;
+/**
+ * Returns a pointer to the stored binary derived from an input FILE
+ * @param romFile - pointer to FILE whose data should be stored
+ * @return - uint8_t pointer to stored contents
+ */
+uint8_t *getRomBuffer(FILE *romFile)
+{
+    int romSizeInBytes = 0;
+    uint8_t *romBuffer;
+
+    // Get ROM size
+    fseek(romFile, 0, SEEK_END);
+    romSizeInBytes = ftell(romFile);
+    fseek(romFile, 0, SEEK_SET);
+
+    // Allocate memory for ROM
+    romBuffer = malloc(romSizeInBytes);
+
+    // Read ROM into buffer
+    fread(romBuffer, 1, romSizeInBytes, romFile);
+
+    return romBuffer;
+}
+
+/**
+ * Given an opcode and operands, perform the resulting state changes of the 8080 CPU
+ */
+void executeInstruction(uint8_t opcode, uint8_t *operands)
+{
+
 }
 
 /**
