@@ -1,3 +1,6 @@
+#ifndef CPUSTRUCTURES_H_
+#define CPUSTRUCTURES_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,3 +35,5 @@ typedef struct State8080 {
     uint16_t    sp;
     uint16_t    pc;
 } State8080;
+
+#endif  // CPUSTRUCTURES_H_

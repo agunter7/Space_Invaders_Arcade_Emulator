@@ -983,9 +983,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
         // CNC adr
         // Call address if No Carry
         if(state->flags.carry == 0){
-            // CALL   
-            CALL();
-            printInstructionInfo(opcode);
+            call(orderedOperands, state);
 		}else{
             state->pc += instructionSizes[opcode];
 		}
