@@ -15,6 +15,9 @@ char instructionSizes[256];
 char instructionFlags[256][20];
 char instructionFunctions[256][100];
 void initializeGlobals();
+uint8_t *getRomBuffer(FILE *romFile);
+void executeInstruction(uint8_t opcode, uint8_t *operands);
+void runCodeFromBuffer(uint8_t *romBuffer);
 
 /* 
 Intel 8080 condition codes are held in an 8-bit register.
@@ -70,17 +73,17 @@ int main(int argc, char **argv)
 void runCodeFromBuffer(uint8_t *romBuffer)
 {
     State8080 state = {
-        memory = malloc(2^16);  // Intel 8080 uses 16-bit byte-addressable memory
-        .flags = 0;
-        .a = 0;    
-        .b = 0;    
-        .c = 0;    
-        .d = 0;    
-        .e = 0;    
-        .h = 0;    
-        .l = 0;    
-        .sp;
-        .pc = 0;
+        .memory = malloc(2^16),  // Intel 8080 uses 16-bit byte-addressable memory
+        .flags = 0,
+        .a = 0,    
+        .b = 0,    
+        .c = 0,    
+        .d = 0,    
+        .e = 0,    
+        .h = 0,    
+        .l = 0,    
+        .sp = 0,
+        .pc = 0,
     };  // Intel 8080 CPU state
 
     // Place ROM buffer data into CPU memory
@@ -89,22 +92,23 @@ void runCodeFromBuffer(uint8_t *romBuffer)
     // Get next instruction and execute
     uint8_t operation = 0;
     uint8_t operands[2] = {0, 0};
-    unsigned integer instructionSize = 0;
+    unsigned int instructionSize = 0;
+    unsigned int numOperands = 0;
     while(state.pc < 0x2000){  // Keep within bounds of ROM data for 8080 memory map
         // Reset operands, 0xff chosen as it will likely standout as a reset value more than 0x00 would
         operands[0] = 0xff;
         operands[1] = 0xff;
 
         // Get next operation
-        operation = romBuffer[pc];
+        operation = romBuffer[state.pc];
 
         // Get operands depending on instruction size
         instructionSize = instructionSizes[operation];  // Array is ordered based on opcode
         numOperands = instructionSize-1;
-        int lastOperandAddress = pc+instructionSize-1;
+        int lastOperandAddress = state.pc+instructionSize-1;
         int operandNum;
-        for(int operandAddress = pc+1; operandAddress <= lastOperandAddress; operandAddress++){
-              operandNum = operandAddress-(pc+1);
+        for(int operandAddress = state.pc+1; operandAddress <= lastOperandAddress; operandAddress++){
+              operandNum = operandAddress-(state.pc+1);
               operands[operandNum] = romBuffer[operandAddress];
 		}
 
