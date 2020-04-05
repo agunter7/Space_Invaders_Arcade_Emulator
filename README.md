@@ -16,3 +16,16 @@ C) The GNU Make tool for 64-bit mingw (minimum GNU for Windows) [https://gist.gi
 5) Extract the contents of the zip folder.
 6) Copy all contents from the extraction to your "Git\mingw64\" folder inside your Git for Windows folder path (NOT the mingw-w64 install performed at step 2)
 7) In step 6, do not overwrite/replace any existing files
+
+# Intel 8080 Memory Map
+ROM    
+    $0000-$07ff:    invaders.h    
+    $0800-$0fff:    invaders.g    
+    $1000-$17ff:    invaders.f    
+    $1800-$1fff:    invaders.e    
+
+    RAM    
+    $2000-$23ff:    work RAM    
+    $2400-$3fff:    video RAM    
+
+    $4000-:     RAM mirror

@@ -3,11 +3,8 @@
 * @Author: Andrew Gunter
 ***********************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <stdint.h>
+#include "../src/instructions.h"
+#include "../src/cpuStructures.h"
 
 // Global variable definitions and function prototypes
 char instructions[256][20];
@@ -16,37 +13,9 @@ char instructionFlags[256][20];
 char instructionFunctions[256][100];
 void initializeGlobals();
 uint8_t *getRomBuffer(FILE *romFile);
-void executeInstruction(uint8_t opcode, uint8_t *operands);
+void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state);
 void runCodeFromBuffer(uint8_t *romBuffer);
-
-/* 
-Intel 8080 condition codes are held in an 8-bit register.
-The various bits of this register correspond with different flags/conditions.
-*/
-typedef struct ConditionCodes {
-    // Define register bit-field
-    uint8_t    zero:1;  
-    uint8_t    sign:1;  
-    uint8_t    parity:1;    
-    uint8_t    carry:1;    
-    uint8_t    auxillaryCarry:1;    
-    uint8_t    unusedBits:3;
-} ConditionCodes;
-
-typedef struct State8080 {
-    uint8_t *memory;
-    ConditionCodes flags;
-    // Registers
-    uint8_t    a;    
-    uint8_t    b;    
-    uint8_t    c;    
-    uint8_t    d;    
-    uint8_t    e;    
-    uint8_t    h;    
-    uint8_t    l;    
-    uint16_t    sp;
-    uint16_t    pc;
-} State8080;
+void printInstructionInfo(uint8_t opcode);
 
 /**
 * Main function
@@ -57,13 +26,14 @@ int main(int argc, char **argv)
     initializeGlobals();
 
     // Open Space Invaders ROM file and store contents in a buffer
-    FILE *invadersFile = fopen(argv[1], "rb");  // binary file read-only
+    FILE *invadersFile = fopen("resources/invaders", "rb");  // binary file read-only
     if(invadersFile == NULL){
         printf("Failed to open Space Invaders ROM.");
         return -1;
     }
     romBuffer = getRomBuffer(invadersFile);
     
+    printf("Running code\n");
     runCodeFromBuffer(romBuffer);
 
     free(romBuffer);
@@ -112,7 +82,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
               operands[operandNum] = romBuffer[operandAddress];
 		}
 
-        executeInstruction(operation, operands);        
+        executeInstruction(operation, operands, &state);        
 	}
 }
 
@@ -140,12 +110,1059 @@ uint8_t *getRomBuffer(FILE *romFile)
     return romBuffer;
 }
 
+void printInstructionInfo(uint8_t opcode)
+{
+    printf("Opcode: 0x%02x\n", opcode);
+    printf("%s\n", instructions[opcode]);
+    printf("%d\n", instructionSizes[opcode]);
+    printf("%s\n", instructionFunctions[opcode]);
+    printf("%s\n\n", instructionFlags[opcode]);
+    fflush(stdout);
+    exit(0);
+}
+
 /**
  * Given an opcode and operands, perform the resulting state changes of the 8080 CPU
  */
-void executeInstruction(uint8_t opcode, uint8_t *operands)
+void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
-
+    uint16_t orderedOperands = (operands[1] << 8) | operands[0];
+    printf("Operand (ordered): 0x%04x\n", orderedOperands);
+    switch(opcode){
+        case 0x00: 
+        state->pc++;
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x01: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x02: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x03: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x04: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x05: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x06: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x07: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x08: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x09: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x0A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x0B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x0C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x0D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x0E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x0F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x10: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x11: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x12: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x13: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x14: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x15: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x16: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x17: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x18: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x19: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x1A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x1B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x1C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x1D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x1E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x1F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x20: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x21: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x22: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x23: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x24: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x25: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x26: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x27: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x28: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x29: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x2A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x2B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x2C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x2D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x2E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x2F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x30: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x31: 
+        // LXI SP, D16
+        // Load Immediate into Stack Pointer
+        state->sp = orderedOperands;
+        state->pc += instructionSizes[opcode];  // 3
+        break;
+        case 0x32: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x33: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x34: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x35: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x36: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x37: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x38: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x39: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x3A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x3B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x3C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x3D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x3E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x3F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x40: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x41: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x42: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x43: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x44: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x45: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x46: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x47: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x48: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x49: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x4A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x4B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x4C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x4D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x4E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x4F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x50: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x51: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x52: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x53: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x54: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x55: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x56: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x57: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x58: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x59: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x5A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x5B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x5C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x5D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x5E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x5F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x60: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x61: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x62: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x63: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x64: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x65: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x66: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x67: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x68: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x69: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x6A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x6B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x6C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x6D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x6E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x6F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x70: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x71: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x72: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x73: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x74: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x75: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x76: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x77: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x78: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x79: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x7A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x7B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x7C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x7D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x7E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x7F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x80: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x81: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x82: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x83: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x84: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x85: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x86: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x87: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x88: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x89: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x8A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x8B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x8C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x8D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x8E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x8F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x90: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x91: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x92: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x93: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x94: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x95: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x96: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x97: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x98: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x99: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x9A: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x9B: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x9C: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x9D: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x9E: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0x9F: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA0: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA1: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA2: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA3: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA4: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA5: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA6: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA7: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA8: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xA9: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xAA: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xAB: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xAC: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xAD: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xAE: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xAF: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB0: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB1: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB2: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB3: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB4: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB5: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB6: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB7: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB8: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xB9: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xBA: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xBB: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xBC: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xBD: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xBE: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xBF: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC0: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC1: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC2: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC3: 
+        // JMP adr - JUMP
+        state->pc = orderedOperands;
+        break;
+        case 0xC4: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC5: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC6: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC7: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC8: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xC9: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xCA: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xCB: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xCC: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xCD: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xCE: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xCF: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD0: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD1: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD2: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD3: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD4: 
+        // CNC adr
+        // Call address if No Carry
+        if(state->flags.carry == 0){
+            // CALL   
+            CALL();
+            printInstructionInfo(opcode);
+		}else{
+            state->pc += instructionSizes[opcode];
+		}
+        break;
+        case 0xD5: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD6: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD7: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD8: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xD9: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xDA: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xDB: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xDC: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xDD: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xDE: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xDF: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE0: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE1: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE2: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE3: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE4: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE5: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE6: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE7: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE8: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xE9: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xEA: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xEB: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xEC: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xED: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xEE: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xEF: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF0: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF1: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF2: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF3: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF4: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF5: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF6: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF7: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF8: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xF9: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xFA: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xFB: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xFC: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xFD: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xFE: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+        case 0xFF: 
+        printInstructionInfo(opcode);
+        state->pc += instructionSizes[opcode];
+        break;
+	}
 }
 
 /**

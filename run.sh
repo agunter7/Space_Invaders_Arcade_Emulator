@@ -1,2 +1,2 @@
-make
-./bin/disassembler.exe resources/invaders > output.txt
+make all
+./bin/emulatorShell.exe resources/invaders

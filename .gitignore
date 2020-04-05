@@ -3,3 +3,5 @@ disassembler.o
 disassembler.exe
 g.exe
 output.txt
+bin/*
+emulatorShell.exe
