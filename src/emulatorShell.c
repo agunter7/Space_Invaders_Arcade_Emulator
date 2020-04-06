@@ -17,6 +17,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state);
 void runCodeFromBuffer(uint8_t *romBuffer);
 void printInstructionInfo(uint8_t opcode);
 
+//TODO: Check all casts between uint8_t and uint16_t
+
 /**
 * Main function
 */

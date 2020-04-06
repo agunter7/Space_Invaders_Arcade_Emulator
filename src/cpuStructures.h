@@ -8,7 +8,8 @@
 #include <stdint.h>
 
 /* 
-Intel 8080 condition codes are held in an 8-bit register.
+Intel 8080 condition codes can be thought of as existing in a 8-bit register.
+This doesn't seem to actually be the case, but simplifies organization in emulation.
 The various bits of this register correspond with different flags/conditions.
 */
 typedef struct ConditionCodes {
