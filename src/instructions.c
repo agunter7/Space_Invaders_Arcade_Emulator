@@ -66,6 +66,22 @@ uint16_t getAddressDE(State8080 *state)
 	return (highBits | lowBits);
 }
 
+uint8_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
+{
+	uint8_t nibble1 = op1 & 0x0F;
+	uint8_t nibble2 = op2 & 0x0F;
+	uint8_t nibbleResult = op1 + op2;
+
+	if((nibbleResult & 0x10) == 0x10){
+		// Carry occurred from bit 3 to bit 4
+		state->flags.auxillaryCarry = 1;
+	}else{
+		state->flags.auxillaryCarry = 0;
+	}
+
+	return ((uint16_t)op1 + (uint16_t)op2);
+}
+
 void checkStandardArithmeticFlags(uint16_t result, State8080 *state)
 {
 	// Check zero flag

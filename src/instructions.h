@@ -62,4 +62,23 @@ void moveDataToHLMemory(uint8_t data, State8080 *state);
  */
 void checkStandardArithmeticFlags(uint16_t result, State8080 *state);
 
+/**
+ Add two values and set/reset Auxillary Carry flag.
+
+ Intel 8080 System Manual comments on Auxillary Carry:
+
+ "If the instruction caused a carry out of bit 3 and into 
+ bit 4 of the resulting value, the auxillary carry is set;
+ otherwise it is reset. This flag is affected by single
+ precision additions, subtractions, increments, decrements, 
+ comparisons, and logical operations, but is principally
+ used with additions and increments preceding a
+ DAA (Decimal Adjust Accumulator) instruction."
+
+ @param op1 - 1st operand
+ @param op2 - 2nd operand
+ @return - sum of operands
+ */
+uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state);
+
 #endif  // INSTRUCTIONS_H_

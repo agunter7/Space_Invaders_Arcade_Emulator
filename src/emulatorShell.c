@@ -152,7 +152,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // DCR B
             // B = B-1
             // Flags: zero, sign, parity, auxillary carry
-            state->b = state->b - 1;
+            state->b = addWithCheckAC(state->b, -1, state);
             checkStandardArithmeticFlags(state->b, state);
             state->pc += 1;
             break;
