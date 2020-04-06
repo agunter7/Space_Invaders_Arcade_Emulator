@@ -24,8 +24,7 @@ ROM
     $1000-$17ff:    invaders.f    
     $1800-$1fff:    invaders.e    
 
-    RAM    
+RAM    
     $2000-$23ff:    work RAM    
     $2400-$3fff:    video RAM    
-
-    $4000-:     RAM mirror
+    $4000-:         RAM mirror

@@ -33,6 +33,11 @@ int main(int argc, char **argv)
     }
     romBuffer = getRomBuffer(invadersFile);
     
+    uint16_t test0 = 0xff;
+    uint8_t test1 = (uint8_t)test0;
+    printf("%x\n", test0);
+    printf("%04x\n", test1);
+
     printf("Running code\n");
     runCodeFromBuffer(romBuffer);
 
