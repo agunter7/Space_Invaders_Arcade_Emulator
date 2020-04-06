@@ -5,9 +5,13 @@ A Windows emulator for the Intel 8080 processor written in C
 The project uses a makefile to compile the C source files. 
 In a windows environment, this makefile will not be useable by default. 
 In order to use the makefile, you will need: 
+
 A) Git for Windows [https://gitforwindows.org/]
+
 B) mingw-w64 (minimum GNU for Windows 64-bit) [http://mingw-w64.org/doku.php/download/mingw-builds]
+
 C) The GNU Make tool for 64-bit mingw (minimum GNU for Windows) [https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058] [https://sourceforge.net/projects/ezwinports/files/]
+
 
 1) Install Git for Windows. This should be straightforward.
 2) Install mingw-w64 to the default Program Files path. Choose the latest version. "Architecture == x86_64" (64-bit). "threads == win32".
