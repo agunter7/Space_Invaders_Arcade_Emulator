@@ -152,8 +152,9 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // DCR B
             // B = B-1
             // Flags: zero, sign, parity, auxillary carry
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            state->b = state->b - 1;
+            checkStandardArithmeticFlags(state->b, state);
+            state->pc += 1;
             break;
         case 0x06: 
             // MVI B; D8
