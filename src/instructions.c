@@ -66,7 +66,7 @@ uint16_t getAddressDE(State8080 *state)
 	return (highBits | lowBits);
 }
 
-uint8_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
+uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
 {
 	uint8_t nibble1 = op1 & 0x0F;
 	uint8_t nibble2 = op2 & 0x0F;

@@ -84,6 +84,8 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 
         executeInstruction(operation, operands, &state);        
 	}
+
+    free(state.memory);
 }
 
 /**
