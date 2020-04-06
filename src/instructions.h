@@ -55,4 +55,11 @@ uint16_t getAddressDE(State8080 *state);
 */
 void moveDataToHLMemory(uint8_t data, State8080 *state);
 
+/**
+ Sets/Resets the most common flags for arithmetic instructions:
+ Zero, Sign, Parity flags
+ Will not affect Carry or Auxillary Carry flags
+ */
+void checkStandardArithmeticFlags(uint16_t result, State8080 *state);
+
 #endif  // INSTRUCTIONS_H_

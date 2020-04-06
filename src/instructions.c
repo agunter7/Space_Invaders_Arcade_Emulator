@@ -65,3 +65,40 @@ uint16_t getAddressDE(State8080 *state)
 	uint16_t lowBits = (uint16_t)(state->e);
 	return (highBits | lowBits);
 }
+
+void checkStandardArithmeticFlags(uint16_t result, State8080 *state)
+{
+	// Check zero flag
+	if (result == 0){
+		state->flags.zero = 1;
+	}else{
+		state->flags.zero = 0;
+	}
+
+	// Check sign flag
+	// A "true" 8080 arithmetic result is only 8 bits, but emulation here uses 16 bits
+	// Using 16 bit results allows for easier carry handling/checking
+	// Sign flag set when MSB (8th bit) is set, else reset
+	// 0x0080 == 0000 0000 1000 0000
+	if((result & 0x0080) == 0x0080){
+		state->flags.sign = 1;
+	}else{
+		state->flags.sign = 0;
+	}
+
+	//Check parity flag
+	uint8_t trueResult = (uint8_t)result;
+	uint8_t mask = 0x01;
+	unsigned int sum = 0;
+	// Get sum of 1s in the 8-bit result
+	for(int shift = 0; shift < 8; shift++){  // Each iteration targets a different bit from trueResult
+		uint8_t maskedResult = trueResult & (mask << shift);
+		sum += (maskedResult >> shift);
+	}
+	// Set for even parity, reset for odd parity
+	if (sum % 2 == 0){
+		state->flags.parity = 1;
+	}else{
+		state->flags.parity = 0;
+	}
+}
