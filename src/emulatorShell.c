@@ -35,8 +35,8 @@ int main(int argc, char **argv)
     }
     romBuffer = getRomBuffer(invadersFile);
     
-    uint16_t test0 = 0xff;
-    uint8_t test1 = (uint8_t)test0;
+    uint16_t test0 = 0x1234;
+    uint8_t test1 = test0;
     printf("%x\n", test0);
     printf("%04x\n", test1);
 
@@ -88,7 +88,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
               operandNum = operandAddress-(state.pc+1);
               operands[operandNum] = romBuffer[operandAddress];
 		}
-
+        //printf("0x%04x\n", state.pc);
         executeInstruction(operation, operands, &state);        
 	}
 
@@ -136,7 +136,8 @@ void printInstructionInfo(uint8_t opcode)
 void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
     uint16_t orderedOperands = (operands[1] << 8) | operands[0];
-    printf("Operand (ordered): 0x%04x\n", orderedOperands);
+    printf("Opcode: 0x%02x\n", opcode);
+    //printf("Operand (ordered): 0x%04x\n", orderedOperands);
     switch(opcode){
         case 0x00:
             state->pc += 1;
@@ -641,6 +642,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x77: 
+            // MOV M, A
+            // memory[(H)(L)] = A
             moveDataToHLMemory(state->a, state);
             state->pc++;
             break;
@@ -976,6 +979,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
         case 0xC9: 
             // RET
             // PC.lo = memory[sp]; PC.hi = memory[sp+1]; sp = sp+2;
+            ;  // avoid case followed by declaration
             uint8_t lowByte = state->memory[state->pc];
             uint8_t highByte = state->memory[(state->pc)+1];
             uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
