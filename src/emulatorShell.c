@@ -974,8 +974,13 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xC9: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // RET
+            // PC.lo = memory[sp]; PC.hi = memory[sp+1]; sp = sp+2;
+            uint8_t lowByte = state->memory[state->pc];
+            uint8_t highByte = state->memory[(state->pc)+1];
+            uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
+            state->sp += 2;
+            state->pc = newValuePC;
             break;
         case 0xCA: 
             printInstructionInfo(opcode);
