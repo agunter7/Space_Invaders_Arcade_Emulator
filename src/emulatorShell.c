@@ -5,6 +5,7 @@
 
 #include "../src/instructions.h"
 #include "../src/cpuStructures.h"
+#include "../src/helpers.h"
 
 // Global variable definitions and function prototypes
 char instructions[256][20];
@@ -30,17 +31,17 @@ int main(int argc, char **argv)
     // Open Space Invaders ROM file and store contents in a buffer
     FILE *invadersFile = fopen("resources/invaders", "rb");  // binary file read-only
     if(invadersFile == NULL){
-        printf("Failed to open Space Invaders ROM.");
+        logger("Failed to open Space Invaders ROM.");
         return -1;
     }
     romBuffer = getRomBuffer(invadersFile);
     
     uint16_t test0 = 0xffff;
     //uint8_t test1 = 0xffff;
-    //printf("%x\n", test0);
-    printf("%04x\n", test0>>8);
+    //logger("%x\n", test0);
+    logger("%04x\n", test0>>8);
 
-    printf("Running code\n");
+    logger("Running code\n");
     runCodeFromBuffer(romBuffer);
 
     free(romBuffer);
@@ -72,7 +73,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
     unsigned int instructionSize = 0;
     unsigned int numOperands = 0;
     unsigned int instrCount = 0;
-    bool printFlag = 0;
+    bool loggerlag = 0;
     while(state.pc < 0x2000){  // Keep within bounds of ROM data for 8080 memory map
         // Reset operands, 0xff chosen as it will likely standout as a reset value more than 0x00 would
         operands[0] = 0xff;
@@ -92,28 +93,25 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 		}
         
         if (operation == 0xc9){
-            printFlag = 1;
+            loggerlag = 1;
 		}
-        if(printFlag){
-            printf("%d\n", instrCount);
-            printf("Operation: 0x%02x\n", operation);
-            printf("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
-            printf("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,c,ac,xxx): 0x%02x\n", state.pc, state.sp, state.flags);
+        if(loggerlag){
+            logger("%d\n", instrCount);
+            logger("Operation: 0x%02x\n", operation);
+            logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
+            logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,c,ac,xxx): 0x%02x\n", state.pc, state.sp, state.flags);
             char garbage[100];
-            fflush(stdout);
             scanf("%s", garbage);
-            fflush(stdout);
 	    }
         executeInstruction(operation, operands, &state);
         instrCount++;
 	}
 
-    printf("%d\n", instrCount);
-    printf("Operation: 0x%02x\n", operation);
-    printf("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
-    printf("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,c,ac,xxx): 0x%02x\n", state.pc, state.sp, state.flags);
+    logger("%d\n", instrCount);
+    logger("Operation: 0x%02x\n", operation);
+    logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
+    logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,c,ac,xxx): 0x%02x\n", state.pc, state.sp, state.flags);
     char garbage[100];
-    fflush(stdout);
 
     free(state.memory);
 }
@@ -144,12 +142,11 @@ uint8_t *getRomBuffer(FILE *romFile)
 
 void printInstructionInfo(uint8_t opcode)
 {
-    printf("Opcode: 0x%02x\n", opcode);
-    printf("%s\n", instructions[opcode]);
-    printf("%d\n", instructionSizes[opcode]);
-    printf("%s\n", instructionFunctions[opcode]);
-    printf("%s\n\n", instructionFlags[opcode]);
-    fflush(stdout);
+    logger("Opcode: 0x%02x\n", opcode);
+    logger("%s\n", instructions[opcode]);
+    logger("%d\n", instructionSizes[opcode]);
+    logger("%s\n", instructionFunctions[opcode]);
+    logger("%s\n\n", instructionFlags[opcode]);
     exit(0);
 }
 
@@ -159,13 +156,12 @@ void printInstructionInfo(uint8_t opcode)
 void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
     uint16_t orderedOperands = (operands[1] << 8) | operands[0];
-    /*printf("Operand (ordered): 0x%04x\n", orderedOperands);
-    printf("Opcode: 0x%02x\n", opcode);
-    printf("%s\n", instructions[opcode]);
-    printf("%d\n", instructionSizes[opcode]);
-    printf("%s\n", instructionFunctions[opcode]);
-    printf("%s\n\n", instructionFlags[opcode]);*/
-    //fflush(stdout);
+    /*logger("Operand (ordered): 0x%04x\n", orderedOperands);
+    logger("Opcode: 0x%02x\n", opcode);
+    logger("%s\n", instructions[opcode]);
+    logger("%d\n", instructionSizes[opcode]);
+    logger("%s\n", instructionFunctions[opcode]);
+    logger("%s\n\n", instructionFlags[opcode]);*/
     switch(opcode){
         case 0x00:
             state->pc += 1;
@@ -1013,8 +1009,6 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
             state->sp += 2;
             state->pc = newValuePC;
-            printf("end of RET\n");
-            fflush(stdout);
             break;
         case 0xCA: 
             printInstructionInfo(opcode);

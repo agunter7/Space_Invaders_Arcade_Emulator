@@ -8,6 +8,7 @@
 
 #include "../src/cpuStructures.h"
 #include "../src/instructions.h"
+#include "../src/helpers.h"
 
 /**
  CALL addr
@@ -26,8 +27,7 @@ void CALL(uint16_t address, State8080 *state)
     pcHigh = (uint8_t)(pc >> 8);
     pcLow = (uint8_t)(pc & 0x0F);
 
-    printf("CALL storing 0x%02x%02x\n", pcHigh, pcLow);
-    fflush(stdout);
+    logger("CALL storing 0x%02x%02x\n", pcHigh, pcLow);
 
     editMem(sp-1, pcHigh, state);
     editMem(sp-2, pcLow, state);
@@ -71,7 +71,7 @@ uint16_t getAddressDE(State8080 *state)
 void editMem(uint16_t address, uint8_t value, State8080 *state)
 {
     if(address == 0x23ff || address == 0x23fe){
-        printf("Change address 0x%04x to value 0x%02x\n", address, value);
+        logger("Change address 0x%04x to value 0x%02x\n", address, value);
     }
     state->memory[address] = value;
 }
@@ -79,7 +79,7 @@ void editMem(uint16_t address, uint8_t value, State8080 *state)
 uint8_t getMem(uint16_t address, State8080 *state)
 {
     if(address == 0x23ff || address == 0x23fe){
-        printf("Read address 0x%04x to value 0x%02x\n", address, state->memory[address]);
+        logger("Read address 0x%04x to value 0x%02x\n", address, state->memory[address]);
     }
     return state->memory[address];
 }

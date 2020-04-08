@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 /* 
 Intel 8080 condition codes can be thought of as existing in a 8-bit register.
