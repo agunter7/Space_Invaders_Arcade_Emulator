@@ -18,18 +18,21 @@
 */
 void CALL(uint16_t address, State8080 *state)
 {
-	uint8_t pcHigh;  // program counter high 8 bits
-	uint8_t pcLow;
-	uint16_t pc = state->pc;
-	uint16_t sp = state->sp;
+    uint8_t pcHigh;  // program counter high 8 bits
+    uint8_t pcLow;
+    uint16_t pc = state->pc;
+    uint16_t sp = state->sp;
 
-	pcHigh = pc >> 8;
-	pcLow = pc & 0x0F;
+    pcHigh = (uint8_t)(pc >> 8);
+    pcLow = (uint8_t)(pc & 0x0F);
 
-	state->memory[sp-1] = pcHigh;
-	state->memory[sp-2] = pcLow;
-	state->sp -= 2;
-	state->pc = address;
+    printf("CALL storing 0x%02x%02x\n", pcHigh, pcLow);
+    fflush(stdout);
+
+    editMem(sp-1, pcHigh, state);
+    editMem(sp-2, pcLow, state);
+    state->sp -= 2;
+    state->pc = address;
 }
 
 /**
@@ -38,85 +41,100 @@ void CALL(uint16_t address, State8080 *state)
 */
 void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
 {
-	uint16_t concatRegValue = (((uint16_t)(*highReg)) << 8) | ((uint16_t)(*lowReg));
-	concatRegValue++;
-	*highReg = (uint8_t)(concatRegValue >> 8);
-	*lowReg = (uint8_t)concatRegValue;
-	state->pc++;
+    uint16_t concatRegValue = (((uint16_t)(*highReg)) << 8) | ((uint16_t)(*lowReg));
+    concatRegValue++;
+    *highReg = (uint8_t)(concatRegValue >> 8);
+    *lowReg = (uint8_t)concatRegValue;
+    state->pc++;
 }
 
 void moveDataToHLMemory(uint8_t data, State8080 *state)
 {
-	uint16_t destinationAddress = getAddressHL(state);
-	state->memory[destinationAddress] = data;
+    uint16_t destinationAddress = getAddressHL(state);
+    editMem(destinationAddress, data, state);
 }
 
 uint16_t getAddressHL(State8080 *state)
 {
-	uint16_t highBits = (((uint16_t)(state->h))<<8);
-	uint16_t lowBits = (uint16_t)(state->l);
-	return (highBits | lowBits);
+    uint16_t highBits = (((uint16_t)(state->h))<<8);
+    uint16_t lowBits = (uint16_t)(state->l);
+    return (highBits | lowBits);
 }
-
 
 uint16_t getAddressDE(State8080 *state)
 {
-	uint16_t highBits = (((uint16_t)(state->d))<<8);
-	uint16_t lowBits = (uint16_t)(state->e);
-	return (highBits | lowBits);
+    uint16_t highBits = (((uint16_t)(state->d))<<8);
+    uint16_t lowBits = (uint16_t)(state->e);
+    return (highBits | lowBits);
+}
+
+void editMem(uint16_t address, uint8_t value, State8080 *state)
+{
+    if(address == 0x23ff || address == 0x23fe){
+        printf("Change address 0x%04x to value 0x%02x\n", address, value);
+    }
+    state->memory[address] = value;
+}
+
+uint8_t getMem(uint16_t address, State8080 *state)
+{
+    if(address == 0x23ff || address == 0x23fe){
+        printf("Read address 0x%04x to value 0x%02x\n", address, state->memory[address]);
+    }
+    return state->memory[address];
 }
 
 uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
 {
-	// Perform lower-order 4-bit addition
-	uint8_t nibble1 = op1 & 0x0F;
-	uint8_t nibble2 = op2 & 0x0F;
-	uint8_t nibbleResult = op1 + op2;
+    // Perform lower-order 4-bit addition
+    uint8_t nibble1 = op1 & 0x0F;
+    uint8_t nibble2 = op2 & 0x0F;
+    uint8_t nibbleResult = op1 + op2;
 
-	if((nibbleResult & 0x10) == 0x10){
-		// Carry occurred from bit 3 to bit 4
-		state->flags.auxillaryCarry = 1;
-	}else{
-		state->flags.auxillaryCarry = 0;
-	}
+    if((nibbleResult & 0x10) == 0x10){
+        // Carry occurred from bit 3 to bit 4
+        state->flags.auxillaryCarry = 1;
+    }else{
+        state->flags.auxillaryCarry = 0;
+    }
 
-	// Return lossless result from 8-bit addition
-	return ((uint16_t)op1 + (uint16_t)op2);
+    // Return lossless result from 8-bit addition
+    return ((uint16_t)op1 + (uint16_t)op2);
 }
 
 void checkStandardArithmeticFlags(uint16_t result, State8080 *state)
 {
-	// Check zero flag
-	if (result == 0){
-		state->flags.zero = 1;
-	}else{
-		state->flags.zero = 0;
-	}
+    // Check zero flag
+    if (result == 0){
+        state->flags.zero = 1;
+    }else{
+        state->flags.zero = 0;
+    }
 
-	// Check sign flag
-	// A "true" 8080 arithmetic result is only 8 bits, but emulation here uses 16 bits
-	// Using 16 bit results allows for easier carry handling/checking
-	// Sign flag set when MSB (bit 7) is set, else reset
-	// 0x0080 == 0000 0000 1000 0000
-	if((result & 0x0080) == 0x0080){
-		state->flags.sign = 1;
-	}else{
-		state->flags.sign = 0;
-	}
+    // Check sign flag
+    // A "true" 8080 arithmetic result is only 8 bits, but emulation here uses 16 bits
+    // Using 16 bit results allows for easier carry handling/checking
+    // Sign flag set when MSB (bit 7) is set, else reset
+    // 0x0080 == 0000 0000 1000 0000
+    if((result & 0x0080) == 0x0080){
+        state->flags.sign = 1;
+    }else{
+        state->flags.sign = 0;
+    }
 
-	//Check parity flag
-	uint8_t trueResult = (uint8_t)result;
-	uint8_t mask = 0x01;
-	unsigned int sum = 0;
-	// Get sum of 1s in the 8-bit result
-	for(int shift = 0; shift < 8; shift++){  // Each iteration targets a different bit from trueResult
-		uint8_t maskedResult = trueResult & (mask << shift);
-		sum += (maskedResult >> shift);
-	}
-	// Set for even parity, reset for odd parity
-	if (sum % 2 == 0){
-		state->flags.parity = 1;
-	}else{
-		state->flags.parity = 0;
-	}
+    //Check parity flag
+    uint8_t trueResult = (uint8_t)result;
+    uint8_t mask = 0x01;
+    unsigned int sum = 0;
+    // Get sum of 1s in the 8-bit result
+    for(int shift = 0; shift < 8; shift++){  // Each iteration targets a different bit from trueResult
+        uint8_t maskedResult = trueResult & (mask << shift);
+        sum += (maskedResult >> shift);
+    }
+    // Set for even parity, reset for odd parity
+    if (sum % 2 == 0){
+        state->flags.parity = 1;
+    }else{
+        state->flags.parity = 0;
+    }
 }

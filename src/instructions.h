@@ -81,4 +81,24 @@ void checkStandardArithmeticFlags(uint16_t result, State8080 *state);
  */
 uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state);
 
+/**
+ For auditing/debugging purposes.
+ Simply changes 8080 memory to some value at some address.
+ Makes life easier for tracking memory changes.
+ @param address - 8080 memory address to edit
+ @param value - Data to place at desired address
+ @param state - 8080 state
+ */
+void editMem(uint16_t address, uint8_t value, State8080 *state);
+
+/**
+ For auditing/debugging purposes.
+ Simply returns a byte from some 8080 memory address.
+ Makes life easier for tracking memory changes.
+ @param address - 8080 memory address to edit
+ @param state - 8080 state
+ @return - byte of data from requested address
+ */
+uint8_t getMem(uint16_t address, State8080 *state);
+
 #endif  // INSTRUCTIONS_H_

@@ -35,10 +35,10 @@ int main(int argc, char **argv)
     }
     romBuffer = getRomBuffer(invadersFile);
     
-    uint16_t test0 = 0x1234;
-    uint8_t test1 = 0xff;
-    printf("%x\n", test0);
-    printf("%04x\n", (uint16_t)test1<<8);
+    uint16_t test0 = 0xffff;
+    //uint8_t test1 = 0xffff;
+    //printf("%x\n", test0);
+    printf("%04x\n", test0>>8);
 
     printf("Running code\n");
     runCodeFromBuffer(romBuffer);
@@ -287,7 +287,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // A = memory[(D)(E)]
             ;  // workaround C99 quirk where a label cannot precede a declaration
             uint16_t sourceAddress = getAddressDE(state);
-            state->a = state->memory[sourceAddress];
+            state->a = getMem(sourceAddress, state);
             state->pc += 1;
             break;
         case 0x1B: 
@@ -1008,8 +1008,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // RET
             // PC.lo = memory[sp]; PC.hi = memory[sp+1]; sp = sp+2;
             ;  // avoid case followed by declaration
-            uint8_t lowByte = state->memory[state->pc];
-            uint8_t highByte = state->memory[(state->pc)+1];
+            uint8_t lowByte = getMem(state->sp, state);
+            uint8_t highByte = getMem((state->sp)+1, state);
             uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
             state->sp += 2;
             state->pc = newValuePC;
