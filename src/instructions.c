@@ -40,7 +40,7 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
 {
 	uint16_t concatRegValue = (((uint16_t)(*highReg)) << 8) | ((uint16_t)(*lowReg));
 	concatRegValue++;
-	*highReg = concatRegValue >> 8;
+	*highReg = (uint8_t)(concatRegValue >> 8);
 	*lowReg = (uint8_t)concatRegValue;
 	state->pc++;
 }
@@ -96,7 +96,7 @@ void checkStandardArithmeticFlags(uint16_t result, State8080 *state)
 	// Check sign flag
 	// A "true" 8080 arithmetic result is only 8 bits, but emulation here uses 16 bits
 	// Using 16 bit results allows for easier carry handling/checking
-	// Sign flag set when MSB (8th bit) is set, else reset
+	// Sign flag set when MSB (bit 7) is set, else reset
 	// 0x0080 == 0000 0000 1000 0000
 	if((result & 0x0080) == 0x0080){
 		state->flags.sign = 1;

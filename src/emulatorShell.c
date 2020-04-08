@@ -36,9 +36,9 @@ int main(int argc, char **argv)
     romBuffer = getRomBuffer(invadersFile);
     
     uint16_t test0 = 0x1234;
-    uint8_t test1 = test0;
+    uint8_t test1 = 0xff;
     printf("%x\n", test0);
-    printf("%04x\n", test1);
+    printf("%04x\n", (uint16_t)test1<<8);
 
     printf("Running code\n");
     runCodeFromBuffer(romBuffer);
@@ -71,6 +71,8 @@ void runCodeFromBuffer(uint8_t *romBuffer)
     uint8_t operands[2] = {0, 0};
     unsigned int instructionSize = 0;
     unsigned int numOperands = 0;
+    unsigned int instrCount = 0;
+    bool printFlag = 0;
     while(state.pc < 0x2000){  // Keep within bounds of ROM data for 8080 memory map
         // Reset operands, 0xff chosen as it will likely standout as a reset value more than 0x00 would
         operands[0] = 0xff;
@@ -88,9 +90,30 @@ void runCodeFromBuffer(uint8_t *romBuffer)
               operandNum = operandAddress-(state.pc+1);
               operands[operandNum] = romBuffer[operandAddress];
 		}
-        //printf("0x%04x\n", state.pc);
-        executeInstruction(operation, operands, &state);        
+        
+        if (operation == 0xc9){
+            printFlag = 1;
+		}
+        if(printFlag){
+            printf("%d\n", instrCount);
+            printf("Operation: 0x%02x\n", operation);
+            printf("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
+            printf("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,c,ac,xxx): 0x%02x\n", state.pc, state.sp, state.flags);
+            char garbage[100];
+            fflush(stdout);
+            scanf("%s", garbage);
+            fflush(stdout);
+	    }
+        executeInstruction(operation, operands, &state);
+        instrCount++;
 	}
+
+    printf("%d\n", instrCount);
+    printf("Operation: 0x%02x\n", operation);
+    printf("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
+    printf("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,c,ac,xxx): 0x%02x\n", state.pc, state.sp, state.flags);
+    char garbage[100];
+    fflush(stdout);
 
     free(state.memory);
 }
@@ -136,8 +159,13 @@ void printInstructionInfo(uint8_t opcode)
 void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
     uint16_t orderedOperands = (operands[1] << 8) | operands[0];
+    /*printf("Operand (ordered): 0x%04x\n", orderedOperands);
     printf("Opcode: 0x%02x\n", opcode);
-    //printf("Operand (ordered): 0x%04x\n", orderedOperands);
+    printf("%s\n", instructions[opcode]);
+    printf("%d\n", instructionSizes[opcode]);
+    printf("%s\n", instructionFunctions[opcode]);
+    printf("%s\n\n", instructionFlags[opcode]);*/
+    //fflush(stdout);
     switch(opcode){
         case 0x00:
             state->pc += 1;
@@ -985,6 +1013,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
             state->sp += 2;
             state->pc = newValuePC;
+            printf("end of RET\n");
+            fflush(stdout);
             break;
         case 0xCA: 
             printInstructionInfo(opcode);
@@ -1026,13 +1056,13 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xD4: 
-        // CNC adr
-        // Call address if No Carry
-        if(state->flags.carry == 0){
-            CALL(orderedOperands, state);
-		}else{
-                state->pc += instructionSizes[opcode];
-		}
+            // CNC adr
+            // Call address if No Carry
+            if(state->flags.carry == 0){
+                CALL(orderedOperands, state);
+		    }else{
+                    state->pc += instructionSizes[opcode];
+		    }
             break;
         case 0xD5: 
             printInstructionInfo(opcode);
