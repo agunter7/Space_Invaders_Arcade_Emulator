@@ -92,8 +92,8 @@ void runCodeFromBuffer(uint8_t *romBuffer)
               operands[operandNum] = romBuffer[operandAddress];
 		}
         
-        if (operation == 0xc9){
-            //loggerFlag = 1;
+        if (instrCount > 1545){
+            loggerFlag = 1;
 		}
         if(loggerFlag){
             logger("%d\n", instrCount);
@@ -1020,6 +1020,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // RET
             // PC.lo = memory[sp]; PC.hi = memory[sp+1]; sp = sp+2;
             ;  // avoid case followed by declaration
+            char garbage[100];
+            scanf("%s", garbage);
             uint8_t lowByte = getMem(state->sp, state);
             uint8_t highByte = getMem((state->sp)+1, state);
             uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
@@ -1044,7 +1046,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xCD: 
+        case 0xCD:
             CALL(orderedOperands, state);
             break;
         case 0xCE: 
@@ -1074,8 +1076,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // (data) = A
             //logger("OUT 'A==0x%02x' to data port 0x%02x\n", state->a, operands[0]);
             ;
-            char garbage[100];
-            scanf("%s", garbage);
+            //char garbage[100];
+            //scanf("%s", garbage);
             state->pc += 2;
             break;
         case 0xD4: 

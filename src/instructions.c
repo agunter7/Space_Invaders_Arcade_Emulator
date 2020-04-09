@@ -12,6 +12,7 @@
 
 /**
  CALL addr
+ PC = PC + 3
  Memory[SP-1] = PCH
  Memory[SP-2] = PCL
  SP = SP-2
@@ -21,11 +22,11 @@ void CALL(uint16_t address, State8080 *state)
 {
     uint8_t pcHigh;  // program counter high 8 bits
     uint8_t pcLow;
-    uint16_t pc = state->pc;
+    uint16_t pcToStore = (state->pc) + 3;
     uint16_t sp = state->sp;
 
-    pcHigh = (uint8_t)(pc >> 8);
-    pcLow = (uint8_t)(pc & 0x0F);
+    pcHigh = (uint8_t)(pcToStore >> 8);
+    pcLow = (uint8_t)pcToStore;
 
     editMem(sp-1, pcHigh, state);
     editMem(sp-2, pcLow, state);
