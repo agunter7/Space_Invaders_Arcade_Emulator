@@ -67,7 +67,7 @@ void moveDataToHLMemory(uint8_t data, State8080 *state);
  Zero, Sign, Parity flags
  Will not affect Carry or Auxillary Carry flags
  */
-void checkStandardArithmeticFlags(uint16_t result, State8080 *state);
+void checkStandardArithmeticFlags(uint8_t result, State8080 *state);
 
 /**
  Add two values and set/reset Auxillary Carry flag.

@@ -110,33 +110,30 @@ uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
     return ((uint16_t)op1 + (uint16_t)op2);
 }
 
-void checkStandardArithmeticFlags(uint16_t result, State8080 *state)
+void checkStandardArithmeticFlags(uint8_t result, State8080 *state)
 {
     // Check zero flag
-    if ((result & 0x00ff) == 0){  // Mask needed as 8-bit result could be zero while 16-bit result has a carry (i.e. not zero)
+    if ((result & 0xff) == 0){  
         state->flags.zero = 1;
     }else{
         state->flags.zero = 0;
     }
 
     // Check sign flag
-    // A "true" 8080 arithmetic result is only 8 bits, but emulation here uses 16 bits
-    // Using 16 bit results allows for easier carry handling/checking
     // Sign flag set when MSB (bit 7) is set, else reset
-    // 0x0080 == 0000 0000 1000 0000
-    if((result & 0x0080) == 0x0080){
+    // 0x80 == 1000 0000
+    if((result & 0x80) == 0x80){
         state->flags.sign = 1;
     }else{
         state->flags.sign = 0;
     }
 
     //Check parity flag
-    uint8_t trueResult = (uint8_t)result;
     uint8_t mask = 0x01;
     unsigned int sum = 0;
     // Get sum of 1s in the 8-bit result
-    for(int shift = 0; shift < 8; shift++){  // Each iteration targets a different bit from trueResult
-        uint8_t maskedResult = trueResult & (mask << shift);
+    for(int shift = 0; shift < 8; shift++){  // Each iteration targets a different bit from result
+        uint8_t maskedResult = result & (mask << shift);
         sum += (maskedResult >> shift);
     }
     // Set for even parity, reset for odd parity
@@ -146,5 +143,3 @@ void checkStandardArithmeticFlags(uint16_t result, State8080 *state)
         state->flags.parity = 0;
     }
 }
-
-void checkCarry(uint16_t result, )

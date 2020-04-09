@@ -839,8 +839,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // AND Accumulator with Register B
             // A = A & B
             // Flags: z,s,p,cy,ac
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            ;  // bypass label-declaration error
+            uint8_t result = state->a & state->b;
+            checkStandardArithmeticFlags(result, state);
+            state->a = result;
+            state->pc += 1;
             break;
         case 0xA1: 
             printInstructionInfo(opcode);
