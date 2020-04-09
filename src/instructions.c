@@ -113,7 +113,7 @@ uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
 void checkStandardArithmeticFlags(uint16_t result, State8080 *state)
 {
     // Check zero flag
-    if (result == 0){
+    if ((result & 0x00ff) == 0){  // Mask needed as 8-bit result could be zero while 16-bit result has a carry (i.e. not zero)
         state->flags.zero = 1;
     }else{
         state->flags.zero = 0;
@@ -146,3 +146,5 @@ void checkStandardArithmeticFlags(uint16_t result, State8080 *state)
         state->flags.parity = 0;
     }
 }
+
+void checkCarry(uint16_t result, )

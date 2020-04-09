@@ -835,6 +835,10 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xA0: 
+            // ANA B
+            // AND Accumulator with Register B
+            // A = A & B
+            // Flags: z,s,p,cy,ac
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
