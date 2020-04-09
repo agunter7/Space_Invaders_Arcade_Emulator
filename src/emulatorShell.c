@@ -840,8 +840,10 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // A = A & B
             // Flags: z,s,p,cy,ac
             ;  // bypass label-declaration error
+            // TODO: Figure out how to implement AC check here
             uint8_t result = state->a & state->b;
             checkStandardArithmeticFlags(result, state);
+            state->flags.carry = 0;  // This instruction explicitly always resets carry flag
             state->a = result;
             state->pc += 1;
             break;
