@@ -34,6 +34,13 @@ void CALL(uint16_t address, State8080 *state);
 void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
 
 /**
+ The 8080 JMP instruction
+ @param address - The 8080 address to jump to
+ @param state - The 8080 state
+ */
+void JMP(uint16_t address, State8080 *state);
+
+/**
  Returns the 16-bit address yielded by concatenating the 'h' (high) register with the 'l' (low) register
  @param state - The 8080 state
  @return - Address bits in order (h)(l)

@@ -27,8 +27,6 @@ void CALL(uint16_t address, State8080 *state)
     pcHigh = (uint8_t)(pc >> 8);
     pcLow = (uint8_t)(pc & 0x0F);
 
-    logger("CALL storing 0x%02x%02x\n", pcHigh, pcLow);
-
     editMem(sp-1, pcHigh, state);
     editMem(sp-2, pcLow, state);
     state->sp -= 2;
@@ -46,6 +44,16 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
     *highReg = (uint8_t)(concatRegValue >> 8);
     *lowReg = (uint8_t)concatRegValue;
     state->pc++;
+}
+
+/**
+ JMP addr
+ Jump to address
+ pc = address
+ */
+void JMP(uint16_t address, State8080 *state)
+{
+    state->pc = address;
 }
 
 void moveDataToHLMemory(uint8_t data, State8080 *state)
@@ -70,17 +78,17 @@ uint16_t getAddressDE(State8080 *state)
 
 void editMem(uint16_t address, uint8_t value, State8080 *state)
 {
-    if(address == 0x23ff || address == 0x23fe){
+    /*if(address == 0x23ff || address == 0x23fe){
         logger("Change address 0x%04x to value 0x%02x\n", address, value);
-    }
+    }*/
     state->memory[address] = value;
 }
 
 uint8_t getMem(uint16_t address, State8080 *state)
 {
-    if(address == 0x23ff || address == 0x23fe){
+    /*if(address == 0x23ff || address == 0x23fe){
         logger("Read address 0x%04x to value 0x%02x\n", address, state->memory[address]);
-    }
+    }*/
     return state->memory[address];
 }
 

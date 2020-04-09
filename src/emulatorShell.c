@@ -73,7 +73,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
     unsigned int instructionSize = 0;
     unsigned int numOperands = 0;
     unsigned int instrCount = 0;
-    bool loggerlag = 0;
+    bool loggerFlag = 0;
     while(state.pc < 0x2000){  // Keep within bounds of ROM data for 8080 memory map
         // Reset operands, 0xff chosen as it will likely standout as a reset value more than 0x00 would
         operands[0] = 0xff;
@@ -93,9 +93,9 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 		}
         
         if (operation == 0xc9){
-            loggerlag = 1;
+            //loggerFlag = 1;
 		}
-        if(loggerlag){
+        if(loggerFlag){
             logger("%d\n", instrCount);
             logger("Operation: 0x%02x\n", operation);
             logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
@@ -971,15 +971,15 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // JNZ addr
             // if NZ, PC = addr
             if(!state->flags.zero){
-                state->pc = orderedOperands;
+                JMP(orderedOperands, state);
 			}else{
                  state->pc += 3;
 			}
             break;
         case 0xC3: 
             // JMP adr - JUMP
-            state->pc = orderedOperands;
-                break;
+            JMP(orderedOperands, state);
+            break;
         case 0xC4: 
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
@@ -1011,8 +1011,14 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc = newValuePC;
             break;
         case 0xCA: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // JZ addr
+            // Jump to address if zero (flag set)
+            // if Z, PC=addr
+            if(state->flags.zero){
+                JMP(orderedOperands, state);
+            }else{
+                state->pc += instructionSizes[opcode];
+            }
             break;
         case 0xCB: 
             printInstructionInfo(opcode);
