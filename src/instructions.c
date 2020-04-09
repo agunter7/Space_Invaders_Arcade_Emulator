@@ -113,7 +113,7 @@ uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
 void checkStandardArithmeticFlags(uint8_t result, State8080 *state)
 {
     // Check zero flag
-    if ((result & 0xff) == 0){  
+    if (result == 0){  
         state->flags.zero = 1;
     }else{
         state->flags.zero = 0;
@@ -131,9 +131,10 @@ void checkStandardArithmeticFlags(uint8_t result, State8080 *state)
     //Check parity flag
     uint8_t mask = 0x01;
     unsigned int sum = 0;
+    uint8_t maskedResult = 0;
     // Get sum of 1s in the 8-bit result
     for(int shift = 0; shift < 8; shift++){  // Each iteration targets a different bit from result
-        uint8_t maskedResult = result & (mask << shift);
+        maskedResult = result & (mask << shift);
         sum += (maskedResult >> shift);
     }
     // Set for even parity, reset for odd parity

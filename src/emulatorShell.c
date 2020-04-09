@@ -103,6 +103,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
             char garbage[100];
             scanf("%s", garbage);
 	    }
+        logger("%d\n", instrCount);
         executeInstruction(operation, operands, &state);
         instrCount++;
 	}
@@ -393,7 +394,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // STA addr
             // STore Accumulator directly in memory addres
             // memory[address] = A
-            state->memory[orderedOperands] = state->a;
+            editMem(orderedOperands, state->a, state);
             state->pc += 3;
             break;
         case 0x33: 
@@ -1032,7 +1033,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             if(state->flags.zero){
                 JMP(orderedOperands, state);
             }else{
-                state->pc += instructionSizes[opcode];
+                state->pc += 3;
             }
             break;
         case 0xCB: 
@@ -1067,8 +1068,15 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xD3: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // OUT D8
+            // Content of register A placed on 8-bit bi-directional data bus
+            // for transmission to the port specified by D8
+            // (data) = A
+            //logger("OUT 'A==0x%02x' to data port 0x%02x\n", state->a, operands[0]);
+            ;
+            char garbage[100];
+            scanf("%s", garbage);
+            state->pc += 2;
             break;
         case 0xD4: 
             // CNC adr
