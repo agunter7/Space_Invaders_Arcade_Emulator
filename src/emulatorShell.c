@@ -390,8 +390,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += 3;
             break;
         case 0x32: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // STA addr
+            // STore Accumulator directly in memory addres
+            // memory[address] = A
+            state->memory[orderedOperands] = state->a;
+            state->pc += 3;
             break;
         case 0x33: 
             printInstructionInfo(opcode);
