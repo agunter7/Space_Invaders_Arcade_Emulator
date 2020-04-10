@@ -103,6 +103,15 @@ uint16_t getValueDE(State8080 *state);
 void moveDataToHLMemory(uint8_t data, State8080 *state);
 
 /**
+ For the set of memory-based MOV-variants
+ Load data from an 8080 memory location determined by the contents of the H-L register pair
+ 
+ @param destination - pointer to the host machine address to store data
+ @param
+ */
+void moveDataFromHLMemory(uint8_t *destination, State8080 *state);
+
+/**
  Performs subtraction of two numbers while setting/resetting the carry flag.
 
  @param minuend - the value to be subtracted from
@@ -154,7 +163,7 @@ uint16_t addWithCheckCY(uint8_t op1, uint8_t op2, State8080 *state);
  @param value - Data to place at desired address
  @param state - 8080 state
  */
-void editMem(uint16_t address, uint8_t value, State8080 *state);
+void writeMem(uint16_t address, uint8_t value, State8080 *state);
 
 /**
  For auditing/debugging purposes.
@@ -164,6 +173,6 @@ void editMem(uint16_t address, uint8_t value, State8080 *state);
  @param state - 8080 state
  @return - byte of data from requested address
  */
-uint8_t getMem(uint16_t address, State8080 *state);
+uint8_t readMem(uint16_t address, State8080 *state);
 
 #endif  // INSTRUCTIONS_H_

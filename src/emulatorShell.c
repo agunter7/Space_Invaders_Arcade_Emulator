@@ -96,7 +96,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 		}
         
         logger("%d\n", instrCount);
-        if (instrCount == 37493){
+        if (instrCount == 40013){
             loggerFlag = 1;
 		}
         if(loggerFlag){
@@ -305,7 +305,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // A = memory[(D)(E)]
             ;  // workaround C99 quirk where a label cannot precede a declaration
             uint16_t sourceAddress = getValueDE(state);
-            state->a = getMem(sourceAddress, state);
+            state->a = readMem(sourceAddress, state);
             state->pc += 1;
             break;
         case 0x1B: 
@@ -418,7 +418,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // STA addr
             // STore Accumulator directly in memory addres
             // memory[address] = A
-            editMem(orderedOperands, state->a, state);
+            writeMem(orderedOperands, state->a, state);
             state->pc += 3;
             break;
         case 0x33: 
@@ -567,8 +567,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x56: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV D, M
+            // Move from memory into register D
+            // D = memory[(H)(L)]
+            moveDataFromHLMemory(&(state->d), state);
+            state->pc += 1;
             break;
         case 0x57: 
             printInstructionInfo(opcode);
@@ -599,8 +602,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x5E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV E, M
+            // Move from memory into register E
+            // E = memory[(H)(L)]
+            moveDataFromHLMemory(&(state->e), state);
+            state->pc += 1;
             break;
         case 0x5F: 
             printInstructionInfo(opcode);
@@ -631,8 +637,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x66: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV H, M
+            // Move from memory into register H
+            // H = memory[(H)(L)]
+            moveDataFromHLMemory(&(state->h), state);
+            state->pc += 1;
             break;
         case 0x67: 
             printInstructionInfo(opcode);
@@ -733,8 +742,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x7E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV A, M
+            // Move from memory into register A
+            // A = memory[(H)(L)]
+            moveDataFromHLMemory(&(state->a), state);
+            state->pc += 1;
             break;
         case 0x7F: 
             printInstructionInfo(opcode);
@@ -1053,8 +1065,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             ;  // avoid case followed by declaration
             /*char garbage[100];
             scanf("%s", garbage);*/  // debug
-            uint8_t lowByte = getMem(state->sp, state);
-            uint8_t highByte = getMem((state->sp)+1, state);
+            uint8_t lowByte = readMem(state->sp, state);
+            uint8_t highByte = readMem((state->sp)+1, state);
             uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
             state->sp += 2;
             state->pc = newValuePC;

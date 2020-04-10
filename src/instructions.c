@@ -28,8 +28,8 @@ void CALL(uint16_t address, State8080 *state)
     pcHigh = (uint8_t)(pcToStore >> 8);
     pcLow = (uint8_t)pcToStore;
 
-    editMem(sp-1, pcHigh, state);
-    editMem(sp-2, pcLow, state);
+    writeMem(sp-1, pcHigh, state);
+    writeMem(sp-2, pcLow, state);
     state->sp -= 2;
     state->pc = address;
 }
@@ -58,8 +58,8 @@ void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
 {
     uint16_t sp = state->sp;
 
-    editMem(sp-1, highReg, state);
-    editMem(sp-2, lowReg, state);
+    writeMem(sp-1, highReg, state);
+    writeMem(sp-2, lowReg, state);
     state->sp = sp-2;
 
     state->pc += 1;
@@ -75,8 +75,8 @@ void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
 void POP_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
 {
     uint16_t sp = state->sp;
-    *lowReg = getMem(sp, state);
-    *highReg = getMem(sp+1, state);
+    *lowReg = readMem(sp, state);
+    *highReg = readMem(sp+1, state);
     state->sp = sp+2;
 
     state->pc += 1;
@@ -130,7 +130,13 @@ void JMP(uint16_t address, State8080 *state)
 void moveDataToHLMemory(uint8_t data, State8080 *state)
 {
     uint16_t destinationAddress = getValueHL(state);
-    editMem(destinationAddress, data, state);
+    writeMem(destinationAddress, data, state);
+}
+
+void moveDataFromHLMemory(uint8_t *destination, State8080 *state)
+{
+    uint16_t sourceAddress = getValueHL(state);
+    *destination = readMem(sourceAddress, state);
 }
 
 uint16_t getValueHL(State8080 *state)
@@ -147,7 +153,7 @@ uint16_t getValueDE(State8080 *state)
     return (highBits | lowBits);
 }
 
-void editMem(uint16_t address, uint8_t value, State8080 *state)
+void writeMem(uint16_t address, uint8_t value, State8080 *state)
 {
     /*if(address == 0x23ff || address == 0x23fe){
         logger("Change address 0x%04x to value 0x%02x\n", address, value);
@@ -155,7 +161,7 @@ void editMem(uint16_t address, uint8_t value, State8080 *state)
     state->memory[address] = value;
 }
 
-uint8_t getMem(uint16_t address, State8080 *state)
+uint8_t readMem(uint16_t address, State8080 *state)
 {
     /*if(address == 0x23ff || address == 0x23fe){
         logger("Read address 0x%04x to value 0x%02x\n", address, state->memory[address]);
