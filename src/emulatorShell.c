@@ -1088,8 +1088,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xD1: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // POP D
+            POP_RP(&state->d, &state->e, state);
             break;
         case 0xD2: 
             printInstructionInfo(opcode);
