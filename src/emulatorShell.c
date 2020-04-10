@@ -97,7 +97,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
         
         logger("%d\n", instrCount);
         if (instrCount == 40017){
-            loggerFlag = 1;
+            //loggerFlag = 1;
 		}
         if(loggerFlag){
             logger("%d\n", instrCount);
@@ -250,8 +250,20 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += 2;
             break;
         case 0x0F: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // RRC
+            // Rotate accumulator Right (and bypass Carry)
+            // (As opposed to through Carry)
+            // CY = A:0 
+            // A:n = A:(n+1); A:7 = A:0
+            // Flags: CY
+            state->flags.carry = (state->a)&0x01;
+            state->a = (state->a)>>1;
+            if(state->flags.carry == 1){
+                state->a = state->a | 0x80;  // A:7 = 1
+            }else{
+                // A:7 = 0
+            }
+            state->pc += 1;
             break;
         case 0x10: 
             printInstructionInfo(opcode);
