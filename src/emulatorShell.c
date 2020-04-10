@@ -1004,8 +1004,9 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xC1: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // POP B
+            // Pop from stack into register pair BC
+            POP_RP(&state->b, &state->c, state);
             break;
         case 0xC2: 
             // JNZ addr
