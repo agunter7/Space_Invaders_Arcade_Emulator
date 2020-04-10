@@ -58,8 +58,8 @@ void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
 {
     uint16_t sp = state->sp;
 
-    state->memory[sp-1];
-    state->memory[sp-2];
+    editMem(sp-1, highReg, state);
+    editMem(sp-2, lowReg, state);
     state->sp = sp-2;
 
     state->pc += 1;
@@ -99,7 +99,7 @@ void editMem(uint16_t address, uint8_t value, State8080 *state)
 {
     /*if(address == 0x23ff || address == 0x23fe){
         logger("Change address 0x%04x to value 0x%02x\n", address, value);
-    }*/
+    }*/ //debugCode
     state->memory[address] = value;
 }
 
@@ -107,7 +107,7 @@ uint8_t getMem(uint16_t address, State8080 *state)
 {
     /*if(address == 0x23ff || address == 0x23fe){
         logger("Read address 0x%04x to value 0x%02x\n", address, state->memory[address]);
-    }*/
+    }*/  //debugCode
     return state->memory[address];
 }
 

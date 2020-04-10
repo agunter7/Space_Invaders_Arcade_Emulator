@@ -95,11 +95,11 @@ void runCodeFromBuffer(uint8_t *romBuffer)
               operands[operandNum] = romBuffer[operandAddress];
 		}
         
-        logger("%d\n", instrCount);
         if (instrCount == 37397){
-            loggerFlag = 1;
+            //loggerFlag = 1;
 		}
         if(loggerFlag){
+            logger("%d\n", instrCount);
             logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
             logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
             logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
@@ -350,8 +350,10 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x26: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MVI H, D8
+            // MoVe Immediate into register H
+            state->h = operands[0];
+            state->pc += 2;
             break;
         case 0x27: 
             printInstructionInfo(opcode);
@@ -1167,8 +1169,9 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xE5: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // PUSH H
+            // Push register pair H-L onto the stack
+            PUSH_RP(state->h, state->l, state);
             break;
         case 0xE6: 
             printInstructionInfo(opcode);
@@ -2123,7 +2126,7 @@ void initializeGlobals()
         "HL <- HL + 1",
         "H <- H+1",
         "H <- H-1",
-        "L <- byte 2",
+        "H <- byte 2",
         "special",
         "",
         "HL = HL + HI",
