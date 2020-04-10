@@ -97,7 +97,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
         
         logger("%d\n", instrCount);
         if (instrCount == 37412){
-            loggerFlag = 1;
+            //loggerFlag = 1;
 		}
         if(loggerFlag){
             logger("%d\n", instrCount);
@@ -175,8 +175,12 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += 1;
             break;
         case 0x01: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // LXI B, D16
+            // Load immediate into register pair BC
+            // B = byte 3, C = byte 2
+            state->b = operands[1];
+            state->c = operands[0];
+            state->pc += 3;
             break;
         case 0x02: 
             printInstructionInfo(opcode);
