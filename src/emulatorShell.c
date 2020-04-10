@@ -285,8 +285,9 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x19: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DAD D
+            // Double precision Add register pair DE to register pair HL
+            DAD_RP(state->d, state->e, state);
             break;
         case 0x1A: 
             // LDAX D
