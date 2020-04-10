@@ -38,7 +38,11 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
  1) PUSH B
  2) PUSH D
  3) PUSH H
- Not for the instruction "PUSH PSW"
+
+ Also used for PUSH PSW as that instruction pushes: 1) The 8080
+ flags assembled into a byte and 2) The accumulator. 
+ However, the flags and accumulator are not considered 
+ a register pair in the 8080 system manual.
 
  @param highReg - Higher order bits register
  @param lowReg - Lower order bits register

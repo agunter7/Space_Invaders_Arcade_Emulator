@@ -96,7 +96,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 		}
         
         logger("%d\n", instrCount);
-        if (instrCount == 40013){
+        if (instrCount == 40017){
             loggerFlag = 1;
 		}
         if(loggerFlag){
@@ -1279,8 +1279,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xF5: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // PUSH PSW
+            // Push Processor Status Word (and accumulator) onto stack
+            ;
+            uint8_t flagsAsInt = *(uint8_t*)&(state->flags);  // Can't use ConditionCodes struct directly
+            PUSH_RP(state->a, flagsAsInt, state);
             break;
         case 0xF6: 
             printInstructionInfo(opcode);
