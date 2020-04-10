@@ -96,8 +96,8 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 		}
         
         logger("%d\n", instrCount);
-        if (instrCount == 37412){
-            //loggerFlag = 1;
+        if (instrCount == 37493){
+            loggerFlag = 1;
 		}
         if(loggerFlag){
             logger("%d\n", instrCount);
@@ -234,8 +234,13 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x0D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DCR C
+            // Decrement register C
+            // C = C-1
+            // Flags: z,s,p,ac
+            state->c = addWithCheckAC(state->c, (uint8_t)(-1), state);
+            checkStandardArithmeticFlags(state->c, state);
+            state->pc += 1;
             break;
         case 0x0E: 
             // MVI C, D8
