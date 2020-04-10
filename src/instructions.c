@@ -66,6 +66,23 @@ void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
 }
 
 /**
+ POP rp
+ Pop 2 bytes from the stack and store in a register pair
+ rl = memory[sp]
+ rh = memory[sp+1]
+ sp = sp+2
+ */
+void POP_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
+{
+    uint16_t sp = state->sp;
+    *lowReg = getMem(sp, state);
+    *highReg = getMem(sp+1, state);
+    state->sp = sp+2;
+
+    state->pc += 1;
+}
+
+/**
  DAD rp
  Concatenate the values from a register pair
  Concatenate the values from register H and register L

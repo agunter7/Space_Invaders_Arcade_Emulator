@@ -47,6 +47,19 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
 void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state);
 
 /**
+ Technically a set of 8080 instructions: Pop Register Pair
+ 1) POP B
+ 2) POP D
+ 3) POP H
+ Not for the instruction "POP PSW"
+
+ @param highReg - Higher order bits register
+ @param lowReg - Lower order bits register
+ @param state - The 8080 state
+ */
+void POP_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
+
+/**
  Technically a set of 8080 instructions: Double Precision Add Register Pair (to HL)
  1) DAD B
  2) DAD D
