@@ -34,6 +34,19 @@ void CALL(uint16_t address, State8080 *state);
 void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
 
 /**
+ Technically a set of 8080 instructions: Push Register Pair
+ 1) PUSH B
+ 2) PUSH D
+ 3) PUSH H
+ Not for the instruction "PUSH PSW"
+
+ @param highReg - Higher order bits register
+ @param lowReg - Lower order bits register
+ @param state - The 8080 state
+ */
+void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state);
+
+/**
  The 8080 JMP instruction
  @param address - The 8080 address to jump to
  @param state - The 8080 state
@@ -63,6 +76,15 @@ uint16_t getAddressDE(State8080 *state);
 void moveDataToHLMemory(uint8_t data, State8080 *state);
 
 /**
+ Performs subtraction of two numbers while setting/resetting the carry flag.
+
+ @param minuend - the value to be subtracted from
+ @param subtrahend - the value to subtract
+ @return - the difference between the minuend and subtrahend, will only capture 8 bits
+ */
+uint8_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state);
+
+/**
  Sets/Resets the most common flags for arithmetic instructions:
  Zero, Sign, Parity flags
  Will not affect Carry or Auxillary Carry flags
@@ -87,6 +109,15 @@ void checkStandardArithmeticFlags(uint8_t result, State8080 *state);
  @return - sum of operands
  */
 uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state);
+
+/**
+ Add two values and set/reset Carry flag.
+
+ @param op1 - 1st operand
+ @param op2 - 2nd operand
+ @return - sum of operands
+ */
+uint16_t addWithCheckCY(uint8_t op1, uint8_t op2, State8080 *state);
 
 /**
  For auditing/debugging purposes.

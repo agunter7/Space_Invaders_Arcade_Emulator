@@ -36,10 +36,13 @@ int main(int argc, char **argv)
     }
     romBuffer = getRomBuffer(invadersFile);
     
-    uint16_t test0 = 0xffff;
-    //uint8_t test1 = 0xffff;
-    //logger("%x\n", test0);
-    logger("%04x\n", test0>>8);
+    //Debug
+    /*uint8_t test0 = 0x80;
+    uint8_t test1 = 0xff*0x81;
+    logger("%x\n", test0);
+    logger("%x\n", test1);
+    char garbage[100];
+    scanf("%s", garbage);*/
 
     logger("Running code\n");
     runCodeFromBuffer(romBuffer);
@@ -92,18 +95,18 @@ void runCodeFromBuffer(uint8_t *romBuffer)
               operands[operandNum] = romBuffer[operandAddress];
 		}
         
-        if (instrCount > 1545){
+        logger("%d\n", instrCount);
+        if (instrCount == 37397){
             loggerFlag = 1;
 		}
         if(loggerFlag){
-            logger("%d\n", instrCount);
-            logger("Operation: 0x%02x\n", operation);
+            logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
             logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
-            logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,c,ac,xxx): 0x%02x\n", state.pc, state.sp, state.flags);
+            logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
+            logger("%1x%1x%1x%1x%1x\n", state.flags.zero, state.flags.sign, state.flags.parity, state.flags.auxillaryCarry, state.flags.carry);
             char garbage[100];
             scanf("%s", garbage);
 	    }
-        logger("%d\n", instrCount);
         executeInstruction(operation, operands, &state);
         instrCount++;
 	}
@@ -157,6 +160,9 @@ void printInstructionInfo(uint8_t opcode)
 void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
     uint16_t orderedOperands = (operands[1] << 8) | operands[0];
+    uint16_t result = 0;  // For temporarily storing computational results losslessly
+    uint8_t resultByte = 0;  // For temporarily storing 8-bit results
+    char garbage[100];  // For reading from scanf, helps debugging
     /*logger("Operand (ordered): 0x%04x\n", orderedOperands);
     logger("Opcode: 0x%02x\n", opcode);
     logger("%s\n", instructions[opcode]);
@@ -226,8 +232,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x0E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MVI C, D8
+            // MoVe Immediate to register C
+            // C = D8
+            state->c = operands[0];
+            state->pc += 2;
             break;
         case 0x0F: 
             printInstructionInfo(opcode);
@@ -410,8 +419,10 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x36: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MVI M; D8
+            // memory[(H)(L)] = D8
+            moveDataToHLMemory(operands[0], state);
+            state->pc += 2;
             break;
         case 0x37: 
             printInstructionInfo(opcode);
@@ -695,8 +706,10 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x7C: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV A, H
+            // A = H
+            state->a = state->h;
+            state->pc += 1;
             break;
         case 0x7D: 
             printInstructionInfo(opcode);
@@ -843,12 +856,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // AND Accumulator with Register B
             // A = A & B
             // Flags: z,s,p,cy,ac
-            ;  // bypass label-declaration error
             // TODO: Figure out how to implement AC check here
-            uint8_t result = state->a & state->b;
-            checkStandardArithmeticFlags(result, state);
+            resultByte = state->a & state->b;
+            checkStandardArithmeticFlags(resultByte, state);
             state->flags.carry = 0;  // This instruction explicitly always resets carry flag
-            state->a = result;
+            state->a = resultByte;
             state->pc += 1;
             break;
         case 0xA1: 
@@ -1020,8 +1032,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // RET
             // PC.lo = memory[sp]; PC.hi = memory[sp+1]; sp = sp+2;
             ;  // avoid case followed by declaration
-            char garbage[100];
-            scanf("%s", garbage);
+            /*char garbage[100];
+            scanf("%s", garbage);*/  // debug
             uint8_t lowByte = getMem(state->sp, state);
             uint8_t highByte = getMem((state->sp)+1, state);
             uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
@@ -1090,8 +1102,9 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 		    }
             break;
         case 0xD5: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // PUSH D
+            // PUSH register pair D-E
+            PUSH_RP(state->d, state->e, state);
             break;
         case 0xD6: 
             printInstructionInfo(opcode);
@@ -1254,8 +1267,27 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xFE: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CPI D8
+            // Compare Immediate
+            // A - D8
+            // Flags: z,s,p,cy,ac
+            // Note: result should not be stored anywhere, this just affects flags
+            /* System Manual explcitly says Carry is set if A < D8
+               I am unsure if CPI is considered a subtraction-type
+               instruction, i.e. does it use 2's complement arithmetic?
+               It seems it does not, and I will assume for now that the way
+               it handles the carry flag should not be applied to other
+               subtraction-type instructions
+            */
+            if (state->a < operands[0]){
+                state->flags.carry = 1;
+            }else{
+                state->flags.carry = 0;
+            }
+            result = addWithCheckAC(state->a, (-1)*operands[0], state);
+            resultByte = (uint8_t)result;
+            checkStandardArithmeticFlags(resultByte, state);
+            state->pc += 2;
             break;
         case 0xFF: 
             printInstructionInfo(opcode);

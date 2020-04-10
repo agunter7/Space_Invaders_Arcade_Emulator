@@ -13,3 +13,8 @@ void logger(const char *format, ...)
     // Free variable argument list
     va_end(argList);
 }
+
+uint8_t twosComplement(uint8_t num)
+{
+    return (uint8_t)((-1)*num);
+}

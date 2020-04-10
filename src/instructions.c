@@ -48,6 +48,24 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
 }
 
 /**
+ PUSH rp
+ Push register pair onto the stack
+ memory[sp-1] = rh
+ memory[sp-2] = rl
+ sp = sp-2;
+ */
+void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
+{
+    uint16_t sp = state->sp;
+
+    state->memory[sp-1];
+    state->memory[sp-2];
+    state->sp = sp-2;
+
+    state->pc += 1;
+}
+
+/**
  JMP addr
  Jump to address
  pc = address
@@ -109,6 +127,55 @@ uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
 
     // Return lossless result from 8-bit addition
     return ((uint16_t)op1 + (uint16_t)op2);
+}
+
+uint16_t addWithCheckCY(uint8_t op1, uint8_t op2, State8080 *state)
+{
+    uint16_t result = (uint16_t)op1 + (uint16_t)op2;
+
+    if( result > 0xff){
+        state->flags.carry = 1;
+    }else{
+        state->flags.carry = 0;
+    }
+
+    return result;
+}
+
+/**
+ Perform subtraction by taking the 2's complement of the subtrahend and add it to the minuend.
+ 
+ The 8080 system manual seems to imply that it performs subtraction differently:
+ "All subtraction operations are performed via two's complement arithmetic and set the 
+  carry flag to one to indicate a borrow and clear it to indicate no borrow."
+
+  "Borrowing" doesn't really happen in 2's complement subtraction? I must be misunderstanding
+  in some way, but I believe normally one performs subtraction via addition of a negated value.
+  In this case, no "Borrowing" occurs, only carries. In such cases, a carry into the sign bit indicates
+  an overflow and thus would trigger a sign change. This is the implementation used herein.
+ */
+uint8_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state)
+{
+    uint8_t result = 0x0000;
+    // Change variable names for the sake of matching addition
+    uint8_t augend = minuend;
+    uint8_t addend = twosComplement(subtrahend);
+
+    result = augend+addend;
+
+    if(augend>>7 == 0x00 && addend>>7 == 0x00 && result>>7 != 0x00){
+        // Addition of two positives did not yield positive, overflow occurred
+        state->flags.carry = 1;
+    }else if(augend>>7 == 0x01 && addend>>7 == 0x01 && result>>7 != 0x01){
+        // Addition of two negatives did not yield negative, overflow occurred
+        state->flags.carry = 1;
+    }else{
+        // Addition of a negative and positive, cannot overflow OR
+        // Addition of pos+pos/neg+neg yielded pos/neg respectively, no overflow
+        state->flags.carry = 0;
+    }
+
+    return result;
 }
 
 void checkStandardArithmeticFlags(uint8_t result, State8080 *state)

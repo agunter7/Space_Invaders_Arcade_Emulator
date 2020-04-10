@@ -32,3 +32,6 @@ RAM
     $2000-$23ff:    work RAM    
     $2400-$3fff:    video RAM    
     $4000-:         RAM mirror
+
+# Space Invaders checkpoints
+Instruction 1546 - RETurn from first function CALL
