@@ -1199,8 +1199,20 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xEB: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // XCHG
+            // eXCHanGe HL with DE
+            // H = D; D = H 
+            // L = E; E = L
+            ;  // label-declaration workaround
+            uint8_t tempH = state->h;
+            uint8_t tempL = state->l;
+            
+            state->h = state->d;
+            state->l = state->e;
+            state->d = tempH;
+            state->e = tempL;
+            
+            state->pc += 1;
             break;
         case 0xEC: 
             printInstructionInfo(opcode);
