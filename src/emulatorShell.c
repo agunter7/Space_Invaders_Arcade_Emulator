@@ -95,8 +95,9 @@ void runCodeFromBuffer(uint8_t *romBuffer)
               operands[operandNum] = romBuffer[operandAddress];
 		}
         
-        if (instrCount == 37397){
-            //loggerFlag = 1;
+        logger("%d\n", instrCount);
+        if (instrCount == 37403){
+            loggerFlag = 1;
 		}
         if(loggerFlag){
             logger("%d\n", instrCount);
@@ -292,7 +293,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // Load Accumulator indirect from register pair D-E
             // A = memory[(D)(E)]
             ;  // workaround C99 quirk where a label cannot precede a declaration
-            uint16_t sourceAddress = getAddressDE(state);
+            uint16_t sourceAddress = getValueDE(state);
             state->a = getMem(sourceAddress, state);
             state->pc += 1;
             break;
@@ -364,8 +365,9 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x29: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DAD H
+            // Double-precision Add HL to HL
+            DAD_RP(state->h, state->l, state);
             break;
         case 0x2A: 
             printInstructionInfo(opcode);

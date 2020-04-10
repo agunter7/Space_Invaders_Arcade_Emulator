@@ -66,6 +66,41 @@ void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
 }
 
 /**
+ DAD rp
+ Concatenate the values from a register pair
+ Concatenate the values from register H and register L
+ Add the two concatenated values
+ Store the result in register pair HL
+ (H)(L) = (H)(L) + (rh)(rl)
+ */
+void DAD_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
+{
+    uint32_t result = 0;
+    uint16_t augend = getValueHL(state);
+    uint16_t addend = ((uint16_t)highReg)<<8 | (uint16_t)lowReg;
+    uint8_t newValueH;
+    uint8_t newValueL;
+    
+    // Lossless addition
+    result = (uint32_t)augend + (uint32_t)addend;
+
+    // Carry check for overflow of 16-bit Addition
+    // Do not set high for 8-bit overflow (which is the typical case in the 8080)
+    if ((result & 0x00010000) == 0x00010000){
+        state->flags.carry = 1;
+    }else{
+        state->flags.carry = 0;
+    }
+
+    newValueH = (uint8_t)(((uint16_t)result)>>8);
+    newValueL = (uint8_t)result;
+    state->h = newValueH;
+    state->l = newValueL;
+
+    state->pc += 1;
+}
+
+/**
  JMP addr
  Jump to address
  pc = address
@@ -77,18 +112,18 @@ void JMP(uint16_t address, State8080 *state)
 
 void moveDataToHLMemory(uint8_t data, State8080 *state)
 {
-    uint16_t destinationAddress = getAddressHL(state);
+    uint16_t destinationAddress = getValueHL(state);
     editMem(destinationAddress, data, state);
 }
 
-uint16_t getAddressHL(State8080 *state)
+uint16_t getValueHL(State8080 *state)
 {
     uint16_t highBits = (((uint16_t)(state->h))<<8);
     uint16_t lowBits = (uint16_t)(state->l);
     return (highBits | lowBits);
 }
 
-uint16_t getAddressDE(State8080 *state)
+uint16_t getValueDE(State8080 *state)
 {
     uint16_t highBits = (((uint16_t)(state->d))<<8);
     uint16_t lowBits = (uint16_t)(state->e);

@@ -47,6 +47,20 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
 void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state);
 
 /**
+ Technically a set of 8080 instructions: Double Precision Add Register Pair (to HL)
+ 1) DAD B
+ 2) DAD D
+ 3) DAD H
+
+ Flags: CY
+
+ @param highReg - Higher order bits register
+ @param lowReg - Lower order bits register
+ @param state - The 8080 state 
+ */
+void DAD_RP(uint8_t highReg, uint8_t lowReg, State8080 *state);
+
+/**
  The 8080 JMP instruction
  @param address - The 8080 address to jump to
  @param state - The 8080 state
@@ -54,18 +68,18 @@ void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state);
 void JMP(uint16_t address, State8080 *state);
 
 /**
- Returns the 16-bit address yielded by concatenating the 'h' (high) register with the 'l' (low) register
+ Returns the 16-bit value yielded by concatenating the 'h' (high) register with the 'l' (low) register
  @param state - The 8080 state
  @return - Address bits in order (h)(l)
 */
-uint16_t getAddressHL(State8080 *state);
+uint16_t getValueHL(State8080 *state);
 
 /**
- Returns the 16-bit address yielded by concatenating the 'd' (high) register with the 'e' (low) register
+ Returns the 16-bit value yielded by concatenating the 'd' (high) register with the 'e' (low) register
  @param state - The 8080 state
  @return - Address bits in order (d)(e)
 */
-uint16_t getAddressDE(State8080 *state);
+uint16_t getValueDE(State8080 *state);
 
 /**
  For the set of register-based MOV-variants
