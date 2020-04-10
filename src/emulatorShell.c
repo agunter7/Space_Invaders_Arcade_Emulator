@@ -96,8 +96,8 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 		}
         
         logger("%d\n", instrCount);
-        if (instrCount == 37408){
-            //loggerFlag = 1;
+        if (instrCount == 37412){
+            loggerFlag = 1;
 		}
         if(loggerFlag){
             logger("%d\n", instrCount);
@@ -1020,8 +1020,9 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xC5: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // PUSH B
+            // Push register pair BC onto the stack
+            PUSH_RP(state->b, state->c, state);
             break;
         case 0xC6: 
             printInstructionInfo(opcode);
