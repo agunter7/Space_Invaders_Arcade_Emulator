@@ -96,15 +96,15 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 		}
         
         logger("%d\n", instrCount);
-        if (instrCount == 40021){
-            //loggerFlag = 1;
+        if (instrCount == 100000){
+            loggerFlag = 1;
 		}
         if(loggerFlag){
-            logger("%d\n", instrCount);
+            //logger("%d\n", instrCount);
             logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
-            logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
-            logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
-            logger("%1x%1x%1x%1x%1x\n", state.flags.zero, state.flags.sign, state.flags.parity, state.flags.auxillaryCarry, state.flags.carry);
+            //logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
+            //logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
+            //logger("%1x%1x%1x%1x%1x\n", state.flags.zero, state.flags.sign, state.flags.parity, state.flags.auxillaryCarry, state.flags.carry);
             char garbage[100];
             scanf("%s", garbage);
 	    }
@@ -905,13 +905,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             // ANA B
             // AND Accumulator with Register B
             // A = A & B
-            // Flags: z,s,p,cy,ac
-            // TODO: Figure out how to implement AC check here
-            resultByte = state->a & state->b;
-            checkStandardArithmeticFlags(resultByte, state);
-            state->flags.carry = 0;  // This instruction explicitly always resets carry flag
-            state->a = resultByte;
-            state->pc += 1;
+            // Flags: z,s,p,cy(reset),ac
+            ANA(state->b, state);
             break;
         case 0xA1: 
             printInstructionInfo(opcode);
@@ -937,9 +932,12 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xA7: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xA7:
+            // ANA A
+            // AND Accumulator with Accumulator
+            // A = A & A
+            // Flags: z,s,p,cy(reset),ac
+            ANA(state->a, state);
             break;
         case 0xA8: 
             printInstructionInfo(opcode);
@@ -1343,8 +1341,9 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xFB: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // EI
+            // Enable Interrupt
+            state->pc += 1;
             break;
         case 0xFC: 
             printInstructionInfo(opcode);

@@ -103,6 +103,24 @@ void JMP(uint16_t address, State8080 *state);
 void XRA(uint8_t data, State8080 *state);
 
 /**
+ A set of 8080 instructions covering register and memory variants of AND with Accumulator:
+ 1) ANA A
+ 2) ANA B
+ 3) ANA C
+ 4) ANA D
+ 5) ANA E
+ 6) ANA H
+ 7) ANA L
+ 8) ANA M (HL Memory)
+
+ Flags: z,s,p,cy(reset),ac
+
+ @param data - The 8 bits to AND with accumulator
+ @param state - The 8080 state
+ */
+void ANA(uint8_t data, State8080 *state);
+
+/**
  Returns the 16-bit value yielded by concatenating the 'h' (high) register with the 'l' (low) register
  @param state - The 8080 state
  @return - Address bits in order (h)(l)

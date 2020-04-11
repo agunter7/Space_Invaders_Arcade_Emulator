@@ -144,6 +144,24 @@ void XRA(uint8_t data, State8080 *state)
     state->pc += 1;
 }
 
+/**
+ ANA r/M
+ AND Accumulator with register/Memory
+ A = A AND (r/M)
+ Flags: z,s,p,cy(reset),ac
+ TODO: Figure out AC check
+ */
+void ANA(uint8_t data, State8080 *state)
+{
+    state->a = state->a & data;
+
+    checkStandardArithmeticFlags(state->a, state);
+    state->flags.carry = 0;
+    state->flags.auxillaryCarry = 0;  // No clue if hard-resetting is correct, but I can't see how it would be set by AND
+
+    state->pc += 1;
+}
+
 void moveDataToHLMemory(uint8_t data, State8080 *state)
 {
     uint16_t destinationAddress = getValueHL(state);
