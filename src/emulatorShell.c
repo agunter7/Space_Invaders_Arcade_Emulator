@@ -96,7 +96,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 		}
         
         logger("%d\n", instrCount);
-        if (instrCount == 40017){
+        if (instrCount == 40021){
             //loggerFlag = 1;
 		}
         if(loggerFlag){
@@ -1063,8 +1063,14 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             PUSH_RP(state->b, state->c, state);
             break;
         case 0xC6: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // ADI D8
+            // Add Immediate to register A
+            // A = A + D8
+            // Flags: z,s,p,cy,ac
+            addWithCheckAC(state->a, operands[0], state);
+            state->a = addWithCheckCY(state->a, operands[0], state);
+            checkStandardArithmeticFlags(state->a, state);
+            state->pc += 2;
             break;
         case 0xC7: 
             printInstructionInfo(opcode);
@@ -1219,8 +1225,15 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             PUSH_RP(state->h, state->l, state);
             break;
         case 0xE6: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // ANI D8
+            // AND register A with Immediate
+            // A = A & D8
+            //Flags: z,s,p,cy(reset),ac(reset)
+            state->a = state->a & operands[0];
+            checkStandardArithmeticFlags(state->a, state);
+            state->flags.carry = 0;
+            state->flags.auxillaryCarry = 0;
+            state->pc += 2;
             break;
         case 0xE7: 
             printInstructionInfo(opcode);
