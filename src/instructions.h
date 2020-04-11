@@ -85,6 +85,24 @@ void DAD_RP(uint8_t highReg, uint8_t lowReg, State8080 *state);
 void JMP(uint16_t address, State8080 *state);
 
 /**
+ A set of 8080 instructions covering register and memory variants of XOR with Accumulator:
+ 1) XRA A
+ 2) XRA B
+ 3) XRA C
+ 4) XRA D
+ 5) XRA E
+ 6) XRA H
+ 7) XRA L
+ 8) XRA M (HL Memory)
+
+ Flags: z,s,p,cy(reset),ac(reset)
+
+ @param data - The 8 bits to XOR with accumulator
+ @param state - The 8080 state
+ */
+void XRA(uint8_t data, State8080 *state);
+
+/**
  Returns the 16-bit value yielded by concatenating the 'h' (high) register with the 'l' (low) register
  @param state - The 8080 state
  @return - Address bits in order (h)(l)

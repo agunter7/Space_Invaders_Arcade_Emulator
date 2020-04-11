@@ -127,6 +127,23 @@ void JMP(uint16_t address, State8080 *state)
     state->pc = address;
 }
 
+/**
+ XRA r/M
+ Exclusive Or Accumulator with a register/Memory
+ A = A XOR (r/M)
+ Flags: z,s,p,cy(reset),ac(reset)
+ */
+void XRA(uint8_t data, State8080 *state)
+{
+    state->a = state->a ^ data;
+
+    checkStandardArithmeticFlags(state->a, state);
+    state->flags.carry = 0;
+    state->flags.auxillaryCarry = 0;
+
+    state->pc += 1;
+}
+
 void moveDataToHLMemory(uint8_t data, State8080 *state)
 {
     uint16_t destinationAddress = getValueHL(state);

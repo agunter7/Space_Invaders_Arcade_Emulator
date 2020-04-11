@@ -483,8 +483,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0x3E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MVI A, D8
+            // Move Immediate into register A
+            // A = D8
+            state->a = operands[0];
+            state->pc += 2;
             break;
         case 0x3F: 
             printInstructionInfo(opcode);
@@ -743,8 +746,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += 1;
             break;
         case 0x7B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV A, E
+            // Move the contents of register E into register A
+            // A = E
+            state->a = state->e;
+            state->pc += 1;
             break;
         case 0x7C: 
             // MOV A, H
@@ -964,8 +970,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xAF: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // XRA A
+            // Exclusive Or register A with register A
+            // A = A XOR A
+            // Flags: z,s,p,cy(reset),ac(reset);
+            XRA(state->a, state);
             break;
         case 0xB0: 
             printInstructionInfo(opcode);
