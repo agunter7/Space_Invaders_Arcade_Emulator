@@ -1288,8 +1288,11 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->pc += instructionSizes[opcode];
             break;
         case 0xF1: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // POP PSW
+            // POP the Processor Status Word (and accumulator) off the stack
+            // flags = memory[sp]; A = memory[sp+1]
+            // sp = sp + 2
+            POP_RP(&(state->a), (uint8_t*)&(state->flags), state);  // Treat flags as 8-bit uint to match function signature
             break;
         case 0xF2: 
             printInstructionInfo(opcode);
