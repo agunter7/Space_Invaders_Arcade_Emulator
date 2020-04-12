@@ -23,6 +23,7 @@ C) The GNU Make tool for 64-bit mingw (minimum GNU for Windows) [https://gist.gi
 
 # Usage
 8080 Emulator - Use run.sh
+
 8080 Disassembler - Use disassemble.sh
 
 # Intel 8080 Memory Map
@@ -36,6 +37,3 @@ RAM
     $2000-$23ff:    work RAM    
     $2400-$3fff:    video RAM    
     $4000-:         RAM mirror
-
-# Space Invaders checkpoints
-Instruction 1546 - RETurn from first function CALL
