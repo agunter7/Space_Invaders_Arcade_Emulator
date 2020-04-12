@@ -3,6 +3,8 @@
  * Capitalized names indicate a function that implements a full 8080 instructions
  * camelCase names indicate a function that implements a portion of an instruction's effect(s)
  *
+ * By convention, only fully-implemented 8080 functions (Capitalized names) will update the program counter.
+ *
  * @author Andrew Gunter
  */
 
@@ -190,17 +192,11 @@ uint16_t getValueDE(State8080 *state)
 
 void writeMem(uint16_t address, uint8_t value, State8080 *state)
 {
-    /*if(address == 0x23ff || address == 0x23fe){
-        logger("Change address 0x%04x to value 0x%02x\n", address, value);
-    }*/ //debugCode
     state->memory[address] = value;
 }
 
 uint8_t readMem(uint16_t address, State8080 *state)
 {
-    /*if(address == 0x23ff || address == 0x23fe){
-        logger("Read address 0x%04x to value 0x%02x\n", address, state->memory[address]);
-    }*/  //debugCode
     return state->memory[address];
 }
 

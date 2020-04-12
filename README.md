@@ -21,6 +21,10 @@ C) The GNU Make tool for 64-bit mingw (minimum GNU for Windows) [https://gist.gi
 6) Copy all contents from the extraction to your "Git\mingw64\" folder inside your Git for Windows folder path (NOT the mingw-w64 install performed at step 2)
 7) In step 6, do not overwrite/replace any existing files
 
+# Usage
+8080 Emulator - Use run.sh
+8080 Disassembler - Use disassemble.sh
+
 # Intel 8080 Memory Map
 ROM    
     $0000-$07ff:    invaders.h    

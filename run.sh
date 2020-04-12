@@ -1,2 +1,2 @@
 make all
-./bin/emulatorShell.exe resources/invaders
+./bin/emulatorShell.exe

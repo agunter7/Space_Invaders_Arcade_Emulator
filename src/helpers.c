@@ -1,3 +1,10 @@
+/**
+ * Contains useful functions for general programming purposes.
+ * These functions should never alter the 8080 state.
+ *
+ * @author Andrew Gunter
+ */
+
 #include "../src/helpers.h"
 
 void logger(const char *format, ...)

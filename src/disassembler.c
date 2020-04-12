@@ -21,14 +21,14 @@ void initializeGlobals();
 */
 int main(int argc, char **argv)
 {
-    unsigned int pc = 0;  // Program Counter
+    unsigned int pc = 0x100;  // Program Counter
     unsigned char *romBuffer;  // Buffer for storing bytes read from Space Invaders ROM
     int romSizeInBytes = 0;
     _Bool verbose = false;  // Determines output format. False yields proper assembly code, True is a bit more human-readable.
     initializeGlobals();
 
     // Open Space Invaders ROM file
-    FILE *invadersFile = fopen(argv[1], "rb");  // binary file read-only
+    FILE *invadersFile = fopen("resources/invaders", "rb");  // binary file read-only
 
     if(invadersFile == NULL){
         printf("Failed to open Space Invaders ROM.");

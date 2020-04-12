@@ -8,6 +8,7 @@
 #include "../src/helpers.h"
 
 // Global variable definitions and function prototypes
+bool debug = 0;
 char instructions[256][20];
 char instructionSizes[256];
 char instructionFlags[256][20];
@@ -18,7 +19,6 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state);
 void runCodeFromBuffer(uint8_t *romBuffer);
 void printInstructionInfo(uint8_t opcode);
 
-//TODO: Check all casts between uint8_t and uint16_t
 
 /**
 * Main function
@@ -35,14 +35,6 @@ int main(int argc, char **argv)
         return -1;
     }
     romBuffer = getRomBuffer(invadersFile);
-    
-    //Debug
-    /*uint8_t test0 = 0x80;
-    uint8_t test1 = 0xff*0x81;
-    logger("%x\n", test0);
-    logger("%x\n", test1);
-    char garbage[100];
-    scanf("%s", garbage);*/
 
     logger("Running code\n");
     runCodeFromBuffer(romBuffer);
@@ -65,7 +57,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
         .l = 0,    
         .sp = 0,
         .pc = 0,
-    };  // Intel 8080 CPU state
+    };  // Intel 8080 CPU initial state
 
     // Place ROM buffer data into CPU memory
     memcpy(state.memory, romBuffer, 0x2000);
@@ -95,28 +87,26 @@ void runCodeFromBuffer(uint8_t *romBuffer)
               operands[operandNum] = romBuffer[operandAddress];
 		}
         
-        logger("%d\n", instrCount);
-        if (instrCount == 100000){
-            loggerFlag = 1;
-		}
-        if(loggerFlag){
-            //logger("%d\n", instrCount);
-            logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
-            //logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
-            //logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
-            //logger("%1x%1x%1x%1x%1x\n", state.flags.zero, state.flags.sign, state.flags.parity, state.flags.auxillaryCarry, state.flags.carry);
-            char garbage[100];
-            scanf("%s", garbage);
-	    }
+        // Perform some debugging logging if desired. Triggered by global flag.
+        if(debug){
+            logger("%d\n", instrCount);
+            if (instrCount == 100000){  // Helps to isolate a desired program section, just change value to meet needs
+                loggerFlag = 1;
+		    }
+            if(loggerFlag){
+                // Print some status info
+                logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
+                logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
+                logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
+                logger("%1x%1x%1x%1x%1x\n", state.flags.zero, state.flags.sign, state.flags.parity, state.flags.auxillaryCarry, state.flags.carry);
+                char garbage[100];
+                scanf("%s", garbage);
+	        }
+        }
+        
         executeInstruction(operation, operands, &state);
         instrCount++;
 	}
-
-    logger("%d\n", instrCount);
-    logger("Operation: 0x%02x\n", operation);
-    logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
-    logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,c,ac,xxx): 0x%02x\n", state.pc, state.sp, state.flags);
-    char garbage[100];
 
     free(state.memory);
 }
@@ -145,6 +135,13 @@ uint8_t *getRomBuffer(FILE *romFile)
     return romBuffer;
 }
 
+/**
+ Prints information about an instruction (and immediately quits the program thereafter) 
+ to help guide emulator development.
+ Intended to be used to print out information for unimplemented instructions.
+ 
+ @param opcode - The opcode for the instruction to print info for
+ */
 void printInstructionInfo(uint8_t opcode)
 {
     logger("Opcode: 0x%02x\n", opcode);
@@ -160,16 +157,10 @@ void printInstructionInfo(uint8_t opcode)
  */
 void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
-    uint16_t orderedOperands = (operands[1] << 8) | operands[0];
+    uint16_t orderedOperands = (operands[1] << 8) | operands[0];  // Operand order converted from little-endian to big-endian
     uint16_t result = 0;  // For temporarily storing computational results losslessly
     uint8_t resultByte = 0;  // For temporarily storing 8-bit results
     char garbage[100];  // For reading from scanf, helps debugging
-    /*logger("Operand (ordered): 0x%04x\n", orderedOperands);
-    logger("Opcode: 0x%02x\n", opcode);
-    logger("%s\n", instructions[opcode]);
-    logger("%d\n", instructionSizes[opcode]);
-    logger("%s\n", instructionFunctions[opcode]);
-    logger("%s\n\n", instructionFlags[opcode]);*/
     switch(opcode){
         case 0x00:
             state->pc += 1;
@@ -1390,6 +1381,8 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 * I could do this elsewhere, but it would clutter the top of the file.
 * Delegate initialization to a function so it can happily remain at the bottom of the file.
 * 
+* I suppose doing this in another file was also an option, but this is most convenient.
+*
 * @return void
 */
 void initializeGlobals()

@@ -1,3 +1,10 @@
+/**
+ * Contains useful functions for general programming purposes.
+ * These functions will never alter the 8080 state.
+ *
+ * @author Andrew Gunter
+ */
+
 #ifndef HELPERS_H_
 #define HELPERS_H_
 
