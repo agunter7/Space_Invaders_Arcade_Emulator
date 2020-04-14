@@ -5,3 +5,5 @@ g.exe
 output.txt
 bin/*
 emulatorShell.exe
+src/testEmu.c
+testEmu.o
