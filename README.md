@@ -25,15 +25,3 @@ C) The GNU Make tool for 64-bit mingw (minimum GNU for Windows) [https://gist.gi
 8080 Emulator - Use run.sh
 
 8080 Disassembler - Use disassemble.sh
-
-# Intel 8080 Memory Map
-ROM    
-    $0000-$07ff:    invaders.h    
-    $0800-$0fff:    invaders.g    
-    $1000-$17ff:    invaders.f    
-    $1800-$1fff:    invaders.e    
-
-RAM    
-    $2000-$23ff:    work RAM    
-    $2400-$3fff:    video RAM    
-    $4000-:         RAM mirror
