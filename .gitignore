@@ -1,4 +1,7 @@
 .vs/
+.idea/
+cmake-build-debug/
+CMakeLists.txt
 disassembler.o
 disassembler.exe
 g.exe

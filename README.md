@@ -12,6 +12,8 @@ B) mingw-w64 (minimum GNU for Windows 64-bit) [http://mingw-w64.org/doku.php/dow
 
 C) The GNU Make tool for 64-bit mingw (minimum GNU for Windows) [https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058] [https://sourceforge.net/projects/ezwinports/files/]
 
+D) SDL2 (Simple DirectMedia Layer 2) 64-bit Developer Library source files (for mingw) [https://libsdl.org/download-2.0.php]
+
 
 1) Install Git for Windows. This should be straightforward.
 2) Install mingw-w64 to the default Program Files path. Choose the latest version. "Architecture == x86_64" (64-bit). "threads == win32".
@@ -20,6 +22,7 @@ C) The GNU Make tool for 64-bit mingw (minimum GNU for Windows) [https://gist.gi
 5) Extract the contents of the zip folder.
 6) Copy all contents from the extraction to your "Git\mingw64\" folder inside your Git for Windows folder path (NOT the mingw-w64 install performed at step 2)
 7) In step 6, do not overwrite/replace any existing files
+8) Download the SDL2 Dev Library folder to the path "C:\Program Files\mingw_dev_lib\SDL2-2.0.12" (or any folder of your choosing if you edit the makefile)
 
 # Usage
 8080 Emulator - Use run.sh
