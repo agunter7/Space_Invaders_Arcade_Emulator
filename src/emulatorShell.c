@@ -98,7 +98,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
                 logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
                 logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
                 logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
-                logger("%1x%1x%1x%1x%1x\n", state.flags.zero, state.flags.sign, state.flags.parity, state.flags.auxillaryCarry, state.flags.carry);
+                logger("%1x%1x%1x%1x%1x\n", state.flags.zero, state.flags.sign, state.flags.parity, state.flags.auxiliaryCarry, state.flags.carry);
                 char garbage[100];
                 scanf("%s", garbage);
 	        }
@@ -1230,7 +1230,7 @@ void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
             state->a = state->a & operands[0];
             checkStandardArithmeticFlags(state->a, state);
             state->flags.carry = 0;
-            state->flags.auxillaryCarry = 0;
+            state->flags.auxiliaryCarry = 0;
             state->pc += 2;
             break;
         case 0xE7: 

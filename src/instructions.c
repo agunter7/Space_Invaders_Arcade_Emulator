@@ -141,7 +141,7 @@ void XRA(uint8_t data, State8080 *state)
 
     checkStandardArithmeticFlags(state->a, state);
     state->flags.carry = 0;
-    state->flags.auxillaryCarry = 0;
+    state->flags.auxiliaryCarry = 0;
 
     state->pc += 1;
 }
@@ -159,7 +159,7 @@ void ANA(uint8_t data, State8080 *state)
 
     checkStandardArithmeticFlags(state->a, state);
     state->flags.carry = 0;
-    state->flags.auxillaryCarry = 0;  // No clue if hard-resetting is correct, but I can't see how it would be set by AND
+    state->flags.auxiliaryCarry = 0;  // No clue if hard-resetting is correct, but I can't see how it would be set by AND
 
     state->pc += 1;
 }
@@ -209,9 +209,9 @@ uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
 
     if((nibbleResult & 0x10) == 0x10){
         // Carry occurred from bit 3 to bit 4
-        state->flags.auxillaryCarry = 1;
+        state->flags.auxiliaryCarry = 1;
     }else{
-        state->flags.auxillaryCarry = 0;
+        state->flags.auxiliaryCarry = 0;
     }
 
     // Return lossless result from 8-bit addition

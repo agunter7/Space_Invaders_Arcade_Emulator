@@ -19,7 +19,7 @@ typedef struct ConditionCodes {
     uint8_t    sign:1;  
     uint8_t    parity:1;    
     uint8_t    carry:1;    
-    uint8_t    auxillaryCarry:1;    
+    uint8_t    auxiliaryCarry:1;
     uint8_t    unusedBits:3;
 } ConditionCodes;
 
