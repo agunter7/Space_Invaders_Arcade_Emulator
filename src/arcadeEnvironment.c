@@ -7,7 +7,7 @@
 
 #include "arcadeEnvironment.h"
 
-int initializeEnvironmentSDL(ArcadeParams *arcade)
+int initializeEnvironmentSDL(ArcadeState *arcade)
 {
     int successfulInit = 1;
 
@@ -48,7 +48,7 @@ int initializeEnvironmentSDL(ArcadeParams *arcade)
     return successfulInit;
 }
 
-void destroyEnvironmentSDL(ArcadeParams *arcade)
+void destroyEnvironmentSDL(ArcadeState *arcade)
 {
     // Destroy window
     SDL_DestroyWindow(arcade->window);

@@ -21,7 +21,8 @@
 typedef struct ArcadeParams{
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
-} ArcadeParams;
+    unsigned int quitGame; /**< Boolean, 1 = end application, 0 = keep running */
+} ArcadeState;
 
 /**
  * Sets up the SDL environment.
@@ -29,7 +30,7 @@ typedef struct ArcadeParams{
  * @param arcade - arcade machines parameters
  * @return int - 1 if initialization was successful, 0 otherwise
  */
-int initializeEnvironmentSDL(ArcadeParams *arcade);
+int initializeEnvironmentSDL(ArcadeState *arcade);
 
 /**
  * Tears down the SDL environment.
@@ -37,6 +38,6 @@ int initializeEnvironmentSDL(ArcadeParams *arcade);
  * @param arcade - arcade machine parameters
  * @return void
  */
-void destroyEnvironmentSDL(ArcadeParams *arcade);
+void destroyEnvironmentSDL(ArcadeState *arcade);
 
 #endif //INTEL_8080_EMULATOR_ARCADEENVIRONMENT_H
