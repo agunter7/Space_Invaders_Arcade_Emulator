@@ -28,3 +28,6 @@ D) SDL2 (Simple DirectMedia Layer 2) 64-bit Developer Library source files (for 
 8080 Emulator - Use run.sh
 
 8080 Disassembler - Use disassemble.sh
+
+# Assumptions
+Clock speed is 2 MHz (or 0.5μs clock period). The 8080 is capable of up to 3.125 MHz, but this was seemingly not a common occurrence.

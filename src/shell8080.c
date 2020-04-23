@@ -6,6 +6,7 @@
 #include "../src/instructions.h"
 #include "../src/cpuStructures.h"
 #include "../src/helpers.h"
+#include <SDL.h>
 
 // Global variable definitions and function prototypes
 bool debug = 0;
@@ -46,7 +47,7 @@ int main(int argc, char **argv)
 void runCodeFromBuffer(uint8_t *romBuffer)
 {
     State8080 state = {
-        .memory = malloc(2^16),  // Intel 8080 uses 16-bit byte-addressable memory
+        .memory = malloc(65536),  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
         .flags = 0,
         .a = 0,    
         .b = 0,    
