@@ -20,27 +20,46 @@ void runCodeFromBuffer(uint8_t *romBuffer);
 void printInstructionInfo(uint8_t opcode);
 
 
-/**
-* Main function
-*/
-int mainUnused(int argc, char **argv)
+State8080 *initializeCPU()
 {
     uint8_t *romBuffer;  // Buffer for storing bytes read from Space Invaders ROM
     initializeGlobals();
 
-    // Open Space Invaders ROM file and store contents in a buffer
-    FILE *invadersFile = fopen("resources/invaders", "rb");  // binary file read-only
+    // Open Space Invaders ROM file as binary-read-only and store contents in a buffer
+    FILE *invadersFile = fopen("resources/invaders", "rb");
     if(invadersFile == NULL){
         logger("Failed to open Space Invaders ROM.");
-        return -1;
+        return NULL;
     }
     romBuffer = getRomBuffer(invadersFile);
 
-    logger("Running code\n");
-    runCodeFromBuffer(romBuffer);
+    // Initialize an 8080 state variable
+    State8080 *state = malloc(sizeof(State8080));
+    state->memory = malloc(MEMORY_SIZE_8080);  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
+    ConditionCodes cc = {0};
+    state->flags = cc;
+    state->a = 0;
+    state->b = 0;
+    state->c = 0;
+    state->d = 0;
+    state->e = 0;
+    state->h = 0;
+    state->l = 0;
+    state->sp = 0;
+    state->pc = 0;
+    // Set 8080 memory to known value
+    memset(state->memory, 0, MEMORY_SIZE_8080);
+    // Place ROM buffer data into CPU memory
+    memcpy(state->memory, romBuffer, 0x2000);
 
     free(romBuffer);
-    return 0;
+    return state;
+}
+
+void destroyCPU(State8080 *state)
+{
+    free(state->memory);
+    free(state);
 }
 
 void runCodeFromBuffer(uint8_t *romBuffer)
@@ -48,13 +67,13 @@ void runCodeFromBuffer(uint8_t *romBuffer)
     State8080 state = {
         .memory = malloc(65536),  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
         .flags = {0},
-        .a = 0,    
-        .b = 0,    
-        .c = 0,    
-        .d = 0,    
-        .e = 0,    
-        .h = 0,    
-        .l = 0,    
+        .a = 0,
+        .b = 0,
+        .c = 0,
+        .d = 0,
+        .e = 0,
+        .h = 0,
+        .l = 0,
         .sp = 0,
         .pc = 0,
     };  // Intel 8080 CPU initial state

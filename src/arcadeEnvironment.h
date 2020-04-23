@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include "sdl_sources/SDL.h"
 #include "helpers.h"
+#include "cpuStructures.h"
+#include "shell8080.h"
 
 #define SCREEN_WIDTH 224
 #define SCREEN_HEIGHT 256
@@ -19,10 +21,16 @@
  * Holds the parameters for the arcade machine
  */
 typedef struct ArcadeParams{
+    State8080 *cpu;
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
-    unsigned int quitGame; /**< Boolean, 1 = end application, 0 = keep running */
 } ArcadeState;
+
+/**
+ * Sets up an arcade for emulation
+ * @return ArcadeState* - initialized arcade, or NULL if initialization failed
+ */
+ArcadeState *initializeArcade();
 
 /**
  * Sets up the SDL environment.
@@ -38,6 +46,6 @@ int initializeEnvironmentSDL(ArcadeState *arcade);
  * @param arcade - arcade machine parameters
  * @return void
  */
-void destroyEnvironmentSDL(ArcadeState *arcade);
+void destroyArcade(ArcadeState *arcade);
 
 #endif //INTEL_8080_EMULATOR_ARCADEENVIRONMENT_H

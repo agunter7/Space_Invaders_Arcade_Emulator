@@ -6,25 +6,19 @@
 ***********************************************************************************/
 
 #include "../src/arcadeEnvironment.h"
+#include "shell8080.h"
 
 void playSpaceInvaders(ArcadeState *arcade);
 unsigned int handleGameEvents(ArcadeState *arcade);
 
 int main(int argc, char **argv)
 {
-    ArcadeState arcade = {
-            .window = NULL,
-            .renderer = NULL,
-            .quitGame = 0,
-    };
+    ArcadeState *arcade = initializeArcade();
 
-    // Initialize SDL
-    initializeEnvironmentSDL(&arcade);
-
-    playSpaceInvaders(NULL);
-
-    // Tear down SDL
-    destroyEnvironmentSDL(&arcade);
+    if(arcade != NULL){
+        playSpaceInvaders(arcade);
+        destroyArcade(arcade);
+    }
 
     return 0;
 }

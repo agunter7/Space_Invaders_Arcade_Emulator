@@ -7,6 +7,23 @@
 
 #include "arcadeEnvironment.h"
 
+ArcadeState *initializeArcade()
+{
+    // Create an arcade to work with
+    ArcadeState *arcade = malloc(sizeof(ArcadeState));
+    arcade->cpu = initializeCPU();
+    arcade->window = NULL;
+    arcade->renderer = NULL;
+
+    // Setup SDL for communicating with host machine API
+    if(initializeEnvironmentSDL(arcade) == 1){
+        return arcade;
+    }else{
+        destroyArcade(arcade);
+        return NULL;
+    }
+}
+
 int initializeEnvironmentSDL(ArcadeState *arcade)
 {
     int successfulInit = 1;
@@ -48,7 +65,7 @@ int initializeEnvironmentSDL(ArcadeState *arcade)
     return successfulInit;
 }
 
-void destroyEnvironmentSDL(ArcadeState *arcade)
+void destroyArcade(ArcadeState *arcade)
 {
     // Destroy window
     SDL_DestroyWindow(arcade->window);

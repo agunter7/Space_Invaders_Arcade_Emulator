@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <stdarg.h>
 
+#define MEMORY_SIZE_8080 65536
+
 /**
 Intel 8080 condition codes can be thought of as existing in a 8-bit register.
 This doesn't seem to actually be the case, but simplifies organization in emulation.
