@@ -51,7 +51,6 @@ int main(int argc, char **argv)
     unsigned char operands[2] = {'0', '0'};
     char instruction[20];
     unsigned int instructionSize;
-    unsigned int numOperands;
     char instructionFlag[20];
     char instructionFunction[100];
     unsigned int instructionCounter = 0;
@@ -70,7 +69,6 @@ int main(int argc, char **argv)
         memcpy(instructionFunction, instructionFunctions[operation], 100);
 
         // Get operands depending on instruction size
-        numOperands = instructionSize-1;
         int lastOperandAddress = pc+instructionSize-1;
         int operandNum;
         for(int operandAddress = pc+1; operandAddress <= lastOperandAddress; operandAddress++){

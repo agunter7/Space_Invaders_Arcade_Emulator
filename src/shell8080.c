@@ -6,7 +6,6 @@
 #include "../src/instructions.h"
 #include "../src/cpuStructures.h"
 #include "../src/helpers.h"
-#include <SDL.h>
 
 // Global variable definitions and function prototypes
 bool debug = 0;
@@ -24,7 +23,7 @@ void printInstructionInfo(uint8_t opcode);
 /**
 * Main function
 */
-int main(int argc, char **argv)
+int mainUnused(int argc, char **argv)
 {
     uint8_t *romBuffer;  // Buffer for storing bytes read from Space Invaders ROM
     initializeGlobals();
@@ -48,7 +47,7 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 {
     State8080 state = {
         .memory = malloc(65536),  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
-        .flags = 0,
+        .flags = {0},
         .a = 0,    
         .b = 0,    
         .c = 0,    
@@ -67,7 +66,6 @@ void runCodeFromBuffer(uint8_t *romBuffer)
     uint8_t operation = 0;
     uint8_t operands[2] = {0, 0};
     unsigned int instructionSize = 0;
-    unsigned int numOperands = 0;
     unsigned int instrCount = 0;
     bool loggerFlag = 0;
     while(state.pc < 0x2000){  // Keep within bounds of ROM data for 8080 memory map
@@ -80,7 +78,6 @@ void runCodeFromBuffer(uint8_t *romBuffer)
 
         // Get operands depending on instruction size
         instructionSize = instructionSizes[operation];  // Array is ordered based on opcode
-        numOperands = instructionSize-1;
         int lastOperandAddress = state.pc+instructionSize-1;
         int operandNum;
         for(int operandAddress = state.pc+1; operandAddress <= lastOperandAddress; operandAddress++){
