@@ -15,7 +15,7 @@ char instructionFlags[256][20];
 char instructionFunctions[256][100];
 void initializeGlobals();
 uint8_t *getRomBuffer(FILE *romFile);
-void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state);
+unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state);
 void runCodeFromBuffer(uint8_t *romBuffer);
 void printInstructionInfo(uint8_t opcode);
 
@@ -47,6 +47,7 @@ State8080 *initializeCPU()
     state->l = 0;
     state->sp = 0;
     state->pc = 0;
+    state->cyclesCompleted = 0;
     // Set 8080 memory to known value
     memset(state->memory, 0, MEMORY_SIZE_8080);
     // Place ROM buffer data into CPU memory
@@ -62,10 +63,39 @@ void destroyCPU(State8080 *state)
     free(state);
 }
 
+void runForCycles(unsigned int cycles, State8080 *state)
+{
+    //
+}
+
+unsigned int executeNextInstruction(State8080 *state)
+{
+    if(state->pc < ROM_LIMIT_8080){
+        uint8_t operation = 0;  // next instruction opcode
+        uint8_t operands[2] = {0xff, 0xff};  // next instruction operands, default 0xff as it would standout more than 0x00
+        unsigned int instructionSize = 0;
+        bool loggerFlag = 0;
+
+        // Get next operation
+        operation = state->memory[state->pc];
+
+        // Get operands depending on instruction size
+        instructionSize = instructionSizes[operation];  // Array is ordered based on opcode
+        uint16_t lastOperandAddress = (state->pc)+instructionSize-1;
+        int operandNum;
+        for(uint16_t operandAddress = state->pc+1; operandAddress <= lastOperandAddress; operandAddress++){
+            operandNum = operandAddress-(state->pc+1);
+            operands[operandNum] = state->memory[operandAddress];
+        }
+
+        executeInstruction(operation, operands, state);
+    }
+}
+
 void runCodeFromBuffer(uint8_t *romBuffer)
 {
     State8080 state = {
-        .memory = malloc(65536),  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
+        .memory = malloc(MEMORY_SIZE_8080),
         .flags = {0},
         .a = 0,
         .b = 0,
@@ -113,9 +143,12 @@ void runCodeFromBuffer(uint8_t *romBuffer)
             if(loggerFlag){
                 // Print some status info
                 logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
-                logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n", state.a, state.b, state.c, state.d, state.e, state.h, state.l);
+                logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
+                        state.a, state.b, state.c, state.d, state.e, state.h, state.l);
                 logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
-                logger("%1x%1x%1x%1x%1x\n", state.flags.zero, state.flags.sign, state.flags.parity, state.flags.auxiliaryCarry, state.flags.carry);
+                logger("%1x%1x%1x%1x%1x\n",
+                        state.flags.zero, state.flags.sign, state.flags.parity,
+                        state.flags.auxiliaryCarry, state.flags.carry);
                 char garbage[100];
                 scanf("%s", garbage);
 	        }
@@ -172,9 +205,9 @@ void printInstructionInfo(uint8_t opcode)
 /**
  * Given an opcode and operands, perform the resulting state changes of the 8080 CPU
  */
-void executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
+unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
-    uint16_t orderedOperands = (operands[1] << 8) | operands[0];  // Operand order converted from little-endian to big-endian
+    uint16_t orderedOperands = ((uint16_t)operands[1] << 8) | (uint16_t)operands[0];  // Operand order converted from little-endian to big-endian
     uint16_t result = 0;  // For temporarily storing computational results losslessly
     uint8_t resultByte = 0;  // For temporarily storing 8-bit results
     char garbage[100];  // For reading from scanf, helps debugging

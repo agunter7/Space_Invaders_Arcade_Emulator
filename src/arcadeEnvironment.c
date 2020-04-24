@@ -19,6 +19,7 @@ ArcadeState *initializeArcade()
     if(initializeEnvironmentSDL(arcade) == 1){
         return arcade;
     }else{
+        destroyCPU(arcade->cpu);
         destroyArcade(arcade);
         return NULL;
     }

@@ -3,7 +3,8 @@
  * Capitalized names indicate a function that implements a full 8080 instructions
  * camelCase names indicate a function that implements a portion of an instruction's effect(s)
  *
- * By convention, only fully-implemented 8080 functions (Capitalized names) will update the program counter.
+ * By convention, only fully-implemented 8080 functions (Capitalized names) will update the program counter and
+ * increase the number of machine cycles completed
  *
  * @author Andrew Gunter
  */
@@ -34,6 +35,7 @@ void CALL(uint16_t address, State8080 *state)
     writeMem(sp-2, pcLow, state);
     state->sp -= 2;
     state->pc = address;
+    state->cyclesCompleted += 5;
 }
 
 /**
@@ -47,6 +49,7 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
     *highReg = (uint8_t)(concatRegValue >> 8);
     *lowReg = (uint8_t)concatRegValue;
     state->pc++;
+    state->cyclesCompleted += 1;
 }
 
 /**
@@ -65,6 +68,7 @@ void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
     state->sp = sp-2;
 
     state->pc += 1;
+    state->cyclesCompleted += 3;
 }
 
 /**
@@ -82,6 +86,7 @@ void POP_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
     state->sp = sp+2;
 
     state->pc += 1;
+    state->cyclesCompleted += 3;
 }
 
 /**
@@ -117,6 +122,7 @@ void DAD_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
     state->l = newValueL;
 
     state->pc += 1;
+    state->cyclesCompleted += 3;
 }
 
 /**
@@ -127,6 +133,7 @@ void DAD_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
 void JMP(uint16_t address, State8080 *state)
 {
     state->pc = address;
+    state->cyclesCompleted += 3;
 }
 
 /**
@@ -144,6 +151,7 @@ void XRA(uint8_t data, State8080 *state)
     state->flags.auxiliaryCarry = 0;
 
     state->pc += 1;
+    state->cyclesCompleted += 1;
 }
 
 /**

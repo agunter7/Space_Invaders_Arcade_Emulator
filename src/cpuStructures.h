@@ -8,7 +8,8 @@
 #include <stdint.h>
 #include <stdarg.h>
 
-#define MEMORY_SIZE_8080 65536
+#define MEMORY_SIZE_8080 65536  // 16-bit byte-addressable memory, 2^16 == 65536
+#define ROM_LIMIT_8080 0x2000
 
 /**
 Intel 8080 condition codes can be thought of as existing in a 8-bit register.
@@ -38,6 +39,7 @@ typedef struct State8080 {
     uint8_t    l;    
     uint16_t    sp;
     uint16_t    pc;
+    unsigned int cyclesCompleted;
 } State8080;
 
 #endif  // CPUSTRUCTURES_H_
