@@ -30,4 +30,5 @@ D) SDL2 (Simple DirectMedia Layer 2) 64-bit Developer Library source files (for 
 8080 Disassembler - Use disassemble.sh
 
 # Assumptions
-Clock speed is 2 MHz (or 0.5μs clock period). The 8080 is capable of up to 3.125 MHz, but this was seemingly not a common occurrence.
+1) Clock speed is 2 MHz (or 0.5μs clock period). The 8080 is capable of up to 3.125 MHz, but this was seemingly not a common occurrence.
+2) One clock period marks a CPU "state". A single instruction constitutes multiple states throughout its execution.

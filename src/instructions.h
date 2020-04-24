@@ -85,7 +85,7 @@ void DAD_RP(uint8_t highReg, uint8_t lowReg, State8080 *state);
 void JMP(uint16_t address, State8080 *state);
 
 /**
- A set of 8080 instructions covering register and memory variants of XOR with Accumulator:
+ A set of 8080 instructions covering register variants of XOR with Accumulator:
  1) XRA A
  2) XRA B
  3) XRA C
@@ -93,14 +93,13 @@ void JMP(uint16_t address, State8080 *state);
  5) XRA E
  6) XRA H
  7) XRA L
- 8) XRA M (HL Memory)
 
  Flags: z,s,p,cy(reset),ac(reset)
 
  @param data - The 8 bits to XOR with accumulator
  @param state - The 8080 state
  */
-void XRA(uint8_t data, State8080 *state);
+void XRA_R(uint8_t data, State8080 *state);
 
 /**
  A set of 8080 instructions covering register variants of AND with Accumulator:
@@ -118,6 +117,16 @@ void XRA(uint8_t data, State8080 *state);
  @param state - The 8080 state
  */
 void ANA_R(uint8_t data, State8080 *state);
+
+/**
+ Performs the function of XOR with the Accumulator
+
+ Flags: z,s,p,cy(reset),ac(reset)
+
+ @param data - The 8 bits to XOR with Accumulator
+ @param state - The 8080 state
+ */
+void xorWithAccumulator(uint8_t data, State8080 *state);
 
 /**
  Performs the function of AND with the Accumulator

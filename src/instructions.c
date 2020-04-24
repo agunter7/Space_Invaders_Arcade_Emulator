@@ -35,7 +35,7 @@ void CALL(uint16_t address, State8080 *state)
     writeMem(sp-2, pcLow, state);
     state->sp -= 2;
     state->pc = address;
-    state->cyclesCompleted += 5;
+    state->cyclesCompleted += 17;
 }
 
 /**
@@ -49,7 +49,7 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
     *highReg = (uint8_t)(concatRegValue >> 8);
     *lowReg = (uint8_t)concatRegValue;
     state->pc++;
-    state->cyclesCompleted += 1;
+    state->cyclesCompleted += 5;
 }
 
 /**
@@ -68,7 +68,7 @@ void PUSH_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
     state->sp = sp-2;
 
     state->pc += 1;
-    state->cyclesCompleted += 3;
+    state->cyclesCompleted += 11;
 }
 
 /**
@@ -86,7 +86,7 @@ void POP_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
     state->sp = sp+2;
 
     state->pc += 1;
-    state->cyclesCompleted += 3;
+    state->cyclesCompleted += 10;
 }
 
 /**
@@ -122,7 +122,7 @@ void DAD_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
     state->l = newValueL;
 
     state->pc += 1;
-    state->cyclesCompleted += 3;
+    state->cyclesCompleted += 10;
 }
 
 /**
@@ -133,25 +133,21 @@ void DAD_RP(uint8_t highReg, uint8_t lowReg, State8080 *state)
 void JMP(uint16_t address, State8080 *state)
 {
     state->pc = address;
-    state->cyclesCompleted += 3;
+    state->cyclesCompleted += 10;
 }
 
 /**
- XRA r/M
- Exclusive Or Accumulator with a register/Memory
- A = A XOR (r/M)
+ XRA r
+ Exclusive Or Accumulator with a register
+ A = A XOR r
  Flags: z,s,p,cy(reset),ac(reset)
  */
-void XRA(uint8_t data, State8080 *state)
+void XRA_R(uint8_t data, State8080 *state)
 {
-    state->a = state->a ^ data;
-
-    checkStandardArithmeticFlags(state->a, state);
-    state->flags.carry = 0;
-    state->flags.auxiliaryCarry = 0;
+    xorWithAccumulator(data, state);
 
     state->pc += 1;
-    state->cyclesCompleted += 1;
+    state->cyclesCompleted += 4;
 }
 
 /**
@@ -166,6 +162,15 @@ void ANA_R(uint8_t data, State8080 *state)
 
     state->pc += 1;
     state->cyclesCompleted += 1;
+}
+
+void xorWithAccumulator(uint8_t data, State8080 *state)
+{
+    state->a = state->a ^ data;
+
+    checkStandardArithmeticFlags(state->a, state);
+    state->flags.carry = 0;
+    state->flags.auxiliaryCarry = 0;
 }
 
 /**

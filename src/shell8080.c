@@ -207,7 +207,7 @@ void printInstructionInfo(uint8_t opcode)
  */
 unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
-    uint16_t orderedOperands = ((uint16_t)operands[1] << 8) | (uint16_t)operands[0];  // Operand order converted from little-endian to big-endian
+    uint16_t orderedOperands = ((uint16_t)operands[1] << 8) | (uint16_t)operands[0];  // Convert from little-endian
     uint16_t result = 0;  // For temporarily storing computational results losslessly
     uint8_t resultByte = 0;  // For temporarily storing 8-bit results
     char garbage[100];  // For reading from scanf, helps debugging
@@ -222,6 +222,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->b = operands[1];
             state->c = operands[0];
             state->pc += 3;
+            state->cyclesCompleted += 3;
             break;
         case 0x02: 
             printInstructionInfo(opcode);
@@ -242,6 +243,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->b = addWithCheckAC(state->b, -1, state);
             checkStandardArithmeticFlags(state->b, state);
             state->pc += 1;
+            state->cyclesCompleted += 1;
             break;
         case 0x06: 
             // MVI B; D8
@@ -1013,7 +1015,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // Exclusive Or register A with register A
             // A = A XOR A
             // Flags: z,s,p,cy(reset),ac(reset);
-            XRA(state->a, state);
+            XRA_R(state->a, state);
             break;
         case 0xB0: 
             printInstructionInfo(opcode);
