@@ -213,7 +213,9 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
     char garbage[100];  // For reading from scanf, helps debugging
     switch(opcode){
         case 0x00:
+            // NOP
             state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x01: 
             // LXI B, D16
@@ -222,7 +224,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->b = operands[1];
             state->c = operands[0];
             state->pc += 3;
-            state->cyclesCompleted += 3;
+            state->cyclesCompleted += 10;
             break;
         case 0x02: 
             printInstructionInfo(opcode);
@@ -243,13 +245,14 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->b = addWithCheckAC(state->b, -1, state);
             checkStandardArithmeticFlags(state->b, state);
             state->pc += 1;
-            state->cyclesCompleted += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0x06: 
             // MVI B; D8
             // Move immediate to register B
             state->b = operands[0];
             state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0x07: 
             printInstructionInfo(opcode);
@@ -284,6 +287,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->c = addWithCheckAC(state->c, (uint8_t)(-1), state);
             checkStandardArithmeticFlags(state->c, state);
             state->pc += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0x0E: 
             // MVI C, D8
@@ -291,6 +295,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // C = D8
             state->c = operands[0];
             state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0x0F: 
             // RRC
@@ -307,6 +312,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
                 // A:7 = 0
             }
             state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x10: 
             printInstructionInfo(opcode);
@@ -319,6 +325,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->d = operands[1];
             state->e = operands[0];
             state->pc += 3;
+            state->cyclesCompleted += 10;
             break;
         case 0x12: 
             printInstructionInfo(opcode);
@@ -362,6 +369,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             uint16_t sourceAddress = getValueDE(state);
             state->a = readMem(sourceAddress, state);
             state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x1B: 
             printInstructionInfo(opcode);
@@ -390,6 +398,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // The instruction is functional on the 8085
             // Equivalent to NOP
             state->pc += instructionSizes[opcode];
+            state->cyclesCompleted += 4;  // Did not find a reference for this, but 4 is the minimum
             break;
         case 0x21: 
             // LXI H, D16
@@ -398,6 +407,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->h = operands[1];
             state->l = operands[0];
             state->pc += 3;
+            state->cyclesCompleted += 10;
             break;
         case 0x22: 
             printInstructionInfo(opcode);
@@ -421,6 +431,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // MoVe Immediate into register H
             state->h = operands[0];
             state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0x27: 
             printInstructionInfo(opcode);
@@ -468,6 +479,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // Load Immediate into Stack Pointer
             state->sp = orderedOperands;
             state->pc += 3;
+            state->cyclesCompleted += 10;
             break;
         case 0x32: 
             // STA addr
@@ -475,6 +487,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // memory[address] = A
             writeMem(orderedOperands, state->a, state);
             state->pc += 3;
+            state->cyclesCompleted += 13;
             break;
         case 0x33: 
             printInstructionInfo(opcode);
@@ -493,6 +506,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // memory[(H)(L)] = D8
             moveDataToHLMemory(operands[0], state);
             state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0x37: 
             printInstructionInfo(opcode);
@@ -512,6 +526,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = address
             state->a = orderedOperands;
             state->pc += 3;
+            state->cyclesCompleted += 13;
             break;
         case 0x3B: 
             printInstructionInfo(opcode);
@@ -531,6 +546,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = D8
             state->a = operands[0];
             state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0x3F: 
             printInstructionInfo(opcode);
@@ -630,6 +646,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // D = memory[(H)(L)]
             moveDataFromHLMemory(&(state->d), state);
             state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x57: 
             printInstructionInfo(opcode);
@@ -665,6 +682,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // E = memory[(H)(L)]
             moveDataFromHLMemory(&(state->e), state);
             state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x5F: 
             printInstructionInfo(opcode);
@@ -700,6 +718,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // H = memory[(H)(L)]
             moveDataFromHLMemory(&(state->h), state);
             state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x67: 
             printInstructionInfo(opcode);
@@ -738,6 +757,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // Move the contents of register A into register L
             state->l = state->a;
             state->pc += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0x70: 
             printInstructionInfo(opcode);
@@ -772,6 +792,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // memory[(H)(L)] = A
             moveDataToHLMemory(state->a, state);
             state->pc++;
+            state->cyclesCompleted += 7;
             break;
         case 0x78: 
             printInstructionInfo(opcode);
@@ -787,6 +808,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = D
             state->a = state->d;
             state->pc += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0x7B: 
             // MOV A, E
@@ -794,12 +816,14 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = E
             state->a = state->e;
             state->pc += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0x7C: 
             // MOV A, H
             // A = H
             state->a = state->h;
             state->pc += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0x7D: 
             printInstructionInfo(opcode);
@@ -811,6 +835,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = memory[(H)(L)]
             moveDataFromHLMemory(&(state->a), state);
             state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x7F: 
             printInstructionInfo(opcode);
@@ -1096,7 +1121,8 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             if(!state->flags.zero){
                 JMP(orderedOperands, state);
 			}else{
-                 state->pc += 3;
+                state->pc += 3;
+                state->cyclesCompleted += ;
 			}
             break;
         case 0xC3: 
@@ -1121,6 +1147,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->a = addWithCheckCY(state->a, operands[0], state);
             checkStandardArithmeticFlags(state->a, state);
             state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0xC7: 
             printInstructionInfo(opcode);
@@ -1141,6 +1168,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
             state->sp += 2;
             state->pc = newValuePC;
+            state->cyclesCompleted += 10;
             break;
         case 0xCA: 
             // JZ addr
@@ -1150,6 +1178,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
                 JMP(orderedOperands, state);
             }else{
                 state->pc += 3;
+                state->cyclesCompleted += 10;
             }
             break;
         case 0xCB: 
@@ -1193,6 +1222,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             //char garbage[100];
             //scanf("%s", garbage);
             state->pc += 2;
+            state->cyclesCompleted += 10;
             break;
         case 0xD4: 
             // CNC adr
@@ -1200,7 +1230,8 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             if(state->flags.carry == 0){
                 CALL(orderedOperands, state);
 		    }else{
-                    state->pc += instructionSizes[opcode];
+                state->pc += instructionSizes[opcode];
+                state->cyclesCompleted += 11;
 		    }
             break;
         case 0xD5: 
@@ -1284,6 +1315,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->flags.carry = 0;
             state->flags.auxiliaryCarry = 0;
             state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0xE7: 
             printInstructionInfo(opcode);
@@ -1316,6 +1348,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             state->e = tempL;
             
             state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0xEC: 
             printInstructionInfo(opcode);
@@ -1387,6 +1420,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // EI
             // Enable Interrupt
             state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0xFC: 
             printInstructionInfo(opcode);
@@ -1418,6 +1452,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             resultByte = (uint8_t)result;
             checkStandardArithmeticFlags(resultByte, state);
             state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0xFF: 
             printInstructionInfo(opcode);
