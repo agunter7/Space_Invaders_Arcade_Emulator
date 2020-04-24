@@ -947,7 +947,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // AND Accumulator with Register B
             // A = A & B
             // Flags: z,s,p,cy(reset),ac
-            ANA(state->b, state);
+            ANA_R(state->b, state);
             break;
         case 0xA1: 
             printInstructionInfo(opcode);
@@ -978,7 +978,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
             // AND Accumulator with Accumulator
             // A = A & A
             // Flags: z,s,p,cy(reset),ac
-            ANA(state->a, state);
+            ANA_R(state->a, state);
             break;
         case 0xA8: 
             printInstructionInfo(opcode);
