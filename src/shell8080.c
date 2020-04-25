@@ -1122,7 +1122,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
                 JMP(orderedOperands, state);
 			}else{
                 state->pc += 3;
-                state->cyclesCompleted += ;
+                state->cyclesCompleted += 10;
 			}
             break;
         case 0xC3: 
