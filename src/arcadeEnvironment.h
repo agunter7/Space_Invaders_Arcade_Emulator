@@ -20,7 +20,7 @@
 /**
  * Holds the parameters for the arcade machine
  */
-typedef struct ArcadeParams{
+typedef struct ArcadeState{
     State8080 *cpu;
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */

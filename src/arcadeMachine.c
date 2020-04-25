@@ -26,18 +26,29 @@ int main(int argc, char **argv)
 void playSpaceInvaders(ArcadeState *arcade)
 {
     unsigned int quitGame = 0;
+
+
+    uint32_t screenPixels[256][224];
+    memset(screenPixels, 0xff, 256*224*4);
+    SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, SCREEN_WIDTH, SCREEN_HEIGHT);
+    SDL_UpdateTexture(texture, NULL, screenPixels, 224*4);
+    //runForCycles(10, arcade->cpu);
+    logger("Entering loop\n");
     while (!quitGame){
         //Start timer
 
         quitGame = handleGameEvents(arcade);
 
         // Clear screen
+        SDL_RenderClear(arcade->renderer);
 
         // Load/render window image
+        SDL_RenderCopy(arcade->renderer, texture, NULL, NULL);
 
         // Play any sounds
 
         // Update screen
+        SDL_RenderPresent(arcade->renderer);
 
         // If frame time < (1/60)s, then stall
     }

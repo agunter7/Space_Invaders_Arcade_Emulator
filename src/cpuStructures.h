@@ -40,6 +40,7 @@ typedef struct State8080 {
     uint16_t    sp;
     uint16_t    pc;
     unsigned int cyclesCompleted;
+    bool interruptsEnabled;
 } State8080;
 
 #endif  // CPUSTRUCTURES_H_

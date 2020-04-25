@@ -8,16 +8,17 @@
 #include "../src/helpers.h"
 
 // Global variable definitions and function prototypes
-bool debug = 0;
+bool debug = 1;
 char instructions[256][20];
 char instructionSizes[256];
 char instructionFlags[256][20];
 char instructionFunctions[256][100];
 void initializeGlobals();
 uint8_t *getRomBuffer(FILE *romFile);
-unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state);
+void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *state);
 void runCodeFromBuffer(uint8_t *romBuffer);
 void printInstructionInfo(uint8_t opcode);
+void executeNextInstruction(State8080 *state);
 
 
 State8080 *initializeCPU()
@@ -48,6 +49,7 @@ State8080 *initializeCPU()
     state->sp = 0;
     state->pc = 0;
     state->cyclesCompleted = 0;
+    state->interruptsEnabled = 0;
     // Set 8080 memory to known value
     memset(state->memory, 0, MEMORY_SIZE_8080);
     // Place ROM buffer data into CPU memory
@@ -63,12 +65,17 @@ void destroyCPU(State8080 *state)
     free(state);
 }
 
-void runForCycles(unsigned int cycles, State8080 *state)
+void runForCycles(unsigned int numCyclesToRun, State8080 *state)
 {
-    //
+    unsigned int startingCycles = state->cyclesCompleted;
+    while((state->cyclesCompleted - startingCycles) < numCyclesToRun){
+        executeNextInstruction(state);
+        printf("%d\n", startingCycles);
+        printf("%d\n", state->cyclesCompleted);
+    }
 }
 
-unsigned int executeNextInstruction(State8080 *state)
+void executeNextInstruction(State8080 *state)
 {
     if(state->pc < ROM_LIMIT_8080){
         uint8_t operation = 0;  // next instruction opcode
@@ -88,7 +95,28 @@ unsigned int executeNextInstruction(State8080 *state)
             operands[operandNum] = state->memory[operandAddress];
         }
 
-        executeInstruction(operation, operands, state);
+        // Perform some debugging logging if desired. Triggered by global flag.
+        if(debug){
+            /*logger("%d\n", instrCount);
+            if (instrCount == 100000){  // Helps to isolate a desired program section, just change value to meet needs
+                loggerFlag = 1;
+            }*/
+            loggerFlag = 1;
+            if(loggerFlag){
+                // Print some status info
+                logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
+                logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
+                       state->a, state->b, state->c, state->d, state->e, state->h, state->l);
+                logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state->pc, state->sp);
+                logger("%1x%1x%1x%1x%1x\n",
+                       state->flags.zero, state->flags.sign, state->flags.parity,
+                       state->flags.auxiliaryCarry, state->flags.carry);
+                /*char garbage[100];
+                scanf("%s", garbage);*/
+            }
+        }
+
+        executeInstructionByOpcode(operation, operands, state);
     }
 }
 
@@ -153,8 +181,8 @@ void runCodeFromBuffer(uint8_t *romBuffer)
                 scanf("%s", garbage);
 	        }
         }
-        
-        executeInstruction(operation, operands, &state);
+
+        executeInstructionByOpcode(operation, operands, &state);
         instrCount++;
 	}
 
@@ -205,7 +233,7 @@ void printInstructionInfo(uint8_t opcode)
 /**
  * Given an opcode and operands, perform the resulting state changes of the 8080 CPU
  */
-unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *state)
+void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
     uint16_t orderedOperands = ((uint16_t)operands[1] << 8) | (uint16_t)operands[0];  // Convert from little-endian
     uint16_t result = 0;  // For temporarily storing computational results losslessly
@@ -1419,6 +1447,7 @@ unsigned int executeInstruction(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0xFB: 
             // EI
             // Enable Interrupt
+            state->interruptsEnabled = 1;
             state->pc += 1;
             state->cyclesCompleted += 4;
             break;
