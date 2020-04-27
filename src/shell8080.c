@@ -8,7 +8,7 @@
 #include "../src/helpers.h"
 
 // Global variable definitions and function prototypes
-bool debug = 1;
+bool debug = 0;
 char instructions[256][20];
 char instructionSizes[256];
 char instructionFlags[256][20];
@@ -53,7 +53,7 @@ State8080 *initializeCPU()
     // Set 8080 memory to known value
     memset(state->memory, 0, MEMORY_SIZE_8080);
     // Place ROM buffer data into CPU memory
-    memcpy(state->memory, romBuffer, 0x2000);
+    memcpy(state->memory, romBuffer, ROM_LIMIT_8080);
 
     free(romBuffer);
     return state;
@@ -70,8 +70,8 @@ void runForCycles(unsigned int numCyclesToRun, State8080 *state)
     unsigned int startingCycles = state->cyclesCompleted;
     while((state->cyclesCompleted - startingCycles) < numCyclesToRun){
         executeNextInstruction(state);
-        printf("%d\n", startingCycles);
-        printf("%d\n", state->cyclesCompleted);
+        /*printf("%d\n", startingCycles);
+        printf("%d\n", state->cyclesCompleted);*/
     }
 }
 
@@ -118,6 +118,15 @@ void executeNextInstruction(State8080 *state)
 
         executeInstructionByOpcode(operation, operands, state);
     }
+}
+
+uint8_t *getVideoRAM(State8080 *state)
+{
+    uint8_t *vramContents = malloc(VRAM_SIZE_8080);
+
+    memcpy(vramContents, &(state->memory[VRAM_START_ADDR_8080]), VRAM_SIZE_8080);
+
+    return vramContents;
 }
 
 void runCodeFromBuffer(uint8_t *romBuffer)

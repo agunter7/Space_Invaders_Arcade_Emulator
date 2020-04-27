@@ -46,7 +46,7 @@ int initializeEnvironmentSDL(ArcadeState *arcade)
 
         // Create a window
         arcade->window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                          SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+                                          SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS, SDL_WINDOW_SHOWN);
         if (arcade->window == NULL){
             logger( "Window could not be created! SDL Error: %s\n", SDL_GetError());
             successfulInit = 0;

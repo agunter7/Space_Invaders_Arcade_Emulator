@@ -9,13 +9,18 @@
 #define INTEL_8080_EMULATOR_ARCADEENVIRONMENT_H
 
 #include <stdio.h>
+#include <math.h>
 #include "sdl_sources/SDL.h"
 #include "helpers.h"
 #include "cpuStructures.h"
 #include "shell8080.h"
 
-#define SCREEN_WIDTH 224
-#define SCREEN_HEIGHT 256
+#define SCREEN_WIDTH_PIXELS 224
+#define SCREEN_HEIGHT_PIXELS 256
+#define BYTES_PER_PIXEL 4
+#define FPS 60
+#define CYCLES_PER_FRAME floor(CYCLES_PER_SECOND_8080/FPS)
+
 
 /**
  * Holds the parameters for the arcade machine
@@ -24,6 +29,7 @@ typedef struct ArcadeState{
     State8080 *cpu;
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
+    SDL_Texture *prerenderTexture; /**< The texture to be drawn on prior to rendering to the game screen */
 } ArcadeState;
 
 /**
