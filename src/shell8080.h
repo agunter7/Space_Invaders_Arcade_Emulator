@@ -38,4 +38,11 @@ void runForCycles(unsigned int numCyclesToRun, State8080 *state);
  */
 uint8_t *getVideoRAM(State8080 *state);
 
+/**
+ * Triggers an 8080 interrupt
+ * @param interruptNum - The number corresponding with the desired interrupt, valid from 0x00 to 0x07
+ * @param state - The 8080 state
+ */
+void generateInterrupt(uint8_t interruptNum, State8080 *state);
+
 #endif //INTEL_8080_EMULATOR_SHELL8080_H

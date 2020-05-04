@@ -133,6 +133,23 @@ uint8_t *getVideoRAM(State8080 *state)
     return vramContents;
 }
 
+void generateInterrupt(uint8_t interruptNum, State8080 *state)
+{
+    if(interruptNum < 8){
+        // Will need to trigger instruction RST n
+        // n = interrupt num
+
+        // Opcode for RST instructions is of form (11NNN111)b
+        // NNN is the binary representation of the interrupt number
+        uint8_t interruptOpcode = 0xc7 | (interruptNum << 3);  // 0xc7 == (11000111)b
+        uint8_t fakeOperands[2] = {0xff, 0xff};
+
+        executeInstructionByOpcode(interruptOpcode, fakeOperands, state);
+    }else{
+        logger("Warning: Invalid interrupt attempted!\n");
+    }
+}
+
 void runCodeFromBuffer(uint8_t *romBuffer)
 {
     State8080 state = {
