@@ -634,9 +634,13 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0x46: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x46:
+            // MOV B, M
+            // Move from memory into register B
+            // B = memory[(H)(L)]
+            moveDataFromHLMemory(&(state->b), state);
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x47: 
             printInstructionInfo(opcode);
