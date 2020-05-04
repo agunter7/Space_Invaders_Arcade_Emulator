@@ -78,3 +78,26 @@ void destroyArcade(ArcadeState *arcade)
     // Quit SDL and any related subsystems
     SDL_Quit();
 }
+
+/**
+ *
+ * @param arcade
+ */
+void synchronizeIO(ArcadeState *arcade)
+{
+    // Grab shorthand reference to cpu
+    State8080 *cpu = arcade->cpu;
+
+    // Copy arcade machine input port data to 8080 input buffers
+    cpu->inputBuffers[0] = arcade->inputPort0;
+    cpu->inputBuffers[1] = arcade->inputPort1;
+    cpu->inputBuffers[2] = arcade->inputPort2;
+    cpu->inputBuffers[3] = arcade->inputPort3;
+
+    // Copy 8080 output buffer data to arcade machine output ports
+    arcade->outputPort2 = cpu->outputBuffers[2];
+    arcade->outputPort3 = cpu->outputBuffers[3];
+    arcade->outputPort4 = cpu->outputBuffers[4];
+    arcade->outputPort5 = cpu->outputBuffers[5];
+    arcade->outputPort6 = cpu->outputBuffers[6];
+}

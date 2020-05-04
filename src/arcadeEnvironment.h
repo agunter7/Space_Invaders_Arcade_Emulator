@@ -30,16 +30,19 @@ typedef struct ArcadeState{
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
     SDL_Texture *prerenderTexture; /**< The texture to be drawn on prior to rendering to the game screen */
-    uint8_t readPort0;
-    uint8_t readPort1;
-    uint8_t readPort2;
-    uint8_t readPort3;
-    uint8_t writePort2;  /** Write ports start counting at 2 for some unknown reason
+    // Input ports, read from by 8080
+    uint8_t inputPort0;
+    uint8_t inputPort1;
+    uint8_t inputPort2;
+    uint8_t inputPort3;
+    // Output ports, written to by 8080
+    uint8_t outputPort2;  /** Write ports start counting at 2 for some unknown reason
                              (Source: http://computerarcheology.com/Arcade/SpaceInvaders/Hardware.html) */
-    uint8_t writePort3;
-    uint8_t writePort4;
-    uint8_t writePort5;
-    uint8_t writePort6;
+    uint8_t outputPort3;
+    uint8_t outputPort4;
+    uint8_t outputPort5;
+    uint8_t outputPort6;
+    uint16_t shiftRegister;  /** Custom hardware, found in arcade cabinet, for performing multi-bit shifts */
 } ArcadeState;
 
 /**
@@ -63,5 +66,15 @@ int initializeEnvironmentSDL(ArcadeState *arcade);
  * @return void
  */
 void destroyArcade(ArcadeState *arcade);
+
+/**
+ * Synchronizes the arcade machine's and 8080's I/O
+ * Arcade machine emulator has "ports" and 8080 emulator has "buffers"
+ * Data flow is:
+ * Input - Arcade machine emulator -> Input port -> Input buffer -> 8080 CPU
+ * Output - 8080 CPU -> Output buffer -> Output port -> Arcade machine emulator
+ * @param arcade
+ */
+void synchronizeIO(ArcadeState *arcade);
 
 #endif //INTEL_8080_EMULATOR_ARCADEENVIRONMENT_H

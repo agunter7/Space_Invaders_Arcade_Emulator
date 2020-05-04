@@ -86,6 +86,8 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     runForCycles(CYCLES_PER_FRAME - numInterruptCycles, arcade->cpu);
     logger("Cycles ran\n");
 
+    synchronizeIO(arcade);
+
     return 0;
 }
 

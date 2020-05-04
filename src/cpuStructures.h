@@ -34,8 +34,7 @@ typedef struct ConditionCodes {
 typedef struct State8080 {
     uint8_t *memory;
     ConditionCodes flags;
-    // I/O Ports - The 8080 can address up to 256 input devices and 256 output devices,
-    // here are buffers for these devices to read/write from/to
+    // I/O Buffers - For communicating with emulated I/O devices
     uint8_t *inputBuffers;
     uint8_t *outputBuffers;
     // Registers
