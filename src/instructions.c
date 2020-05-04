@@ -213,7 +213,12 @@ uint16_t getValueDE(State8080 *state)
 
 void writeMem(uint16_t address, uint8_t value, State8080 *state)
 {
-    state->memory[address] = value;
+    if(address >= ROM_LIMIT_8080){
+        state->memory[address] = value;
+    }else{
+        logger("Warning: Attempted to write to Intel 8080 ROM! Write attempt rejected!\n");
+        logger("Address 0x%04x; Value 0x%02x\n", address, value);
+    }
 }
 
 uint8_t readMem(uint16_t address, State8080 *state)
