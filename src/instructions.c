@@ -255,8 +255,6 @@ uint8_t readMem(uint16_t address, State8080 *state)
 uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
 {
     // Perform lower-order 4-bit addition
-    uint8_t nibble1 = op1 & 0x0F;
-    uint8_t nibble2 = op2 & 0x0F;
     uint8_t nibbleResult = op1 + op2;
 
     if((nibbleResult & 0x10) == 0x10){

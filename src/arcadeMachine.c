@@ -67,7 +67,6 @@ void playSpaceInvaders(ArcadeState *arcade)
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
     SDL_Event currentEvent;
-    unsigned int executedCycles = 0;
 
     // Receive user input
     while(SDL_PollEvent(&currentEvent) != 0){
@@ -84,18 +83,20 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     // Emulate cpu up to the known point of the mid-screen render interrupt
     // Screen width is used here, rather than height, as the Space Invaders screen is rotated 90degrees and is
     // thus rendering vertical lines rather than horizontal lines
-    runForCycles(CYCLES_PER_FRAME*(MIDSCREEN_INTERRUPT_LINE/SCREEN_WIDTH_PIXELS), arcade->cpu);
+    unsigned int numCyclesFirstHalf = CYCLES_PER_FRAME*((float)MIDSCREEN_INTERRUPT_LINE/(float)SCREEN_WIDTH_PIXELS);
+    runForCycles(numCyclesFirstHalf, arcade->cpu);
 
     // Trigger mid-screen interrupt
     generateInterrupt(0x01, arcade->cpu);  // mid-screen
 
     // Emulate cpu up to the end of the frame
-    runForCycles(CYCLES_PER_FRAME*(MIDSCREEN_INTERRUPT_LINE/SCREEN_WIDTH_PIXELS), arcade->cpu);
+    unsigned int numCyclesSecondHalf = CYCLES_PER_FRAME-numCyclesFirstHalf;
+    runForCycles(numCyclesSecondHalf, arcade->cpu);
 
     //Trigger end-of-screen vertical blank interrupt
     generateInterrupt(0x02, arcade->cpu);
 
-    synchronizeIO(arcade);
+    //synchronizeIO(arcade);
 
     return 0;
 }

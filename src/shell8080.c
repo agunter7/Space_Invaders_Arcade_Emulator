@@ -1256,6 +1256,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xCF:
             // RST 1
+            logger("RST 1\n");
             RST(1, state);
             break;
         case 0xD0: 
@@ -1303,6 +1304,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xD7:
             // RST 2
+            logger("RST 2\n");
             RST(2, state);
             break;
         case 0xD8: 
