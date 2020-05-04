@@ -52,3 +52,6 @@ the 8080's I/O memory.
 last interrupt routine. I.e. the 8080 emulator code does not explicitly make interrupt handling atomic. However,
 the intended effect is achieved regardless as the arcade machine only sends interrupts twice per frame,
 giving the 8080 plenty of time to handle each interrupt completely.
+
+# Miscellaneous Notes
+Register A == 8080 "Accumulator"
