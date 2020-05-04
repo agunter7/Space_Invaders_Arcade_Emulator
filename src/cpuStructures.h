@@ -13,6 +13,8 @@
 #define VRAM_START_ADDR_8080 0x2400
 #define ROM_LIMIT_8080 0x2000
 #define CYCLES_PER_SECOND_8080 2000000
+#define NUM_INPUT_DEVICES 256
+#define NUM_OUTPUT_DEVICES 256
 
 /**
 Intel 8080 condition codes can be thought of as existing in a 8-bit register.
@@ -32,6 +34,10 @@ typedef struct ConditionCodes {
 typedef struct State8080 {
     uint8_t *memory;
     ConditionCodes flags;
+    // I/O Ports - The 8080 can address up to 256 input devices and 256 output devices,
+    // here are buffers for these devices to read/write from/to
+    uint8_t *inputBuffers;
+    uint8_t *outputBuffers;
     // Registers
     uint8_t    a;    
     uint8_t    b;    

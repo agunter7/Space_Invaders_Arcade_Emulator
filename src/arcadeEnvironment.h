@@ -30,6 +30,16 @@ typedef struct ArcadeState{
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
     SDL_Texture *prerenderTexture; /**< The texture to be drawn on prior to rendering to the game screen */
+    uint8_t readPort0;
+    uint8_t readPort1;
+    uint8_t readPort2;
+    uint8_t readPort3;
+    uint8_t writePort2;  /** Write ports start counting at 2 for some unknown reason
+                             (Source: http://computerarcheology.com/Arcade/SpaceInvaders/Hardware.html) */
+    uint8_t writePort3;
+    uint8_t writePort4;
+    uint8_t writePort5;
+    uint8_t writePort6;
 } ArcadeState;
 
 /**

@@ -217,6 +217,7 @@ uint16_t addWithCheckCY(uint8_t op1, uint8_t op2, State8080 *state);
  For auditing/debugging purposes.
  Simply changes 8080 memory to some value at some address.
  Makes life easier for tracking memory changes.
+ Will not allow changes to ROM (0x0000 - 0x1FFF).
  @param address - 8080 memory address to edit
  @param value - Data to place at desired address
  @param state - 8080 state

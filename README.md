@@ -29,6 +29,20 @@ D) SDL2 (Simple DirectMedia Layer 2) 64-bit Developer Library source files (for 
 
 8080 Disassembler - Use disassemble.sh
 
+# Resources
+1) http://computerarcheology.com/Arcade/SpaceInvaders/
+2) http://www.emulator101.com/welcome.html
+3) http://www.nj7p.info/Manuals/PDFs/Intel/9800153B.pdf
+4) https://altairclone.com/downloads/manuals/8080%20Programmers%20Manual.pdf
+
 # Assumptions
-1) Clock speed is 2 MHz (or 0.5μs clock period). The 8080 is capable of up to 3.125 MHz, but this was seemingly not a common occurrence.
+1) Clock speed is 2 MHz (or 0.5μs clock period). The 8080 is capable of up to 3.125 MHz, but this was seemingly not 
+the case for the Space Invaders Arcade Machine
+
 2) One clock period marks a CPU "state". A single instruction constitutes multiple states throughout its execution.
+This is based off of information from the 8080 programmer's manual.
+
+3) The I/O ports for Space Invaders are separate rather than joined. Documentation from Computer Archeology and Emulator
+101 is quite unclear on this. It could be, for example, that Read Port 2 and Write Port 2 are the same physical port.
+This emulator assumes Read Port 2 and Write Port 2 to be two separate physical entities with their own I/O addresses in
+the 8080's I/O memory.

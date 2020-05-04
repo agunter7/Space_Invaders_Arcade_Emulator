@@ -39,6 +39,8 @@ State8080 *initializeCPU()
     state->memory = malloc(MEMORY_SIZE_8080);  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
     ConditionCodes cc = {0};
     state->flags = cc;
+    state->inputBuffers = malloc(NUM_INPUT_DEVICES);
+    state->outputBuffers = malloc(NUM_OUTPUT_DEVICES);
     state->a = 0;
     state->b = 0;
     state->c = 0;
@@ -62,6 +64,8 @@ State8080 *initializeCPU()
 void destroyCPU(State8080 *state)
 {
     free(state->memory);
+    free(state->inputBuffers);
+    free(state->outputBuffers);
     free(state);
 }
 
