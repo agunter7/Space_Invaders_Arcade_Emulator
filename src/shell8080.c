@@ -903,7 +903,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0x81: 
+        case 0x81:
+            // ADD C
+            // Add C to Accumulator
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
@@ -1221,7 +1223,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
                 state->pc += 1;
                 state->cyclesCompleted += 5;
             }
-            state->pc += instructionSizes[opcode];
             break;
         case 0xC9: 
             // RET
