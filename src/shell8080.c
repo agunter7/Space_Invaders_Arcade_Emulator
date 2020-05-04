@@ -1190,9 +1190,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 2;
             state->cyclesCompleted += 7;
             break;
-        case 0xC7: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xC7:
+            // RST 0
+            RST(0, state);
             break;
         case 0xC8: 
             printInstructionInfo(opcode);
@@ -1237,9 +1237,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xCF: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xCF:
+            // RST 1
+            RST(1, state);
             break;
         case 0xD0: 
             printInstructionInfo(opcode);
@@ -1284,9 +1284,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xD7: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xD7:
+            // RST 2
+            RST(2, state);
             break;
         case 0xD8: 
             printInstructionInfo(opcode);
@@ -1316,9 +1316,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xDF: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xDF:
+            // RST 3
+            RST(3, state);
             break;
         case 0xE0: 
             printInstructionInfo(opcode);
@@ -1358,9 +1358,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 2;
             state->cyclesCompleted += 7;
             break;
-        case 0xE7: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xE7:
+            // RST 4
+            RST(4, state);
             break;
         case 0xE8: 
             printInstructionInfo(opcode);
@@ -1403,9 +1403,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xEF: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xEF:
+            // RST 5
+            RST(5, state);
             break;
         case 0xF0: 
             printInstructionInfo(opcode);
@@ -1441,9 +1441,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xF7: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xF7:
+            // RST 6
+            RST(6, state);
             break;
         case 0xF8: 
             printInstructionInfo(opcode);
@@ -1496,9 +1496,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 2;
             state->cyclesCompleted += 7;
             break;
-        case 0xFF: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xFF:
+            // RST 7
+            RST(7, state);
             break;
 	}
 }

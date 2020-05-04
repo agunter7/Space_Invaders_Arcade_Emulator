@@ -34,6 +34,7 @@ D) SDL2 (Simple DirectMedia Layer 2) 64-bit Developer Library source files (for 
 2) http://www.emulator101.com/welcome.html
 3) http://www.nj7p.info/Manuals/PDFs/Intel/9800153B.pdf
 4) https://altairclone.com/downloads/manuals/8080%20Programmers%20Manual.pdf
+5) http://lazyfoo.net/tutorials/SDL/index.php
 
 # Assumptions
 1) Clock speed is 2 MHz (or 0.5μs clock period). The 8080 is capable of up to 3.125 MHz, but this was seemingly not 
@@ -46,3 +47,8 @@ This is based off of information from the 8080 programmer's manual.
 101 is quite unclear on this. It could be, for example, that Read Port 2 and Write Port 2 are the same physical port.
 This emulator assumes Read Port 2 and Write Port 2 to be two separate physical entities with their own I/O addresses in
 the 8080's I/O memory.
+
+4) Intel 8080 emulator will assume that the arcade machine will not send an interrupt prior to the completion of the 
+last interrupt routine. I.e. the 8080 emulator code does not explicitly make interrupt handling atomic. However,
+the intended effect is achieved regardless as the arcade machine only sends interrupts twice per frame,
+giving the 8080 plenty of time to handle each interrupt completely.

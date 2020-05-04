@@ -67,8 +67,8 @@ void playSpaceInvaders(ArcadeState *arcade)
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
     SDL_Event currentEvent;
+    unsigned int executedCycles = 0;
 
-    unsigned int numInterruptCycles = 0;
     while(SDL_PollEvent(&currentEvent) != 0){
         // Events to check: quit, game input
 
@@ -77,14 +77,17 @@ unsigned int handleGameEvents(ArcadeState *arcade)
             return 1;
         }
 
-        // User inputs become interrupts
-
-        // Process interrupts
-        numInterruptCycles += 0;
+        // User inputs placed inside input ports
     }
 
+    unsigned int numInterruptCycles = 0;
+    // Trigger mid-screen interrupt
+
+
     runForCycles(CYCLES_PER_FRAME - numInterruptCycles, arcade->cpu);
-    logger("Cycles ran\n");
+
+    //Trigger end-of-screen vertical blank interrupt
+
 
     synchronizeIO(arcade);
 
@@ -161,7 +164,7 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
     uint8_t currentByte = 0x00;
     bool currentPixelBit = 0;
     unsigned int byteIndex = 0;
-    unsigned int bitIndexWithinByte = 0;  // MSB index == 7, LSB index == 1
+    unsigned int bitIndexWithinByte = 0;  // MSB index == 7, LSB index == 0
     // top-left pixel = index 0, top-right = index 223, bottom-right = 57,343
     for(unsigned int I_2 = 0; I_2 < numPixels; I_2++){
         // Get the rotated index for the desired bit in VRAM that corresponds with the current pixel

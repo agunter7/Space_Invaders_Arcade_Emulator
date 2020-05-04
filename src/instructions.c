@@ -164,6 +164,32 @@ void ANA_R(uint8_t data, State8080 *state)
     state->cyclesCompleted += 1;
 }
 
+/**
+ * RST n
+ * Restart with subroutine 'n'
+ * PC = PC + 1
+ * memory[sp-1] = PCH
+ * memory[sp-2] = PCL
+ * SP = SP - 2
+ * PC = 8 * n
+ */
+void RST(uint8_t restartNumber, State8080 *state)
+{
+    uint8_t pcHigh;  // program counter higher 8 bits
+    uint8_t pcLow;  // program counter lower 8 bits
+    uint16_t pcToStore = (state->pc) + 1;
+    uint16_t sp = state->sp;
+
+    pcHigh = (uint8_t)(pcToStore >> 8);
+    pcLow = (uint8_t)pcToStore;
+
+    writeMem(sp-1, pcHigh, state);
+    writeMem(sp-2, pcLow, state);
+    state->sp -= 2;
+    state->pc = 8 * restartNumber;
+    state->cyclesCompleted += 11;
+}
+
 void xorWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a ^ data;

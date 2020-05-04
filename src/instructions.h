@@ -119,6 +119,16 @@ void XRA_R(uint8_t data, State8080 *state);
 void ANA_R(uint8_t data, State8080 *state);
 
 /**
+ * A set of 8080 instructions for Restarting with different subroutines:
+ * RST n
+ * n: 0 -> 7
+ *
+ * @param restartNumber - "n", the subroutine number to execute
+ * @param state - The 8080 state
+ */
+void RST(uint8_t restartNumber, State8080 *state);
+
+/**
  Performs the function of XOR with the Accumulator
 
  Flags: z,s,p,cy(reset),ac(reset)
