@@ -89,24 +89,11 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     return 0;
 }
 
-uint8_t *getPixelsRotatedClockwise(uint8_t *counterClockwisePixels)
-{
-    // Each pixel is 1 bit here. 8 bits per memory location.
-    unsigned int numPixelBytes = SCREEN_WIDTH_PIXELS*SCREEN_HEIGHT_PIXELS/8;
-    uint8_t *uprightPixels = malloc(numPixelBytes);
-
-    unsigned int screenWidthBytes = SCREEN_WIDTH_PIXELS/8;
-    unsigned int screenHeightBytes = SCREEN_HEIGHT_PIXELS/8;
-    unsigned int originalPixelIndex = 0;
-    for(unsigned int i = 0; i < numPixelBytes; i++){
-        originalPixelIndex = ((i%screenWidthBytes) + 1)*screenHeightBytes - (floor(i/screenWidthBytes) + 1);
-        logger("original %d  |  new %d\n", originalPixelIndex, i);
-        uprightPixels[i] = counterClockwisePixels[originalPixelIndex];
-    }
-
-    return uprightPixels;
-}
-
+/**
+ * Returns a pointer to the 32-bits-per-pixel data for the current frame to be rendered (by extracting from 8080 VRAM)
+ * @param cpu - The 8080 state
+ * @return Pointer to pixel data, ready to be rendered directly by SDL
+ */
 uint32_t *getCurrentFramePixels(State8080 *cpu)
 {
     // get rotated pixel data from cpu
@@ -132,7 +119,7 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
     // 1) The renderer is 32 bits per pixel
     // 2) The renderer operates top-left pixel to bottom-right pixel, row-by-row.
     //
-    // Fixing problem #1 is easy, we just expand each bit to 32 bits and we can even add RGBA info as we desire .
+    // Fixing problem #1 is easy, we just expand each bit to 32 bits and we can even add RGBA info as we desire.
     // Fixing problem #2 is messy. If we read from our data as currently ordered, we would have the pixel that should
     // be in the bottom-leftmost position ending up rendered in the top-leftmost position.
     // To fix this, we can create a map from the render-order pixel indices to the rotated ones that we have now:
@@ -158,12 +145,14 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
     // Substituting as appropriate yields:
     // I_1 = ((I_2%W)+1)H - (floor(I_2/W)+1);
 
-    // expand pixel bits
+    // Prepare to expand pixels
     // each bit from cpu will become 32 bits (RGBA format)
     // 8 bits for each of: red, green, blue, alpha
     unsigned int numPixels = SCREEN_HEIGHT_PIXELS*SCREEN_WIDTH_PIXELS;
     unsigned int numPixelBytes = numPixels*BYTES_PER_PIXEL;
-    uint32_t *currentFramePixels = malloc(numPixelBytes);
+    uint32_t *currentFramePixels = malloc(numPixelBytes);  // Pointer to data describing 32-bit pixels for current frame
+
+    // Get 32-bit pixel data for entire frame by iterating through pixels to be rendered on screen
     unsigned int I_1 = 0;
     unsigned int W = SCREEN_WIDTH_PIXELS;
     unsigned int H = SCREEN_HEIGHT_PIXELS;
@@ -171,7 +160,6 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
     bool currentPixelBit = 0;
     unsigned int byteIndex = 0;
     unsigned int bitIndexWithinByte = 0;  // MSB index == 7, LSB index == 1
-    // Iterate through the pixels to be rendered on screen.
     // top-left pixel = index 0, top-right = index 223, bottom-right = 57,343
     for(unsigned int I_2 = 0; I_2 < numPixels; I_2++){
         // Get the rotated index for the desired bit in VRAM that corresponds with the current pixel
@@ -193,6 +181,5 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
         }
     }
 
-    // return
     return currentFramePixels;
 }
