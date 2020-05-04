@@ -1211,22 +1211,21 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // RST 0
             RST(0, state);
             break;
-        case 0xC8: 
-            printInstructionInfo(opcode);
+        case 0xC8:
+            // RZ
+            // Return if Zero
+            if(state->flags.zero){
+                RET(state);
+                state->cyclesCompleted += 1;
+            }else{
+                state->pc += 1;
+                state->cyclesCompleted += 5;
+            }
             state->pc += instructionSizes[opcode];
             break;
         case 0xC9: 
             // RET
-            // PC.lo = memory[sp]; PC.hi = memory[sp+1]; sp = sp+2;
-            ;  // avoid case followed by declaration
-            /*char garbage[100];
-            scanf("%s", garbage);*/  // debug
-            uint8_t lowByte = readMem(state->sp, state);
-            uint8_t highByte = readMem((state->sp)+1, state);
-            uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
-            state->sp += 2;
-            state->pc = newValuePC;
-            state->cyclesCompleted += 10;
+            RET(state);
             break;
         case 0xCA: 
             // JZ addr

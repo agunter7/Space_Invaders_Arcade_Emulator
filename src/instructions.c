@@ -190,6 +190,24 @@ void RST(uint8_t restartNumber, State8080 *state)
     state->cyclesCompleted += 11;
 }
 
+/**
+ * RET
+ * Return
+ * PCL = memory[sp]
+ * PCH = memory[sp+1]
+ * SP = SP + 2
+ */
+void RET(State8080 *state)
+{
+    uint8_t lowByte = readMem(state->sp, state);
+    uint8_t highByte = readMem((state->sp)+1, state);
+    uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
+    state->pc = newValuePC;
+
+    state->sp += 2;
+    state->cyclesCompleted += 10;
+}
+
 void xorWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a ^ data;

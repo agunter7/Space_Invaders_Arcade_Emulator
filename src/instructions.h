@@ -129,6 +129,14 @@ void ANA_R(uint8_t data, State8080 *state);
 void RST(uint8_t restartNumber, State8080 *state);
 
 /**
+ * RET
+ * Return to address on stack
+ *
+ * @param state - The 8080 state
+ */
+void RET(State8080 *state);
+
+/**
  Performs the function of XOR with the Accumulator
 
  Flags: z,s,p,cy(reset),ac(reset)
