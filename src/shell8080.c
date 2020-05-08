@@ -1185,9 +1185,16 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xC0: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xC0:
+            // RNZ
+            // Return if Not Zero
+            if(!(state->flags.zero)){
+                RET(state);
+                state->cyclesCompleted += 1;
+            }else{
+                state->pc += 1;
+                state->cyclesCompleted += 5;
+            }
             break;
         case 0xC1: 
             // POP B
