@@ -1288,9 +1288,16 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             logger("RST 1\n");
             RST(1, state);
             break;
-        case 0xD0: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xD0:
+            // RNC
+            // Return if No Carry
+            if(!(state->flags.carry)){
+                RET(state);
+                state->cyclesCompleted += 1;
+            }else{
+                state->pc += 1;
+                state->cyclesCompleted += 5;
+            }
             break;
         case 0xD1: 
             // POP D
