@@ -208,6 +208,29 @@ void RET(State8080 *state)
     state->cyclesCompleted += 10;
 }
 
+/**
+ * ORA r
+ * OR Accumulator with register
+ * Flags: z,s,p,cy(reset),ac(reset)
+ */
+void ORA_R(uint8_t data, State8080 *state)
+{
+    orWithAccumulator(data, state);
+
+    state->pc += 1;
+    state->cyclesCompleted += 4;
+}
+
+void orWithAccumulator(uint8_t data, State8080 *state)
+{
+    state->a = state->a | data;
+
+    checkStandardArithmeticFlags(state->a, state);
+
+    state->flags.carry = 0;
+    state->flags.auxiliaryCarry = 0;
+}
+
 void xorWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a ^ data;

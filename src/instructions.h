@@ -137,6 +137,30 @@ void RST(uint8_t restartNumber, State8080 *state);
 void RET(State8080 *state);
 
 /**
+ * A set of 8080 instructions covering register variants of OR with Accumulator:
+ * 1) ORA A
+ * 2) ORA B
+ * 3) ORA C
+ * 4) ORA D
+ * 5) ORA E
+ * 6) ORA H
+ * 7) ORA L
+ * @param data - The 8 bits to OR with Accumulator
+ * @param state - The 8080 state
+ */
+void ORA_R(uint8_t data, State8080 *state);
+
+/**
+ * Performs the function of OR with the Accumulator
+ *
+ * Flags: z,s,p,cy(reset),ac(reset)
+ *
+ * @param data - The 8 bits to OR with Accumulator
+ * @param state - The 8080 state
+ */
+void orWithAccumulator(uint8_t data, State8080 *state);
+
+/**
  Performs the function of XOR with the Accumulator
 
  Flags: z,s,p,cy(reset),ac(reset)
