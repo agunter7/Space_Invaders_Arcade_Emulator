@@ -513,9 +513,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0x2B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x2B:
+            // DCX H
+            // Decrement HL
+            DCX_RP(&(state->h), &(state->l), state);
             break;
         case 0x2C: 
             printInstructionInfo(opcode);
@@ -563,7 +564,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x35:
             // DCR M
             // Decrement memory
-            // memory[(HL)] = memory[(HL)] - 1
+            // memory[(H)(L)] = memory[(H)(L)] - 1
             // Flags: z,s,p,ac
             ;  // declaration after label workaround
             uint16_t targetAddress = getValueHL(state);
@@ -1445,7 +1446,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xE9:
             // PCHL
-            // Jump to address (HL) by moving (HL) to PC
+            // Jump to address (H)(L) by moving (H)(L) to PC
             // PCH = H
             // PCL = L
             state->pc = getValueHL(state);
@@ -2427,9 +2428,9 @@ void initializeGlobals()
         "SP.hi <- byte 3; SP.lo <- byte 2",
         "(adr) <- A",
         "SP = SP + 1",
-        "(HL) <- (HL)+1",
-        "(HL) <- (HL)-1",
-        "(HL) <- byte 2",
+        "(H)(L) <- (H)(L)+1",
+        "(H)(L) <- (H)(L)-1",
+        "(H)(L) <- byte 2",
         "CY = 1",
         "",
         "HL = HL + SP",
@@ -2445,7 +2446,7 @@ void initializeGlobals()
         "B <- E",
         "B <- H",
         "B <- L",
-        "B <- (HL)",
+        "B <- (H)(L)",
         "B <- A",
         "C <- B",
         "C <- C",
@@ -2453,7 +2454,7 @@ void initializeGlobals()
         "C <- E",
         "C <- H",
         "C <- L",
-        "C <- (HL)",
+        "C <- (H)(L)",
         "C <- A",
         "D <- B",
         "D <- C",
@@ -2461,7 +2462,7 @@ void initializeGlobals()
         "D <- E",
         "D <- H",
         "D <- L",
-        "D <- (HL)",
+        "D <- (H)(L)",
         "D <- A",
         "E <- B",
         "E <- C",
@@ -2469,7 +2470,7 @@ void initializeGlobals()
         "E <- E",
         "E <- H",
         "E <- L",
-        "E <- (HL)",
+        "E <- (H)(L)",
         "E <- A",
         "H <- B",
         "H <- C",
@@ -2477,7 +2478,7 @@ void initializeGlobals()
         "H <- E",
         "H <- H",
         "H <- L",
-        "H <- (HL)",
+        "H <- (H)(L)",
         "H <- A",
         "L <- B",
         "L <- C",
@@ -2485,23 +2486,23 @@ void initializeGlobals()
         "L <- E",
         "L <- H",
         "L <- L",
-        "L <- (HL)",
+        "L <- (H)(L)",
         "L <- A",
-        "(HL) <- B",
-        "(HL) <- C",
-        "(HL) <- D",
-        "(HL) <- E",
-        "(HL) <- H",
-        "(HL) <- L",
+        "(H)(L) <- B",
+        "(H)(L) <- C",
+        "(H)(L) <- D",
+        "(H)(L) <- E",
+        "(H)(L) <- H",
+        "(H)(L) <- L",
         "special",
-        "(HL) <- A",
+        "(H)(L) <- A",
         "A <- B",
         "A <- C",
         "A <- D",
         "A <- E",
         "A <- H",
         "A <- L",
-        "A <- (HL)",
+        "A <- (H)(L)",
         "A <- A",
         "A <- A + B",
         "A <- A + C",
@@ -2509,7 +2510,7 @@ void initializeGlobals()
         "A <- A + E",
         "A <- A + H",
         "A <- A + L",
-        "A <- A + (HL)",
+        "A <- A + (H)(L)",
         "A <- A + A",
         "A <- A + B + CY",
         "A <- A + C + CY",
@@ -2517,7 +2518,7 @@ void initializeGlobals()
         "A <- A + E + CY",
         "A <- A + H + CY",
         "A <- A + L + CY",
-        "A <- A + (HL) + CY",
+        "A <- A + (H)(L) + CY",
         "A <- A + A + CY",
         "A <- A - B",
         "A <- A - C",
@@ -2525,7 +2526,7 @@ void initializeGlobals()
         "A <- A - E",
         "A <- A + H",
         "A <- A - L",
-        "A <- A + (HL)",
+        "A <- A + (H)(L)",
         "A <- A - A",
         "A <- A - B - CY",
         "A <- A - C - CY",
@@ -2533,7 +2534,7 @@ void initializeGlobals()
         "A <- A - E - CY",
         "A <- A - H - CY",
         "A <- A - L - CY",
-        "A <- A - (HL) - CY",
+        "A <- A - (H)(L) - CY",
         "A <- A - A - CY",
         "A <- A & B",
         "A <- A & C",
@@ -2541,7 +2542,7 @@ void initializeGlobals()
         "A <- A & E",
         "A <- A & H",
         "A <- A & L",
-        "A <- A & (HL)",
+        "A <- A & (H)(L)",
         "A <- A & A",
         "A <- A ^ B",
         "A <- A ^ C",
@@ -2549,7 +2550,7 @@ void initializeGlobals()
         "A <- A ^ E",
         "A <- A ^ H",
         "A <- A ^ L",
-        "A <- A ^ (HL)",
+        "A <- A ^ (H)(L)",
         "A <- A ^ A",
         "A <- A | B",
         "A <- A | C",
@@ -2557,7 +2558,7 @@ void initializeGlobals()
         "A <- A | E",
         "A <- A | H",
         "A <- A | L",
-        "A <- A | (HL)",
+        "A <- A | (H)(L)",
         "A <- A | A",
         "A - B",
         "A - C",
@@ -2565,7 +2566,7 @@ void initializeGlobals()
         "A - E",
         "A - H",
         "A - L",
-        "A - (HL)",
+        "A - (H)(L)",
         "A - A",
         "if NZ; RET",
         "C <- (sp); B <- (sp+1); sp <- sp+2",

@@ -145,10 +145,25 @@ void RET(State8080 *state);
  * 5) ORA E
  * 6) ORA H
  * 7) ORA L
+ *
  * @param data - The 8 bits to OR with Accumulator
  * @param state - The 8080 state
  */
 void ORA_R(uint8_t data, State8080 *state);
+
+/**
+ * A set of 8080 instructions for decrementing register pairs:
+ * 1) DCX B
+ * 2) DCX D
+ * 3) DCX H
+ *
+ * Flags: none
+ *
+ * @param highReg - Higher order bits register
+ * @param lowReg - Lower order bits register
+ * @param state - The 8080 state
+ */
+void DCX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
 
 /**
  * Performs the function of OR with the Accumulator

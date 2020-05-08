@@ -221,6 +221,25 @@ void ORA_R(uint8_t data, State8080 *state)
     state->cyclesCompleted += 4;
 }
 
+/**
+ * DCX rp
+ * Decrement register pair
+ * (rh)(rl) = (rh)(rl) - 1
+ */
+void DCX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
+{
+    // Concatenate pair and decrement
+    uint16_t pairValue = ((uint16_t)(*highReg))<<8 | (uint16_t)(*lowReg);
+    pairValue -= 1;
+
+    // Store result in original, separated registers
+    *highReg = (uint8_t)((pairValue & 0xff00)>>8);
+    *lowReg = (uint8_t)(pairValue & 0x00ff);
+
+    state->pc += 1;
+    state->cyclesCompleted += 5;
+}
+
 void orWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a | data;
