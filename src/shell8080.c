@@ -560,12 +560,23 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0x35: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x35:
+            // DCR M
+            // Decrement memory
+            // memory[(HL)] = memory[(HL)] - 1
+            // Flags: z,s,p,ac
+            ;  // declaration after label workaround
+            uint16_t targetAddress = getValueHL(state);
+            uint16_t oldMemValue = readMem(targetAddress, state);
+            uint16_t newMemValue = addWithCheckAC(oldMemValue, (uint8_t)(-1), state);
+            writeMem(targetAddress, newMemValue, state);
+            checkStandardArithmeticFlags(newMemValue, state);
+            state->pc += 1;
+            state->cyclesCompleted += 10;
             break;
         case 0x36: 
             // MVI M; D8
+            // Move 8-bit immediate to memory
             // memory[(H)(L)] = D8
             moveDataToHLMemory(operands[0], state);
             state->pc += 2;
