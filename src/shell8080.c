@@ -572,8 +572,11 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 7;
             break;
         case 0x37: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // STC
+            // Set Carry flag
+            state->flags.carry = 1;
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x38: 
             printInstructionInfo(opcode);
