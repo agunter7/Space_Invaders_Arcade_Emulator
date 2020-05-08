@@ -269,6 +269,11 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint16_t result = 0;  // For temporarily storing computational results losslessly
     uint8_t resultByte = 0;  // For temporarily storing 8-bit results
     char garbage[100];  // For reading from scanf, helps debugging
+
+    // variable declaration for usage in some cases of switch
+    uint8_t tempL;  // A temporary place to hold the value of the L register
+    uint8_t tempH;  // A temporary place to hold the value of the H register
+
     switch(opcode){
         case 0x00:
             // NOP
@@ -1363,9 +1368,20 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xE3: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xE3:
+            // XTHL
+            // Exchange stack top with H and L
+            // L <-> memory[SP]
+            // H <-> memory[SP+1]
+            ;  // declaration after label workaround
+            tempL = state->l;
+            tempH = state->h;
+            state->l = readMem(state->sp, state);
+            state->h = readMem((state->sp)+1, state);
+            writeMem(state->sp, tempL, state);
+            writeMem((state->sp)+1, tempH, state);
+            state->pc += 1;
+            state-> cyclesCompleted += 18;
             break;
         case 0xE4: 
             printInstructionInfo(opcode);
@@ -1410,8 +1426,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // H = D; D = H 
             // L = E; E = L
             ;  // label-declaration workaround
-            uint8_t tempH = state->h;
-            uint8_t tempL = state->l;
+            tempH = state->h;
+            tempL = state->l;
             
             state->h = state->d;
             state->l = state->e;
