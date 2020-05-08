@@ -1083,8 +1083,11 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             ANA_R(state->a, state);
             break;
         case 0xA8: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // XRA B
+            // Exclusive OR Accumulator with Register B
+            // A = A XOR B
+            // Flags: z,s,p,cy(reset),ac(reset);
+            XRA_R(state->b, state);
             break;
         case 0xA9: 
             printInstructionInfo(opcode);
