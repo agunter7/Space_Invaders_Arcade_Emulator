@@ -1412,9 +1412,13 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xE9: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xE9:
+            // PCHL
+            // Jump to address (HL) by moving (HL) to PC
+            // PCH = H
+            // PCL = L
+            state->pc = getValueHL(state);
+            state->cyclesCompleted += 5;
             break;
         case 0xEA: 
             printInstructionInfo(opcode);
