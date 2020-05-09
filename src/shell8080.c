@@ -1376,9 +1376,16 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0xDA: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xDA:
+            // JC addr
+            // Jump to address if carry
+            // if cy; pc = addr
+            if(state->flags.carry){
+                JMP(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 10;
+            }
             break;
         case 0xDB: 
             // IN
