@@ -477,8 +477,14 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 10;
             break;
         case 0x22: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // SHLD addr
+            // Store H and L into memory directly
+            // memory[addr] = L
+            // memory[addr+1] = H
+            writeMem(orderedOperands, state->l, state);
+            writeMem(orderedOperands+1, state->h, state);
+            state->pc += 3;
+            state->cyclesCompleted += 16;
             break;
         case 0x23: 
             // INX H
