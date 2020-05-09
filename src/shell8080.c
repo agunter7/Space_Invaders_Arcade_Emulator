@@ -1619,8 +1619,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0xFA: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // JM Addr
+            // Jump to address if minus
+            // if M, pc = addr
+            if(state->flags.sign){
+                JMP(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 10;
+            }
             break;
         case 0xFB: 
             // EI
