@@ -1381,8 +1381,14 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0xDB: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // IN
+            // Read from input port
+            // A = data
+            ;  // declaration after label workaround
+            uint8_t portNumber = operands[0];
+            state->a = state->inputBuffers[portNumber];
+            state->pc += 2;
+            state->cyclesCompleted += 10;
             break;
         case 0xDC: 
             printInstructionInfo(opcode);
