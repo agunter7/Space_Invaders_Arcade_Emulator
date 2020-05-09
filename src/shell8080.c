@@ -951,9 +951,19 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0x86: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x86:
+            // ADD M
+            // Add memory to Accumulator
+            // A = A + memory[(H)(L)]
+            // Flags: z,s,p,cy,ac
+            ;  // declaration after label workaround
+            uint8_t tempA = state->a;
+            moveDataFromHLMemory(&(state->a), state);  // Accumulator has memory value now
+            addWithCheckAC(state->a, tempA, state);  // Do not store value, just for flag check
+            state->a = addWithCheckCY(state->a, tempA, state);
+            checkStandardArithmeticFlags(state->a, state);
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x87: 
             printInstructionInfo(opcode);
