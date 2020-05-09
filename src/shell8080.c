@@ -662,9 +662,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // MOV B, M
             // Move from memory into register B
             // B = memory[(H)(L)]
-            moveDataFromHLMemory(&(state->b), state);
-            state->pc += 1;
-            state->cyclesCompleted += 7;
+            MOV_R_M(&(state->b), state);
             break;
         case 0x47: 
             printInstructionInfo(opcode);
@@ -695,8 +693,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0x4E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV C, M
+            // Move from memory into register C
+            MOV_R_M(&(state->c), state);
             break;
         case 0x4F:
             // MOV C, A
@@ -733,9 +732,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // MOV D, M
             // Move from memory into register D
             // D = memory[(H)(L)]
-            moveDataFromHLMemory(&(state->d), state);
-            state->pc += 1;
-            state->cyclesCompleted += 7;
+            MOV_R_M(&(state->d), state);
             break;
         case 0x57: 
             printInstructionInfo(opcode);
@@ -769,9 +766,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // MOV E, M
             // Move from memory into register E
             // E = memory[(H)(L)]
-            moveDataFromHLMemory(&(state->e), state);
-            state->pc += 1;
-            state->cyclesCompleted += 7;
+            MOV_R_M(&(state->e), state);
             break;
         case 0x5F: 
             printInstructionInfo(opcode);
@@ -805,9 +800,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // MOV H, M
             // Move from memory into register H
             // H = memory[(H)(L)]
-            moveDataFromHLMemory(&(state->h), state);
-            state->pc += 1;
-            state->cyclesCompleted += 7;
+            MOV_R_M(&(state->h), state);
             break;
         case 0x67: 
             // MOV H, A
@@ -926,9 +919,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // MOV A, M
             // Move from memory into register A
             // A = memory[(H)(L)]
-            moveDataFromHLMemory(&(state->a), state);
-            state->pc += 1;
-            state->cyclesCompleted += 7;
+            MOV_R_M(&(state->a), state);
             break;
         case 0x7F: 
             printInstructionInfo(opcode);

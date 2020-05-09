@@ -229,6 +229,16 @@ void INR_R(uint8_t *reg, State8080 *state);
 void DCR_R(uint8_t *reg, State8080 *state);
 
 /**
+ * A set of 8080 instructions for moving data from memory into a register:
+ * MOV R, M
+ * R: A,B,C,D,E,H,L
+ *
+ * @param destReg - The destination register
+ * @param state - The 8080 state
+ */
+void MOV_R_M(uint8_t *destReg, State8080 *state);
+
+/**
  * Performs the function of OR with the Accumulator
  *
  * Flags: z,s,p,cy(reset),ac(reset)

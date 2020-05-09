@@ -297,6 +297,19 @@ void DCR_R(uint8_t *reg, State8080 *state)
     state->pc += 5;
 }
 
+/**
+ * MOV R, M
+ * Move from memory into register R
+ * R = memory[(H)(L)]
+ */
+void MOV_R_M(uint8_t *destReg, State8080 *state)
+{
+    moveDataFromHLMemory(destReg, state);
+
+    state->pc += 1;
+    state->cyclesCompleted += 7;
+}
+
 void orWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a | data;
