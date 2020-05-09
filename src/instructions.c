@@ -271,13 +271,30 @@ void MVI_R(uint8_t *destReg, uint8_t value, State8080 *state)
  * INR R
  * Increment Register
  * R = R + 1
+ * Flags: z,s,p,ac
  */
 void INR_R(uint8_t *reg, State8080 *state)
 {
-    *reg += 1;
+    *reg = addWithCheckAC(*reg, (uint8_t)1, state);
+    checkStandardArithmeticFlags(*reg, state);
 
     state->pc += 1;
     state->cyclesCompleted += 5;
+}
+
+/**
+ * DCR R
+ * Decrement Register
+ * R = R - 1
+ * Flags: z,s,p,ac
+ */
+void DCR_R(uint8_t *reg, State8080 *state)
+{
+    *reg = addWithCheckAC(*reg, (uint8_t)(-1), state);
+    checkStandardArithmeticFlags(*reg, state);
+
+    state->pc += 1;
+    state->pc += 5;
 }
 
 void orWithAccumulator(uint8_t data, State8080 *state)

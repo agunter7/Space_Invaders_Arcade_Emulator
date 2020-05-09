@@ -204,10 +204,29 @@ void MVI_R(uint8_t *destReg, uint8_t value, State8080 *state);
  * 6) INR H
  * 7) INR L
  *
+ * Flags: z,s,p,ac
+ *
  * @param reg - Target register
  * @param state - The 8080 state
  */
 void INR_R(uint8_t *reg, State8080 *state);
+
+/**
+ * A set of 8080 instructions for decrementing a register's value:
+ * 1) DCR A
+ * 2) DCR B
+ * 3) DCR C
+ * 4) DCR D
+ * 5) DCR E
+ * 6) DCR H
+ * 7) DCR L
+ *
+ * Flags: z,s,p,ac
+ *
+ * @param reg - Target register
+ * @param state - The 8080 state
+ */
+void DCR_R(uint8_t *reg, State8080 *state);
 
 /**
  * Performs the function of OR with the Accumulator

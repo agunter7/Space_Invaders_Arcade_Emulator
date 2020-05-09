@@ -404,8 +404,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0x15: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DCR D
+            // Decrement register D
+            // D = D - 1
+            DCR_R(&(state->d), state);
             break;
         case 0x16:
             // MVI D, D8
