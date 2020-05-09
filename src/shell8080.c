@@ -959,8 +959,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 5;
             break;
         case 0x7D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV A, L
+            // Move the content of register L into register A
+            // A = L
+            MOV_R1_R2(&(state->a), &(state->l), state);
             break;
         case 0x7E: 
             // MOV A, M
