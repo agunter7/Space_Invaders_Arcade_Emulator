@@ -1208,8 +1208,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0xB4: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // ORA H
+            // OR Accumulator with register H
+            ORA_R(state->h, state);
             break;
         case 0xB5: 
             printInstructionInfo(opcode);
