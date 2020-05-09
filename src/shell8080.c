@@ -551,9 +551,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Double-precision Add HL to HL
             DAD_RP(state->h, state->l, state);
             break;
-        case 0x2A: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x2A:
+            // LHLD addr
+            // Load address into H and L directly
+            // L = memory[addr]
+            // H = memory[addr+1]
+            state->l = readMem(orderedOperands, state);
+            state->h = readMem(orderedOperands+1, state);
+            state->pc += 3;
+            state->cyclesCompleted += 16;
             break;
         case 0x2B:
             // DCX H
@@ -882,8 +888,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 5;
             break;
         case 0x70: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV M, B
+            // Move the contents of register B into memory
+            MOV_M_R(state->b, state);
             break;
         case 0x71: 
             printInstructionInfo(opcode);

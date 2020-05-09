@@ -310,6 +310,19 @@ void MOV_R_M(uint8_t *destReg, State8080 *state)
     state->cyclesCompleted += 7;
 }
 
+/**
+ * MOV M, R
+ * Move from register R into memory
+ * memory[(H)(L)] = R
+ */
+void MOV_M_R(uint8_t data, State8080 *state)
+{
+    moveDataToHLMemory(data, state);
+
+    state->pc += 1;
+    state->cyclesCompleted += 7;
+}
+
 void orWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a | data;
