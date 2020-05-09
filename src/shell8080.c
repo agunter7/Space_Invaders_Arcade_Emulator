@@ -407,9 +407,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;
-        case 0x16: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x16:
+            // MVI D, D8
+            // Move immediate into register D
+            MVI_R(&(state->d), operands[0], state);
             break;
         case 0x17: 
             printInstructionInfo(opcode);
@@ -581,7 +582,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // memory[(H)(L)] = D8
             moveDataToHLMemory(operands[0], state);
             state->pc += 2;
-            state->cyclesCompleted += 7;
+            state->cyclesCompleted += 10;
             break;
         case 0x37: 
             // STC

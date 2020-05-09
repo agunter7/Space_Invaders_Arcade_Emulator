@@ -179,6 +179,22 @@ void DCX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
 void MOV_R1_R2(uint8_t *r1, uint8_t *r2, State8080 *state);
 
 /**
+ * A set of 8080 instructions for moving immediate data into a register:
+ * 1) MVI A, D8
+ * 2) MVI B, D8
+ * 3) MVI C, D8
+ * 4) MVI D, D8
+ * 5) MVI E, D8
+ * 6) MVI H, D8
+ * 7) MVI L, D8
+ *
+ * @param destReg - destination register
+ * @param value - immediate value
+ * @param state - The 8080 state
+ */
+void MVI_R(uint8_t *destReg, uint8_t value, State8080 *state);
+
+/**
  * Performs the function of OR with the Accumulator
  *
  * Flags: z,s,p,cy(reset),ac(reset)

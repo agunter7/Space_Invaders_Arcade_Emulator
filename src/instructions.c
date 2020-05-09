@@ -211,6 +211,7 @@ void RET(State8080 *state)
 /**
  * ORA r
  * OR Accumulator with register
+ * A = A OR r
  * Flags: z,s,p,cy(reset),ac(reset)
  */
 void ORA_R(uint8_t data, State8080 *state)
@@ -251,6 +252,19 @@ void MOV_R1_R2(uint8_t *destReg, uint8_t *sourceReg, State8080 *state)
 
     state->pc += 1;
     state->cyclesCompleted += 5;
+}
+
+/**
+ * MVI r, d8
+ * Move 8-bit immediate into register r
+ * r = d8
+ */
+void MVI_R(uint8_t *destReg, uint8_t value, State8080 *state)
+{
+    *destReg = value;
+
+    state->pc += 2;
+    state->cyclesCompleted += 7;
 }
 
 void orWithAccumulator(uint8_t data, State8080 *state)
