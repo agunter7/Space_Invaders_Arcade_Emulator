@@ -298,8 +298,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0x04: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // INR B
+            // Increment register B
+            INR_R(&(state->b), state);
             break;
         case 0x05: 
             // DCR B
