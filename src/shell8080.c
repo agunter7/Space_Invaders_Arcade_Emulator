@@ -1288,8 +1288,14 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0xCC: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CZ addr
+            // Call address if zero
+            if(state->flags.zero){
+                CALL(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 5;
+            }
             break;
         case 0xCD:
             CALL(orderedOperands, state);
