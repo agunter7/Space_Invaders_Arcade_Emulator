@@ -806,8 +806,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 7;
             break;
         case 0x67: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV H, A
+            // Move Accumulator content into register H
+            MOV_R1_R2(&(state->h), &(state->a), state);
             break;
         case 0x68: 
             printInstructionInfo(opcode);

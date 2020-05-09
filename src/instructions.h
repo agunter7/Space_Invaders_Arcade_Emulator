@@ -166,6 +166,19 @@ void ORA_R(uint8_t data, State8080 *state);
 void DCX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
 
 /**
+ * A set of 8080 instructions for moving data from one register to another
+ *
+ * r2 = r1
+ * r1: A,B,C,D,E,H,L
+ * r2: A,B,C,D,E,H,L
+ *
+ * @param destReg - destination register
+ * @param sourceReg - source register
+ * @param state - The 8080 state
+ */
+void MOV_R1_R2(uint8_t *r1, uint8_t *r2, State8080 *state);
+
+/**
  * Performs the function of OR with the Accumulator
  *
  * Flags: z,s,p,cy(reset),ac(reset)

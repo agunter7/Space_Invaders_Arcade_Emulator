@@ -240,6 +240,19 @@ void DCX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
     state->cyclesCompleted += 5;
 }
 
+/**
+ * MOV r1, r2
+ * Move the content of r2 into r1
+ * r1 = r2
+ */
+void MOV_R1_R2(uint8_t *destReg, uint8_t *sourceReg, State8080 *state)
+{
+    *destReg = *sourceReg;
+
+    state->pc += 1;
+    state->cyclesCompleted += 5;
+}
+
 void orWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a | data;
