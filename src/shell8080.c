@@ -499,9 +499,47 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 2;
             state->cyclesCompleted += 7;
             break;
-        case 0x27: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x27:
+            // DAA
+            // Decimal Adjust Accumulator
+            // 1) IF Accumulator's lower nibble > 9
+            //    OR auxiliary carry == 1
+            //    THEN Accumulator is incremented by 6
+            // 2) IF Accumulator's upper nibble > 9
+            //    OR normal carry == 1
+            //    THEN Accumulator's upper nibble is incremented by 6
+            // Flags: z,s,p,cy,ac
+            // IF a carry out of lower nibble occurs in step 1
+            // THEN set auxiliary carry
+            // ELSE reset auxiliary carry
+            // IF a carry out of upper nibble occurs in step 2
+            // THEN set carry
+            // ELSE carry unaffected
+            ;  // declaration after label workaround
+            uint8_t lowerNibble = state->a & 0x0f;
+            // Step 1
+            if(lowerNibble > 9 || state->flags.auxiliaryCarry == 1){
+                state->a = (uint8_t)addWithCheckAC(state->a, 0x06, state);
+            }else{
+                state->flags.auxiliaryCarry = 0;
+            }
+            // Step 2
+            uint8_t upperNibble = (state->a)>>4;
+            if(upperNibble > 9 || state->flags.carry == 1){
+                upperNibble += 6;
+                // Perform carry check
+                if(upperNibble > 0x0f){
+                    state->flags.carry = 1;
+                }
+                // Place upper nibble back into Accumulator
+                upperNibble = upperNibble<<4;
+                state->a = state->a & 0x0f;
+                state->a = state->a | upperNibble;
+            }
+            // Do standard arithmetic instruction stuff
+            checkStandardArithmeticFlags(state->a, state);
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x28: 
             printInstructionInfo(opcode);
