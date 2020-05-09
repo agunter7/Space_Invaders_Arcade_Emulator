@@ -195,6 +195,21 @@ void MOV_R1_R2(uint8_t *r1, uint8_t *r2, State8080 *state);
 void MVI_R(uint8_t *destReg, uint8_t value, State8080 *state);
 
 /**
+ * A set of 8080 instructions for incrementing a register's value:
+ * 1) INR A
+ * 2) INR B
+ * 3) INR C
+ * 4) INR D
+ * 5) INR E
+ * 6) INR H
+ * 7) INR L
+ *
+ * @param reg - Target register
+ * @param state - The 8080 state
+ */
+void INR_R(uint8_t *reg, State8080 *state);
+
+/**
  * Performs the function of OR with the Accumulator
  *
  * Flags: z,s,p,cy(reset),ac(reset)

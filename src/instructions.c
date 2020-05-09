@@ -267,6 +267,19 @@ void MVI_R(uint8_t *destReg, uint8_t value, State8080 *state)
     state->cyclesCompleted += 7;
 }
 
+/**
+ * INR R
+ * Increment Register
+ * R = R + 1
+ */
+void INR_R(uint8_t *reg, State8080 *state)
+{
+    *reg += 1;
+
+    state->pc += 1;
+    state->cyclesCompleted += 5;
+}
+
 void orWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a | data;
