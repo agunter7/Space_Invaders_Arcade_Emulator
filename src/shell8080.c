@@ -453,8 +453,11 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0x1D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DCR E
+            // Decrement register E
+            // E = E - 1
+            // Flags: z,s,p,cy,ac
+            DCR_R(&(state->e), state);
             break;
         case 0x1E: 
             printInstructionInfo(opcode);
