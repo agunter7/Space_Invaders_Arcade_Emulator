@@ -716,8 +716,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             MOV_R_M(&(state->b), state);
             break;
         case 0x47: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV B, A
+            // Move content of Accumulator into register B
+            MOV_R1_R2(&(state->b), &(state->a), state);
             break;
         case 0x48: 
             printInstructionInfo(opcode);
