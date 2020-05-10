@@ -666,8 +666,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0x39: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DAD SP
+            // Double Precision Add Stack Pointer to HL
+            // (H)(L) = (H)(L) + SP
+            DAD_RP((state->sp)>>8, (state->sp)&0x00ff, state);  // Separate SP into high and low bits
             break;
         case 0x3A: 
             // LDA addr
