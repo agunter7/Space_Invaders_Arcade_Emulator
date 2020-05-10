@@ -672,8 +672,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             INR_R(&(state->a), state);
             break;
         case 0x3D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DCR A
+            // Decrement Accumulator
+            // A = A - 1
+            DCR_R(&(state->a), state);
             break;
         case 0x3E: 
             // MVI A, D8

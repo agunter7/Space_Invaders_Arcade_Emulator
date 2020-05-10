@@ -272,6 +272,7 @@ void MVI_R(uint8_t *destReg, uint8_t value, State8080 *state)
  * Increment Register
  * R = R + 1
  * Flags: z,s,p,ac
+ * TODO: Check that this is correct AC check behaviour
  */
 void INR_R(uint8_t *reg, State8080 *state)
 {
@@ -287,6 +288,7 @@ void INR_R(uint8_t *reg, State8080 *state)
  * Decrement Register
  * R = R - 1
  * Flags: z,s,p,ac
+ * TODO: Check that this is correct AC check behaviour
  */
 void DCR_R(uint8_t *reg, State8080 *state)
 {
