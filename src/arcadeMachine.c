@@ -36,32 +36,32 @@ void playSpaceInvaders(ArcadeState *arcade)
     }*/
     SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_RGBA32,
             SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS);
-    logger("Entering loop\n");
+    //logger("Entering loop\n");
     while (!quitGame){
         //Start timer
 
-        logger("Attempting to handle game events\n");
+        //logger("Attempting to handle game events\n");
         quitGame = handleGameEvents(arcade);
-        logger("Handled game events\n");
+        //logger("Handled game events\n");
 
         // Clear screen
         SDL_RenderClear(arcade->renderer);
-        logger("Cleared screen\n");
+        //logger("Cleared screen\n");
 
         // Load/render window image
         SDL_UpdateTexture(texture, NULL, getCurrentFramePixels(arcade->cpu), SCREEN_WIDTH_PIXELS*BYTES_PER_PIXEL);
-        logger("Updated texture\n");
+        //logger("Updated texture\n");
         SDL_RenderCopy(arcade->renderer, texture, NULL, NULL);
-        logger("Copied texture to renderer\n");
+        //logger("Copied texture to renderer\n");
 
         // Play any sounds
 
         // Update screen
         SDL_RenderPresent(arcade->renderer);
-        logger("Presented renderer\n");
+        //logger("Presented renderer\n");
 
         // If frame time < (1/60)s, then stall
-        logger("Finished a main loop\n");
+        //logger("Finished a main loop\n");
     }
 }
 
@@ -85,9 +85,9 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     // Screen width is used here, rather than height, as the Space Invaders screen is rotated 90degrees and is
     // thus rendering vertical lines rather than horizontal lines
     unsigned int numCyclesFirstHalf = CYCLES_PER_FRAME*((float)MIDSCREEN_INTERRUPT_LINE/(float)SCREEN_WIDTH_PIXELS);
-    logger("Attempting first half cycles\n");
+    //logger("Attempting first half cycles\n");
     runForCycles(numCyclesFirstHalf, arcade->cpu);
-    logger("Finished first half cycles\n");
+    //logger("Finished first half cycles\n");
 
     // Trigger mid-screen interrupt
     generateInterrupt(0x01, arcade->cpu);  // mid-screen
@@ -96,7 +96,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     // Emulate cpu up to the end of the frame
     unsigned int numCyclesSecondHalf = CYCLES_PER_FRAME-numCyclesFirstHalf;
     runForCycles(numCyclesSecondHalf, arcade->cpu);
-    logger("Finished full frame cycles\n");
+    //logger("Finished full frame cycles\n");
 
     //Trigger end-of-screen vertical blank interrupt
     generateInterrupt(0x02, arcade->cpu);

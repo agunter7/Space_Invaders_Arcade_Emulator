@@ -249,6 +249,18 @@ void MOV_R_M(uint8_t *destReg, State8080 *state);
 void MOV_M_R(uint8_t data, State8080 *state);
 
 /**
+ * A set of 8080 instructions for adding registers to the Accumulator:
+ * ADD R
+ * R: A,B,C,D,E,H,L
+ *
+ * Flags: z,s,p,cy,ac
+ *
+ * @param data - Value to add to accumulator
+ * @param state - The 8080 state
+ */
+void ADD_R(uint8_t data, State8080 *state);
+
+/**
  * Subtracts a value from the Accumulator without changing the Accumulator.
  * Sets flags based on 8080 subtraction logic.
  *
@@ -316,6 +328,13 @@ uint16_t getValueHL(State8080 *state);
 uint16_t getValueDE(State8080 *state);
 
 /**
+ Returns the 16-bit value yielded by concatenating the 'b' (high) register with the 'c' (low) register
+ @param state - The 8080 state
+ @return - Address bits in order (b)(c)
+*/
+uint16_t getValueBC(State8080 *state);
+
+/**
  For the set of register-based MOV-variants
  Copy data to an 8080 memory location determined by the contents of the H-L register pair
  @param data - Data to move
@@ -331,6 +350,13 @@ void moveDataToHLMemory(uint8_t data, State8080 *state);
  @param
  */
 void moveDataFromHLMemory(uint8_t *destination, State8080 *state);
+
+/**
+ Copy data to an 8080 memory location determined by the contents of the B-C register pair
+ @param data - Data to move
+ @param state - The 8080 state
+*/
+void moveDataToBCMemory(uint8_t data, State8080 *state);
 
 /**
  Performs subtraction of two numbers while setting/resetting the carry flag.

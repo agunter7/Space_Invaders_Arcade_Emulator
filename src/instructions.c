@@ -36,7 +36,6 @@ void CALL(uint16_t address, State8080 *state)
     state->sp -= 2;
     state->pc = address;
     state->cyclesCompleted += 17;
-    logger("Completed CALL\n");
 }
 
 /**
@@ -326,6 +325,22 @@ void MOV_M_R(uint8_t data, State8080 *state)
     state->cyclesCompleted += 7;
 }
 
+/**
+ * ADD R
+ * Add Register to Accumulator
+ * A = A + R
+ * Flags: z,s,p,cy,ac
+ */
+void ADD_R(uint8_t data, State8080 *state)
+{
+    addWithCheckAC(state->a, data, state);
+    state->a = addWithCheckCY(state->a, data, state);
+    checkStandardArithmeticFlags(state->a, state);
+
+    state->pc += 1;
+    state->cyclesCompleted += 4;
+}
+
 uint16_t compareWithAccumulator(uint8_t subtrahend, State8080 *state)
 {
     addWithCheckAC(state->a, twosComplement(subtrahend), state);  // Do not store result, just check AC
@@ -348,7 +363,7 @@ void orWithAccumulator(uint8_t data, State8080 *state)
     checkStandardArithmeticFlags(state->a, state);
 
     state->flags.carry = 0;
-    state->flags.auxiliaryCarry = 0;
+    state->flags.auxiliaryCarry = 0; // TODO: Check this
 }
 
 void xorWithAccumulator(uint8_t data, State8080 *state)
@@ -357,7 +372,7 @@ void xorWithAccumulator(uint8_t data, State8080 *state)
 
     checkStandardArithmeticFlags(state->a, state);
     state->flags.carry = 0;
-    state->flags.auxiliaryCarry = 0;
+    state->flags.auxiliaryCarry = 0; // TODO: Check this
 }
 
 /**
@@ -369,7 +384,7 @@ void andWithAccumulator(uint8_t data, State8080 *state)
 
     checkStandardArithmeticFlags(state->a, state);
     state->flags.carry = 0;
-    state->flags.auxiliaryCarry = 0;  // No clue if hard-resetting is correct, but I can't see how it would be set by AND
+    state->flags.auxiliaryCarry = 0;  // TODO: No clue if hard-resetting is correct, but I can't see how it would be set by AND
 }
 
 void moveDataToHLMemory(uint8_t data, State8080 *state)
@@ -384,6 +399,12 @@ void moveDataFromHLMemory(uint8_t *destination, State8080 *state)
     *destination = readMem(sourceAddress, state);
 }
 
+void moveDataToBCMemory(uint8_t data, State8080 *state)
+{
+    uint16_t destinationAddress = getValueBC(state);
+    writeMem(destinationAddress, data, state);
+}
+
 uint16_t getValueHL(State8080 *state)
 {
     uint16_t highBits = (((uint16_t)(state->h))<<8);
@@ -395,6 +416,13 @@ uint16_t getValueDE(State8080 *state)
 {
     uint16_t highBits = (((uint16_t)(state->d))<<8);
     uint16_t lowBits = (uint16_t)(state->e);
+    return (highBits | lowBits);
+}
+
+uint16_t getValueBC(State8080 *state)
+{
+    uint16_t highBits = (((uint16_t)(state->b))<<8);
+    uint16_t lowBits = (uint16_t)(state->c);
     return (highBits | lowBits);
 }
 

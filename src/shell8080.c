@@ -264,18 +264,6 @@ void printInstructionInfo(uint8_t opcode)
  */
 void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
-    logger("Executing instruction #%d\n", numExec);
-    logger("Executing 0x%02x\n", opcode);
-    if(numExec == 5565){
-        // Print some status info
-        logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
-        logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
-               state->a, state->b, state->c, state->d, state->e, state->h, state->l);
-        logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state->pc, state->sp);
-        logger("%1x%1x%1x%1x%1x\n",
-               state->flags.zero, state->flags.sign, state->flags.parity,
-               state->flags.auxiliaryCarry, state->flags.carry);
-    }
     uint16_t orderedOperands = ((uint16_t)operands[1] << 8) | (uint16_t)operands[0];  // Convert from little-endian
     uint16_t result = 0;  // For temporarily storing computational results losslessly
     uint8_t resultByte = 0;  // For temporarily storing 8-bit results
@@ -300,9 +288,12 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 3;
             state->cyclesCompleted += 10;
             break;
-        case 0x02: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x02:
+            // STAX B
+            // Store accumulator in memory location (B)(C)
+            moveDataToBCMemory(state->a, state);
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x03: 
             // INX B
@@ -1009,8 +1000,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x81:
             // ADD C
             // Add C to Accumulator
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            ADD_R(state->c, state);
             break;
         case 0x82: 
             printInstructionInfo(opcode);
@@ -1379,7 +1369,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             }
             break;
         case 0xCD:
-            logger("Calling 0x%04x\n", orderedOperands);
             CALL(orderedOperands, state);
             break;
         case 0xCE: 
