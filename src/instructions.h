@@ -249,6 +249,29 @@ void MOV_R_M(uint8_t *destReg, State8080 *state);
 void MOV_M_R(uint8_t data, State8080 *state);
 
 /**
+ * Subtracts a value from the Accumulator without changing the Accumulator.
+ * Sets flags based on 8080 subtraction logic.
+ *
+ * Flags: z,s,p,cy,ac
+ *
+ * @param subtrahend - Value to subtract from Accumulator
+ * @param state - The 8080 state
+ */
+uint16_t compareWithAccumulator(uint8_t subtrahend, State8080 *state);
+
+/**
+ * Wrapper function for subtracting a value form the Accumulator and changing
+ * the Accumulator's value.
+ * Sets flags based on 8080 subtraction logic.
+ *
+ * Flags: z,s,p,cy,ac
+ *
+ * @param subtrahend - Value to subtract from Accumulator
+ * @param state - The 8080 state
+ */
+void subFromAccumulator(uint8_t subtrahend, State8080 *state);
+
+/**
  * Performs the function of OR with the Accumulator
  *
  * Flags: z,s,p,cy(reset),ac(reset)

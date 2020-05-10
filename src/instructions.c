@@ -323,6 +323,21 @@ void MOV_M_R(uint8_t data, State8080 *state)
     state->cyclesCompleted += 7;
 }
 
+uint16_t compareWithAccumulator(uint8_t subtrahend, State8080 *state)
+{
+    addWithCheckAC(state->a, twosComplement(subtrahend), state);  // Do not store result, just check AC
+    uint16_t result = subWithCheckCY(state->a, subtrahend, state);
+    uint8_t resultByte = (uint8_t)(result & 0x00ff);  // clear overflow bit in result
+    checkStandardArithmeticFlags(resultByte, state);
+
+    return result;
+}
+
+void subFromAccumulator(uint8_t subtrahend, State8080 *state)
+{
+    state->a = compareWithAccumulator(subtrahend, state);
+}
+
 void orWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a | data;
