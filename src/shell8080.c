@@ -19,6 +19,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
 void runCodeFromBuffer(uint8_t *romBuffer);
 void printInstructionInfo(uint8_t opcode);
 void executeNextInstruction(State8080 *state);
+int numExec = 0;
 
 
 State8080 *initializeCPU()
@@ -74,14 +75,12 @@ void runForCycles(unsigned int numCyclesToRun, State8080 *state)
     unsigned int startingCycles = state->cyclesCompleted;
     while((state->cyclesCompleted - startingCycles) < numCyclesToRun){
         executeNextInstruction(state);
-        /*printf("%d\n", startingCycles);
-        printf("%d\n", state->cyclesCompleted);*/
     }
 }
 
 void executeNextInstruction(State8080 *state)
 {
-    if(state->pc < ROM_LIMIT_8080){
+    if(state->pc < 0x2400){
         uint8_t operation = 0;  // next instruction opcode
         uint8_t operands[2] = {0xff, 0xff};  // next instruction operands, default 0xff as it would standout more than 0x00
         unsigned int instructionSize = 0;
@@ -265,6 +264,18 @@ void printInstructionInfo(uint8_t opcode)
  */
 void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
+    logger("Executing instruction #%d\n", numExec);
+    logger("Executing 0x%02x\n", opcode);
+    if(numExec == 5565){
+        // Print some status info
+        logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
+        logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
+               state->a, state->b, state->c, state->d, state->e, state->h, state->l);
+        logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state->pc, state->sp);
+        logger("%1x%1x%1x%1x%1x\n",
+               state->flags.zero, state->flags.sign, state->flags.parity,
+               state->flags.auxiliaryCarry, state->flags.carry);
+    }
     uint16_t orderedOperands = ((uint16_t)operands[1] << 8) | (uint16_t)operands[0];  // Convert from little-endian
     uint16_t result = 0;  // For temporarily storing computational results losslessly
     uint8_t resultByte = 0;  // For temporarily storing 8-bit results
@@ -1366,6 +1377,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             }
             break;
         case 0xCD:
+            logger("Calling 0x%04x\n", orderedOperands);
             CALL(orderedOperands, state);
             break;
         case 0xCE: 
@@ -1674,6 +1686,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             RST(7, state);
             break;
 	}
+
+	numExec++;
 }
 
 /**

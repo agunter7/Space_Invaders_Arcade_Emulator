@@ -36,6 +36,7 @@ void CALL(uint16_t address, State8080 *state)
     state->sp -= 2;
     state->pc = address;
     state->cyclesCompleted += 17;
+    logger("Completed CALL\n");
 }
 
 /**
