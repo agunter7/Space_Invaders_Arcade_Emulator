@@ -1468,7 +1468,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = A - (D8 + CY)
             // Flags: z,s,p,cy,ac
             ;  // declaration after label workaround
-            uint8_t subtrahend = operands[0] + 0x01;
+            // TODO: Double check the AC check here
+            uint8_t subtrahend = operands[0] + state->flags.carry;  // TODO: Double check that the bitfield add works
             addWithCheckAC(state->a, twosComplement(subtrahend), state);  // Do not store, just for ac flag
             state->a = subWithCheckCY(state->a, subtrahend, state);
             checkStandardArithmeticFlags(state->a, state);
@@ -1659,20 +1660,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // A - D8
             // Flags: z,s,p,cy,ac
             // Note: result should not be stored anywhere, this just affects flags
-            /* System Manual explcitly says Carry is set if A < D8
-               I am unsure if CPI is considered a subtraction-type
-               instruction, i.e. does it use 2's complement arithmetic?
-               It seems it does not, and I will assume for now that the way
-               it handles the carry flag should not be applied to other
-               subtraction-type instructions
-            */
-            if (state->a < operands[0]){
-                state->flags.carry = 1;
-            }else{
-                state->flags.carry = 0;
-            }
-            result = addWithCheckAC(state->a, (-1)*operands[0], state);
-            resultByte = (uint8_t)result;
+            addWithCheckAC(state->a, (-1)*operands[0], state);
+            result = subWithCheckCY(state->a, operands[0], state);
+            resultByte = (uint8_t)(result & 0x00ff);  // clear overflow bit in result
             checkStandardArithmeticFlags(resultByte, state);
             state->pc += 2;
             state->cyclesCompleted += 7;

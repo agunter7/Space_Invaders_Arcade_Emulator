@@ -1,5 +1,5 @@
-# intel_8080_emulator
-A Windows emulator for the Intel 8080 processor written in C
+# Space Invaders (Intel 8080)
+A Windows emulator for the Space Invaders arcade machine running on an Intel 8080 CPU, written in C.
 
 # Build
 The project uses a makefile to compile the C source files. 
@@ -55,4 +55,6 @@ giving the 8080 plenty of time to handle each interrupt completely.
 
 # Miscellaneous Notes
 - Register A == 8080 "Accumulator"
-- Description of how the 8080 performs subtractions is found in the programmer's manual pg. 13 
+- Description of how the 8080 performs subtractions is found in the programmer's manual pg. 13.
+The language on this page is a bit unclear with regard to the carry bit. The programmer's manual's
+description of the SUB instruction on pg. 18 clarifies this. 

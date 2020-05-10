@@ -427,10 +427,11 @@ uint16_t addWithCheckCY(uint8_t op1, uint8_t op2, State8080 *state)
 /**
  * Perform subtraction by taking the 2's complement of the subtrahend and add it to the minuend.
  * In 8080 subtraction operations, the minuend is interpreted as an unsigned number.
- * If the result is positive, the carry bit is reset. If the result is negative, the carry bit is set.
- * I.E. The Carry bit mirrors bit 7 of the result
+ * The logic for the carry flag is inverted relative to the logic for addition:
+ *   If a carry out occurs, the carry flag is reset
+ *   If no carry out occurs, the carry flag is set
  *
- * Source: Intel 8080 Programmer's Manual pg. 13
+ * Source: Intel 8080 Programmer's Manual pg.13 and pg.18
  *
  * @param minuend - The number being subtracted from
  * @param subtrahend - The value being subtracted
@@ -448,13 +449,13 @@ uint16_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state)
     result = augend + addend;
 
     // Perform carry check
-    uint16_t signBit = (result>>7) & 0x0001;
-    if(signBit == 1){
-        // Negative result, "borrow" occurred
-        state->flags.carry = 1;
-    }else{
-        // Positive result, no "borrow"
+    uint16_t overflowBit = result>>8;  // Get bit 8
+    if(overflowBit == 1){
+        // Carry out occurred
         state->flags.carry = 0;
+    }else{
+        // No carry out occurred, a "borrow" occurred
+        state->flags.carry = 1;
     }
 
     return result;
