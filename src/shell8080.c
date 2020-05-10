@@ -1463,8 +1463,17 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0xDE: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // SBI D8
+            // Subtract immediate from Accumulator with borrow
+            // A = A - (D8 + CY)
+            // Flags: z,s,p,cy,ac
+            ;  // declaration after label workaround
+            uint8_t subtrahend = operands[0] + 0x01;
+            addWithCheckAC(state->a, twosComplement(subtrahend), state);  // Do not store, just for ac flag
+            state->a = subWithCheckCY(state->a, subtrahend, state);
+            checkStandardArithmeticFlags(state->a, state);
+            state->pc += 2;
+            state->cyclesCompleted += 7;
             break;
         case 0xDF:
             // RST 3

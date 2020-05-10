@@ -316,7 +316,7 @@ void moveDataFromHLMemory(uint8_t *destination, State8080 *state);
  @param subtrahend - the value to subtract
  @return - the difference between the minuend and subtrahend, will only capture 8 bits
  */
-uint8_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state);
+uint16_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state);
 
 /**
  Sets/Resets the most common flags for arithmetic instructions:

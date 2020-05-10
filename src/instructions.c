@@ -425,35 +425,35 @@ uint16_t addWithCheckCY(uint8_t op1, uint8_t op2, State8080 *state)
 }
 
 /**
- Perform subtraction by taking the 2's complement of the subtrahend and add it to the minuend.
- 
- The 8080 system manual seems to imply that it performs subtraction differently:
- "All subtraction operations are performed via two's complement arithmetic and set the 
-  carry flag to one to indicate a borrow and clear it to indicate no borrow."
-
-  "Borrowing" doesn't really happen in 2's complement subtraction? I must be misunderstanding
-  in some way, but I believe normally one performs subtraction via addition of a negated value.
-  In this case, no "Borrowing" occurs, only carries. In such cases, a carry into the sign bit indicates
-  an overflow and thus would trigger a sign change. This is the implementation used herein.
+ * Perform subtraction by taking the 2's complement of the subtrahend and add it to the minuend.
+ * In 8080 subtraction operations, the minuend is interpreted as an unsigned number.
+ * If the result is positive, the carry bit is reset. If the result is negative, the carry bit is set.
+ * I.E. The Carry bit mirrors bit 7 of the result
+ *
+ * Source: Intel 8080 Programmer's Manual pg. 13
+ *
+ * @param minuend - The number being subtracted from
+ * @param subtrahend - The value being subtracted
+ * @param state - The 8080 state
+ * @return
  */
-uint8_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state)
+uint16_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state)
 {
-    uint8_t result = 0x0000;
-    // Change variable names for the sake of matching addition
+    uint16_t result;
+    // use addition nomenclature
     uint8_t augend = minuend;
     uint8_t addend = twosComplement(subtrahend);
 
-    result = augend+addend;
+    // Perform subtraction as twos complement addition
+    result = augend + addend;
 
-    if(augend>>7 == 0x00 && addend>>7 == 0x00 && result>>7 != 0x00){
-        // Addition of two positives did not yield positive, overflow occurred
-        state->flags.carry = 1;
-    }else if(augend>>7 == 0x01 && addend>>7 == 0x01 && result>>7 != 0x01){
-        // Addition of two negatives did not yield negative, overflow occurred
+    // Perform carry check
+    uint16_t signBit = (result>>7) & 0x0001;
+    if(signBit == 1){
+        // Negative result, "borrow" occurred
         state->flags.carry = 1;
     }else{
-        // Addition of a negative and positive, cannot overflow OR
-        // Addition of pos+pos/neg+neg yielded pos/neg respectively, no overflow
+        // Positive result, no "borrow"
         state->flags.carry = 0;
     }
 

@@ -54,4 +54,5 @@ the intended effect is achieved regardless as the arcade machine only sends inte
 giving the 8080 plenty of time to handle each interrupt completely.
 
 # Miscellaneous Notes
-Register A == 8080 "Accumulator"
+- Register A == 8080 "Accumulator"
+- Description of how the 8080 performs subtractions is found in the programmer's manual pg. 13 

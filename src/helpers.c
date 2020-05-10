@@ -23,5 +23,6 @@ void logger(const char *format, ...)
 
 uint8_t twosComplement(uint8_t num)
 {
-    return (uint8_t)((-1)*num);
+    uint8_t inverted = ~num;
+    return (uint8_t)(inverted + (uint8_t)1);
 }
