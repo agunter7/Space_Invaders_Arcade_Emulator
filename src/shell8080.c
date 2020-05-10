@@ -607,7 +607,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0x32: 
             // STA addr
-            // STore Accumulator directly in memory addres
+            // STore Accumulator directly in memory address
             // memory[address] = A
             writeMem(orderedOperands, state->a, state);
             state->pc += 3;
@@ -618,8 +618,19 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0x34: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // INR M
+            // Increment Memory
+            // memory[(H)(L)] = memory[(H)(L)] + 1
+            // Flags: z,s,p,cy,ac
+            ;  // declaration after label workaround
+            uint8_t memoryValue = 0;
+            moveDataFromHLMemory(&memoryValue, state);
+            addWithCheckAC(memoryValue, 1, state);  // Do not store result, just check AC
+            memoryValue = addWithCheckCY(memoryValue, 1, state);
+            checkStandardArithmeticFlags(memoryValue, state);
+            moveDataToHLMemory(memoryValue, state);
+            state->pc += 1;
+            state->cyclesCompleted += 10;
             break;
         case 0x35:
             // DCR M
