@@ -1588,9 +1588,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 1;
             state->cyclesCompleted += 4;
             break;
-        case 0xEC: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xEC:
+            // CPE addr
+            // Call if Parity Even
+            if(state->flags.parity){
+                CALL(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 11;
+            }
             break;
         case 0xED: 
             printInstructionInfo(opcode);
