@@ -666,8 +666,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 4;
             break;
         case 0x38: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unused opcode
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x39: 
             // DAD SP
@@ -909,9 +910,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Move the content of register H to register L
             MOV_R1_R2(&(state->l), &(state->h), state);
             break;
-        case 0x6D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x6D:
+            // MOV L, L
+            // Effectively a NOP
+            MOV_R1_R2(&(state->l), &(state->l), state);
             break;
         case 0x6E: 
             // MOV L, M
@@ -1010,8 +1012,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             MOV_R_M(&(state->a), state);
             break;
         case 0x7F: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV A, A
+            // Effectively a NOP
+            MOV_R1_R2(&(state->a), &(state->a), state);
             break;
         case 0x80: 
             printInstructionInfo(opcode);
