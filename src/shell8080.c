@@ -272,6 +272,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     // variable declaration for usage in some cases of switch
     uint8_t tempL;  // A temporary place to hold the value of the L register
     uint8_t tempH;  // A temporary place to hold the value of the H register
+    uint8_t subtrahend;
 
     switch(opcode){
         case 0x00:
@@ -1286,8 +1287,14 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0xBE: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CMP M
+            // Compare Memory with Accumulator
+            // Flags: z,s,p,cy,ac
+            ;  // declaration after label workaround
+            moveDataFromHLMemory(&subtrahend, state);
+            compareWithAccumulator(subtrahend, state);
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0xBF: 
             printInstructionInfo(opcode);
@@ -1497,7 +1504,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = A - (D8 + CY)
             // Flags: z,s,p,cy,ac
             ;  // declaration after label workaround
-            uint8_t subtrahend = operands[0] + state->flags.carry;
+            subtrahend = operands[0] + state->flags.carry;
             subFromAccumulator(subtrahend, state);
             state->pc += 2;
             state->cyclesCompleted += 7;
