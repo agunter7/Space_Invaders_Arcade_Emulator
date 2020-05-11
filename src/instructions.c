@@ -444,7 +444,7 @@ uint8_t readMem(uint16_t address, State8080 *state)
 uint16_t addWithCheckAC(uint8_t op1, uint8_t op2, State8080 *state)
 {
     // Perform lower-order 4-bit addition
-    uint8_t nibbleResult = op1 + op2;
+    uint8_t nibbleResult = (op1 & 0x0f) + (op2 & 0x0f);
 
     if((nibbleResult & 0x10) == 0x10){
         // Carry occurred from bit 3 to bit 4
