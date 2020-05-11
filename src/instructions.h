@@ -387,6 +387,9 @@ void checkStandardArithmeticFlags(uint8_t result, State8080 *state);
  used with additions and increments preceding a
  DAA (Decimal Adjust Accumulator) instruction."
 
+ For subtraction operations, the twos complement of the subtrahend
+ should be input as one of the operands of this function.
+
  @param op1 - 1st operand
  @param op2 - 2nd operand
  @return - sum of operands

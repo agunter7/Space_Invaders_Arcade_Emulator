@@ -273,6 +273,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t tempL;  // A temporary place to hold the value of the L register
     uint8_t tempH;  // A temporary place to hold the value of the H register
     uint8_t subtrahend;
+    uint8_t tempCarry;
 
     switch(opcode){
         case 0x00:
@@ -465,8 +466,14 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0x1F: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // RAR
+            // Rotate Accumulator Right through carry
+            tempCarry = state->flags.carry;
+            state->flags.carry = (state->a) & 0x01;  // carry = bit 0
+            state->a = (state->a)>>1;  // rotate Accumulator
+            state->a = (state->a) | (tempCarry<<7);  // bit 7 = old carry
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x20: 
             // RIM
