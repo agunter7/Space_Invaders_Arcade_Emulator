@@ -80,7 +80,7 @@ void runForCycles(unsigned int numCyclesToRun, State8080 *state)
 
 void executeNextInstruction(State8080 *state)
 {
-    if(state->pc < 0x2400){
+    if(state->pc < MEMORY_SIZE_8080){
         uint8_t operation = 0;  // next instruction opcode
         uint8_t operands[2] = {0xff, 0xff};  // next instruction operands, default 0xff as it would standout more than 0x00
         unsigned int instructionSize = 0;
@@ -274,6 +274,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t tempH;  // A temporary place to hold the value of the H register
     uint8_t subtrahend;
     uint8_t tempCarry;
+
+    logger("%d\n", numExec);
 
     switch(opcode){
         case 0x00:
