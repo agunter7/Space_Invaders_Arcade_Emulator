@@ -279,8 +279,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t tempCarry;
     uint8_t memoryByte;
 
-    logger("%d\n", numExec);
-    if(numExec > 44382){
+    //logger("%d\n", numExec);
+    if(numExec > 46061){
+        logger("%d\n", numExec);
         logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
         logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
                state->a, state->b, state->c, state->d, state->e, state->h, state->l);
@@ -293,6 +294,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         logger("%d\n", instructionSizes[opcode]);
         logger("%s\n", instructionFunctions[opcode]);
         logger("%s\n\n", instructionFlags[opcode]);
+    }
+    if(numExec > 46100){
+        exit(0);
     }
 
     switch(opcode){
@@ -705,9 +709,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0x3A: 
             // LDA addr
-            // Load address directly into Accumulator
+            // Load memory directly into Accumulator
             // A = address
-            state->a = orderedOperands;
+            state->a = readMem(orderedOperands, state);
             state->pc += 3;
             state->cyclesCompleted += 13;
             break;
