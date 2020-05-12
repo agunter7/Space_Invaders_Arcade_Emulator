@@ -1603,8 +1603,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 5;
             break;
         case 0xEA: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // JPE addr
+            // Jump if parity is even
+            // if p, then JMP addr
+            if(state->flags.parity){
+                JMP(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 10;
+            }
             break;
         case 0xEB: 
             // XCHG
