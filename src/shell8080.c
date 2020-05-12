@@ -274,6 +274,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t tempH;  // A temporary place to hold the value of the H register
     uint8_t subtrahend;
     uint8_t tempCarry;
+    uint8_t memoryByte;
 
     logger("%d\n", numExec);
 
@@ -636,12 +637,12 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // memory[(H)(L)] = memory[(H)(L)] + 1
             // Flags: z,s,p,cy,ac
             ;  // declaration after label workaround
-            uint8_t memoryValue = 0;
-            moveDataFromHLMemory(&memoryValue, state);
-            addWithCheckAC(memoryValue, 1, state);  // Do not store result, just check AC
-            memoryValue = addWithCheckCY(memoryValue, 1, state);
-            checkStandardArithmeticFlags(memoryValue, state);
-            moveDataToHLMemory(memoryValue, state);
+            memoryByte = 0;
+            moveDataFromHLMemory(&memoryByte, state);
+            addWithCheckAC(memoryByte, 1, state);  // Do not store result, just check AC
+            memoryByte = addWithCheckCY(memoryByte, 1, state);
+            checkStandardArithmeticFlags(memoryByte, state);
+            moveDataToHLMemory(memoryByte, state);
             state->pc += 1;
             state->cyclesCompleted += 10;
             break;
@@ -1231,8 +1232,18 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0xAE: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // XRA M
+            // XOR Memory with Accumulator
+            // A = A XOR memory[(H)(L)]
+            // Flags: z,s,p,cy(reset),ac(reset)
+            ;  // declaration after label workaround
+            moveDataFromHLMemory(&memoryByte, state);
+            state->a = state->a ^ memoryByte;
+            checkStandardArithmeticFlags(state->a, state);
+            state->flags.carry = 0;
+            state->flags.auxiliaryCarry = 0;
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0xAF: 
             // XRA A
