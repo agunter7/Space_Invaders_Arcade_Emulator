@@ -341,6 +341,19 @@ void ADD_R(uint8_t data, State8080 *state)
     state->cyclesCompleted += 4;
 }
 
+/**
+ * CMP R
+ * Compare Register with Accumulator
+ * A - R
+ * Flags: z,s,p,cy,ac
+ */
+void CMP_R(uint8_t data, State8080 *state)
+{
+    compareWithAccumulator(data, state);
+    state->pc += 1;
+    state->cyclesCompleted += 4;
+}
+
 uint16_t compareWithAccumulator(uint8_t subtrahend, State8080 *state)
 {
     addWithCheckAC(state->a, twosComplement(subtrahend), state);  // Do not store result, just check AC

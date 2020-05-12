@@ -261,6 +261,21 @@ void MOV_M_R(uint8_t data, State8080 *state);
 void ADD_R(uint8_t data, State8080 *state);
 
 /**
+ * A set of 8080 instructions for comparing registers with the Accumulator:
+ * CMP R
+ * R: A,B,C,D,E,H,L
+ *
+ * Flags set based on subtraction logic
+ * Flags: z,s,p,cy,ac
+ *
+ * Note that these instructions do not change the Accumulator
+ *
+ * @param data - The value to compare with Accumulator
+ * @param state - The 8080 state
+ */
+void CMP_R(uint8_t data, State8080 *state);
+
+/**
  * Subtracts a value from the Accumulator without changing the Accumulator.
  * Sets flags based on 8080 subtraction logic.
  *

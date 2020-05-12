@@ -1287,8 +1287,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0xB8: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CMP B
+            // Compare register B with accumulator
+            CMP_R(state->b, state);
             break;
         case 0xB9: 
             printInstructionInfo(opcode);
