@@ -80,7 +80,7 @@ void runForCycles(unsigned int numCyclesToRun, State8080 *state)
 
 void executeNextInstruction(State8080 *state)
 {
-    if(state->pc < MEMORY_SIZE_8080){  // TODO: Impose a proper limit on PC
+    if(state->pc < ROM_LIMIT_8080){
         uint8_t operation = 0;  // next instruction opcode
         uint8_t operands[2] = {0xff, 0xff};  // next instruction operands, default 0xff as it would standout more than 0x00
         unsigned int instructionSize = 0;
@@ -120,6 +120,9 @@ void executeNextInstruction(State8080 *state)
         }
 
         executeInstructionByOpcode(operation, operands, state);
+    }else{
+        logger("Error! Attempted to execute instruction outside of ROM!\n");
+        exit(0);
     }
 }
 
@@ -277,6 +280,20 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t memoryByte;
 
     logger("%d\n", numExec);
+    if(numExec > 44382){
+        logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
+        logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
+               state->a, state->b, state->c, state->d, state->e, state->h, state->l);
+        logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state->pc, state->sp);
+        logger("%1x%1x%1x%1x%1x\n",
+               state->flags.zero, state->flags.sign, state->flags.parity,
+               state->flags.auxiliaryCarry, state->flags.carry);
+        logger("Opcode: 0x%02x\n", opcode);
+        logger("%s\n", instructions[opcode]);
+        logger("%d\n", instructionSizes[opcode]);
+        logger("%s\n", instructionFunctions[opcode]);
+        logger("%s\n\n", instructionFlags[opcode]);
+    }
 
     switch(opcode){
         case 0x00:
@@ -1713,6 +1730,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0xFB: 
             // EI
             // Enable Interrupt
+            logger("ENABLING INTERRUPTS\n");
             state->interruptsEnabled = 1;
             state->pc += 1;
             state->cyclesCompleted += 4;

@@ -175,19 +175,26 @@ void ANA_R(uint8_t data, State8080 *state)
  */
 void RST(uint8_t restartNumber, State8080 *state)
 {
-    uint8_t pcHigh;  // program counter higher 8 bits
-    uint8_t pcLow;  // program counter lower 8 bits
-    uint16_t pcToStore = (state->pc) + 1;
-    uint16_t sp = state->sp;
+    if(state->interruptsEnabled){
+        uint8_t pcHigh;  // program counter higher 8 bits
+        uint8_t pcLow;  // program counter lower 8 bits
+        uint16_t pcToStore = (state->pc) + 1;
+        uint16_t sp = state->sp;
 
-    pcHigh = (uint8_t)(pcToStore >> 8);
-    pcLow = (uint8_t)pcToStore;
+        pcHigh = (uint8_t)(pcToStore >> 8);
+        pcLow = (uint8_t)pcToStore;
 
-    writeMem(sp-1, pcHigh, state);
-    writeMem(sp-2, pcLow, state);
-    state->sp -= 2;
-    state->pc = 8 * restartNumber;
-    state->cyclesCompleted += 11;
+        writeMem(sp-1, pcHigh, state);
+        writeMem(sp-2, pcLow, state);
+        state->sp -= 2;
+        state->pc = 8 * restartNumber;
+        state->cyclesCompleted += 11;
+
+        // It is expected for interrupts to be disabled until end of ISR. Interrupts will be enabled at end of ISR
+        state->interruptsEnabled = 0;
+
+        logger("Interrupt executed and disabled\n");
+    }
 }
 
 /**
