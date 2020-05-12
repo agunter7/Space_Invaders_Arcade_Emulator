@@ -80,7 +80,7 @@ void runForCycles(unsigned int numCyclesToRun, State8080 *state)
 
 void executeNextInstruction(State8080 *state)
 {
-    if(state->pc < MEMORY_SIZE_8080){
+    if(state->pc < MEMORY_SIZE_8080){  // TODO: Impose a proper limit on PC
         uint8_t operation = 0;  // next instruction opcode
         uint8_t operands[2] = {0xff, 0xff};  // next instruction operands, default 0xff as it would standout more than 0x00
         unsigned int instructionSize = 0;
@@ -867,8 +867,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += instructionSizes[opcode];
             break;
         case 0x61: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV H, C
+            // Move the content of register C into register H
+            MOV_R1_R2(&(state->h), &(state->c), state);
             break;
         case 0x62: 
             printInstructionInfo(opcode);
