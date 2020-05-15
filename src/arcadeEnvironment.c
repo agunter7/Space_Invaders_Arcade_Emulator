@@ -10,7 +10,7 @@
 ArcadeState *initializeArcade()
 {
     // Create an arcade to work with
-    ArcadeState *arcade = malloc(sizeof(ArcadeState));
+    ArcadeState *arcade = mallocSet(sizeof(ArcadeState));
     arcade->cpu = initializeCPU();
     arcade->window = NULL;
     arcade->renderer = NULL;

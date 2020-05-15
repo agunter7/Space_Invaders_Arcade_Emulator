@@ -21,7 +21,7 @@
 void CALL(uint16_t address, State8080 *state);
 
 /**
- Technically a set of 8080 instructions: Increment Register Pair
+ A set of 8080 instructions: Increment Register Pair
  1) INX B
  2) INX D
  3) INX H
@@ -34,7 +34,7 @@ void CALL(uint16_t address, State8080 *state);
 void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state);
 
 /**
- Technically a set of 8080 instructions: Push Register Pair
+ A set of 8080 instructions: Push Register Pair
  1) PUSH B
  2) PUSH D
  3) PUSH H

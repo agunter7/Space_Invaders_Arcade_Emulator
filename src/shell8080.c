@@ -36,12 +36,13 @@ State8080 *initializeCPU()
     romBuffer = getRomBuffer(invadersFile);
 
     // Initialize an 8080 state variable
-    State8080 *state = malloc(sizeof(State8080));
-    state->memory = malloc(MEMORY_SIZE_8080);  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
+    State8080 *state = mallocSet(sizeof(State8080));
+
+    state->memory = mallocSet(MEMORY_SIZE_8080);  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
     ConditionCodes cc = {0};
     state->flags = cc;
-    state->inputBuffers = malloc(NUM_INPUT_DEVICES);
-    state->outputBuffers = malloc(NUM_OUTPUT_DEVICES);
+    state->inputBuffers = mallocSet(NUM_INPUT_DEVICES);
+    state->outputBuffers = mallocSet(NUM_OUTPUT_DEVICES);
     state->a = 0;
     state->b = 0;
     state->c = 0;
@@ -53,8 +54,7 @@ State8080 *initializeCPU()
     state->pc = 0;
     state->cyclesCompleted = 0;
     state->interruptsEnabled = 0;
-    // Set 8080 memory to known value
-    memset(state->memory, 0, MEMORY_SIZE_8080);
+
     // Place ROM buffer data into CPU memory
     memcpy(state->memory, romBuffer, ROM_LIMIT_8080);
 
@@ -128,7 +128,7 @@ void executeNextInstruction(State8080 *state)
 
 uint8_t *getVideoRAM(State8080 *state)
 {
-    uint8_t *vramContents = malloc(VRAM_SIZE_8080);
+    uint8_t *vramContents = mallocSet(VRAM_SIZE_8080);
 
     memcpy(vramContents, &(state->memory[VRAM_START_ADDR_8080]), VRAM_SIZE_8080);
 
@@ -155,7 +155,7 @@ void generateInterrupt(uint8_t interruptNum, State8080 *state)
 void runCodeFromBuffer(uint8_t *romBuffer)
 {
     State8080 state = {
-        .memory = malloc(MEMORY_SIZE_8080),
+        .memory = mallocSet(MEMORY_SIZE_8080),
         .flags = {0},
         .a = 0,
         .b = 0,
@@ -237,7 +237,7 @@ uint8_t *getRomBuffer(FILE *romFile)
     fseek(romFile, 0, SEEK_SET);
 
     // Allocate memory for ROM
-    romBuffer = malloc(romSizeInBytes);
+    romBuffer = mallocSet(romSizeInBytes);
 
     // Read ROM into buffer
     fread(romBuffer, 1, romSizeInBytes, romFile);
@@ -279,8 +279,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t tempCarry;
     uint8_t memoryByte;
 
-    //logger("%d\n", numExec);
-    if(numExec > 46061){
+    if(false){
         logger("%d\n", numExec);
         logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
         logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
@@ -295,7 +294,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         logger("%s\n", instructionFunctions[opcode]);
         logger("%s\n\n", instructionFlags[opcode]);
     }
-    if(numExec > 46100){
+    if(false){
         exit(0);
     }
 
@@ -1449,7 +1448,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xCF:
             // RST 1
-            logger("RST 1\n");
+            logger("RST 1 Attempt\n");
             RST(1, state);
             break;
         case 0xD0:
@@ -1467,9 +1466,16 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // POP D
             POP_RP(&state->d, &state->e, state);
             break;
-        case 0xD2: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xD2:
+            // JNC Addr
+            // Jump to address if no Carry
+            // if NC, JMP addr
+            if(!(state->flags.carry)){
+                JMP(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted +=10;
+            }
             break;
         case 0xD3: 
             // OUT D8
@@ -1504,7 +1510,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xD7:
             // RST 2
-            logger("RST 2\n");
+            logger("RST 2 Attempt\n");
             RST(2, state);
             break;
         case 0xD8: 

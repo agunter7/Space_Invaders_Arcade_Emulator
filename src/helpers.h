@@ -29,4 +29,13 @@ void logger(const char *format, ...);
  */
 uint8_t twosComplement(uint8_t num);
 
+/**
+ * Returns a pointer to memory of a requested size.
+ * Memory all zeroed.
+ *
+ * @param size - desired size of memory, in bytes
+ * @return - pointer to requested memory
+ */
+void *mallocSet(size_t size);
+
 #endif  // HELPERS_H_

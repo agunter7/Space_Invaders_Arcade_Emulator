@@ -26,3 +26,11 @@ uint8_t twosComplement(uint8_t num)
     uint8_t inverted = ~num;
     return (uint8_t)(inverted + (uint8_t)1);
 }
+
+void *mallocSet(size_t size)
+{
+    void *pointer = malloc(size);
+    memset(pointer, 0 , size);
+
+    return pointer;
+}

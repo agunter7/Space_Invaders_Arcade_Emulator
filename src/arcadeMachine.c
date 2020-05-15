@@ -168,7 +168,7 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
     // 8 bits for each of: red, green, blue, alpha
     unsigned int numPixels = SCREEN_HEIGHT_PIXELS*SCREEN_WIDTH_PIXELS;
     unsigned int numPixelBytes = numPixels*BYTES_PER_PIXEL;
-    uint32_t *currentFramePixels = malloc(numPixelBytes);  // Pointer to data describing 32-bit pixels for current frame
+    uint32_t *currentFramePixels = mallocSet(numPixelBytes);  // Pointer to data describing 32-bit pixels for current frame
 
     // Get 32-bit pixel data for entire frame by iterating through pixels to be rendered on screen
     unsigned int I_1 = 0;
