@@ -51,7 +51,7 @@ void INX_RP(uint8_t *highReg, uint8_t *lowReg, State8080 *state)
     concatRegValue++;
     *highReg = (uint8_t)(concatRegValue >> 8);
     *lowReg = (uint8_t)concatRegValue;
-    state->pc++;
+    state->pc += 1;
     state->cyclesCompleted += 5;
 }
 

@@ -686,9 +686,12 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 3;
             state->cyclesCompleted += 13;
             break;
-        case 0x33: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x33:
+            // INX SP
+            // Increment Stack Pointer
+            state->sp += 1;
+            state->pc += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0x34: 
             // INR M
@@ -713,7 +716,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             ;  // declaration after label workaround
             uint16_t targetAddress = getValueHL(state);
             uint16_t oldMemValue = readMem(targetAddress, state);
-            uint16_t newMemValue = addWithCheckAC(oldMemValue, (uint8_t)(-1), state);
+            uint16_t newMemValue = addWithCheckAC(oldMemValue, (uint8_t)(-1), state);  // TODO: ac check correct?
             writeMem(targetAddress, newMemValue, state);
             checkStandardArithmeticFlags(newMemValue, state);
             state->pc += 1;
@@ -735,9 +738,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 4;
             break;
         case 0x38: 
-            // Unused opcode
-            state->pc += 1;
-            state->cyclesCompleted += 4;
+            // Unimplemented
+            NOP(state);
             break;
         case 0x39: 
             // DAD SP
@@ -754,12 +756,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 13;
             break;
         case 0x3B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DCX SP
+            // Decrement stack pointer
+            state->sp -= 1;
+            state->pc += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0x3C: 
             // INR A
-            // Increment register A
+            // Increment Accumulator
             INR_R(&(state->a), state);
             break;
         case 0x3D: 
@@ -772,13 +777,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // MVI A, D8
             // Move Immediate into register A
             // A = D8
-            state->a = operands[0];
-            state->pc += 2;
-            state->cyclesCompleted += 7;
+            MVI_R(&(state->a), operands[0], state);
             break;
-        case 0x3F: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x3F:
+            // CMC
+            // Complement Carry
+            // CY = !CY
+            state->flags.carry = ~(state->flags.carry);
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x40: 
             printInstructionInfo(opcode);
