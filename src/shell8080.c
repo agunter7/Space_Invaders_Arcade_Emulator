@@ -329,6 +329,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x02:
             // STAX B
             // Store accumulator in memory location (B)(C)
+            // memory[(B)(C)] = A
             moveDataToBCMemory(state->a, state);
             state->pc += 1;
             state->cyclesCompleted += 7;
@@ -390,30 +391,26 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 7;
             break;
         case 0x0B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            //DCX B
+            // Decrement register pair B-C
+            DCX_RP(&(state->b), &(state->c), state);
             break;
         case 0x0C: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // INR C
+            // Increment register C
+            // Flags: z,s,p,ac
+            INR_R(&(state->c), state);
             break;
         case 0x0D: 
             // DCR C
             // Decrement register C
-            // C = C-1
             // Flags: z,s,p,ac
-            state->c = addWithCheckAC(state->c, (uint8_t)(-1), state);
-            checkStandardArithmeticFlags(state->c, state);
-            state->pc += 1;
-            state->cyclesCompleted += 5;
+            DCR_R(&(state->c), state);
             break;
         case 0x0E: 
             // MVI C, D8
-            // MoVe Immediate to register C
-            // C = D8
-            state->c = operands[0];
-            state->pc += 2;
-            state->cyclesCompleted += 7;
+            // Move Immediate to register C
+            MVI_R(&(state->c), operands[0], state);
             break;
         case 0x0F: 
             // RRC
@@ -433,21 +430,19 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 4;
             break;
         case 0x10: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0x11: 
             // LXI D, D16
             // Load Immediate into Register Pair D-E
-            // D = byte 3; E = byte 2
-            state->d = operands[1];
-            state->e = operands[0];
-            state->pc += 3;
-            state->cyclesCompleted += 10;
+            LXI_RP(&(state->d), &(state->e), orderedOperands, state);
             break;
-        case 0x12: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x12:
+            // STAX D
+            // Store Accumulator in memory location (D)(E)
+            // memory[(D)(E)] = A
+            moveDataToDEMemory(state->a, state);
             break;
         case 0x13: 
             // INX D
@@ -471,13 +466,20 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Move immediate into register D
             MVI_R(&(state->d), operands[0], state);
             break;
-        case 0x17: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x17:
+            // RAL
+            // Rotate Accumulator Left through carry
+            // A:n = A(n-1); CY = A:7; A:0 = CY
+            tempCarry = state->flags.carry;
+            state->flags.carry = ((state->a)&0x80)>>7;  // CY = A:7
+            state->a = (state->a)<<1;  // rotate accumulator
+            state->a = (state->a) | tempCarry;  // A:0 = old CY
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x18: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0x19: 
             // DAD D
@@ -494,13 +496,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 1;
             state->cyclesCompleted += 7;
             break;
-        case 0x1B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x1B:
+            // DCX D
+            // Decrement register pair D-E
+            DCX_RP(&(state->d), &(state->e), state);
             break;
-        case 0x1C: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x1C:
+            // INR E
+            // Increment register E
+            INR_R(&(state->e), state);
             break;
         case 0x1D: 
             // DCR E
@@ -509,13 +513,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Flags: z,s,p,cy,ac
             DCR_R(&(state->e), state);
             break;
-        case 0x1E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x1E:
+            // MVI E, d8
+            // Move immediate into register E
+            MVI_R(&(state->e), operands[0], state);
             break;
         case 0x1F: 
             // RAR
             // Rotate Accumulator Right through carry
+            // A:n = A:(n+1); CY = A:0; A:7 = CY
             tempCarry = state->flags.carry;
             state->flags.carry = (state->a) & 0x01;  // carry = bit 0
             state->a = (state->a)>>1;  // rotate Accumulator
@@ -529,17 +535,13 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // This instruction is actually unimplemented on the 8080
             // The instruction is functional on the 8085
             // Equivalent to NOP
-            state->pc += instructionSizes[opcode];
-            state->cyclesCompleted += 4;  // Did not find a reference for this, but 4 is the minimum
+            NOP(state);
             break;
         case 0x21: 
             // LXI H, D16
             // Load Immediate into register pair H-L
             // H = byte 3; L = byte 2
-            state->h = operands[1];
-            state->l = operands[0];
-            state->pc += 3;
-            state->cyclesCompleted += 10;
+            LXI_RP(&(state->h), &(state->l), orderedOperands, state);
             break;
         case 0x22: 
             // SHLD addr

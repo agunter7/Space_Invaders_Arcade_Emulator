@@ -391,6 +391,13 @@ void moveDataFromHLMemory(uint8_t *destination, State8080 *state);
 void moveDataToBCMemory(uint8_t data, State8080 *state);
 
 /**
+ Copy data to an 8080 memory location determined by the contents of the D-E register pair
+ @param data - Data to move
+ @param state - The 8080 state
+*/
+void moveDataToDEMemory(uint8_t data, State8080 *state);
+
+/**
  Performs subtraction of two numbers while setting/resetting the carry flag.
 
  @param minuend - the value to be subtracted from

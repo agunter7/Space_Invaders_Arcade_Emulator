@@ -455,6 +455,12 @@ void moveDataToBCMemory(uint8_t data, State8080 *state)
     writeMem(destinationAddress, data, state);
 }
 
+void moveDataToDEMemory(uint8_t data, State8080 *state)
+{
+    uint16_t destinationAddress = getValueDE(state);
+    writeMem(destinationAddress, data, state);
+}
+
 uint16_t getValueHL(State8080 *state)
 {
     uint16_t highBits = (((uint16_t)(state->h))<<8);
