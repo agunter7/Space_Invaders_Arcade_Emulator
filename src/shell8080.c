@@ -158,6 +158,15 @@ void generateInterrupt(uint8_t interruptNum, State8080 *state)
     }
 }
 
+void testAllOpcodes()
+{
+    State8080 *testCpu = initializeCPU();
+    uint8_t fakeOperands[2] = {0xff, 0xff};
+    for(uint16_t i = 0x00; i < 0x100; i++){
+        executeInstructionByOpcode(i, fakeOperands, testCpu);
+    }
+}
+
 void runCodeFromBuffer(uint8_t *romBuffer)
 {
     State8080 state = {
@@ -284,6 +293,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t subtrahend;
     uint8_t tempCarry;
     uint8_t memoryByte;
+    uint8_t portNumber;
 
     //logger("%d\n", numExec);
     if(false){
@@ -314,11 +324,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x01: 
             // LXI B, D16
             // Load immediate into register pair BC
-            // B = byte 3, C = byte 2
-            state->b = operands[1];
-            state->c = operands[0];
-            state->pc += 3;
-            state->cyclesCompleted += 10;
+            LXI_RP(&(state->b), &(state->c), orderedOperands, state);
             break;
         case 0x02:
             // STAX B
@@ -340,24 +346,30 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0x05: 
             // DCR B
-            // B = B-1
-            // Flags: zero, sign, parity, auxillary carry
-            // TODO: Is this the correct way to check AC for decrement?
-            state->b = addWithCheckAC(state->b, -1, state);
-            checkStandardArithmeticFlags(state->b, state);
-            state->pc += 1;
-            state->cyclesCompleted += 5;
+            // Decrement register B
+            DCR_R(&(state->b), state);
             break;
         case 0x06: 
             // MVI B; D8
             // Move immediate to register B
-            state->b = operands[0];
-            state->pc += 2;
-            state->cyclesCompleted += 7;
+            MVI_R(&(state->b), operands[0], state);
             break;
-        case 0x07: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x07:
+            // RLC
+            // Rotate accumulator Right (and bypass Carry)
+            // (As opposed to through Carry)
+            // CY = A:7
+            // A:n = A:(n-1); A:0 = A:7
+            // Flags: CY
+            state->flags.carry = ((state->a)&(0x80))>>7;  // CY = A:7
+            state->a = (state->a)<<1;
+            if(state->flags.carry == 1){
+                state->a = state->a | 0x01;  // A:0 = 1
+            }else{
+                // A:0 = 0
+            }
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x08: 
             printInstructionInfo(opcode);
@@ -1489,10 +1501,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Content of register A placed on 8-bit bi-directional data bus
             // for transmission to the port specified by D8
             // (data) = A
-            //logger("OUT 'A==0x%02x' to data port 0x%02x\n", state->a, operands[0]);
-            ;
-            //char garbage[100];
-            //scanf("%s", garbage);
+            ;  // declaration after label workaround
+            portNumber = operands[0];
+            state->outputBuffers[portNumber] = state->a;
+            logger("OUTPUT 0x%02x -- 0x%02x\n", operands[0], state->a);
             state->pc += 2;
             state->cyclesCompleted += 10;
             break;
@@ -1544,8 +1556,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Read from input port
             // A = data
             ;  // declaration after label workaround
-            uint8_t portNumber = operands[0];
+            portNumber = operands[0];
             state->a = state->inputBuffers[portNumber];
+            logger("INPUT 0x%02x -- 0x%02x\n", operands[0], state->a);
             state->pc += 2;
             state->cyclesCompleted += 10;
             break;

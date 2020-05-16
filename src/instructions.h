@@ -276,6 +276,23 @@ void ADD_R(uint8_t data, State8080 *state);
 void CMP_R(uint8_t data, State8080 *state);
 
 /**
+ * A set of 8080 instructions for adding an immediate to a register pair:
+ * LXI RP
+ * RP: B-C, D-E, H-L
+ *
+ * @param highReg - Higher order bits register
+ * @param lowReg - Lower order bits register
+ * @param orderedOperands - 16-bit immediate
+ * @param state - The 8080 state
+ */
+void LXI_RP(uint8_t *highReg, uint8_t *lowReg, uint16_t orderedOperands, State8080 *state);
+
+/**
+ * No Operation
+ * @param state - The 8080 state
+ */
+void NOP(State8080 *state);
+/**
  * Subtracts a value from the Accumulator without changing the Accumulator.
  * Sets flags based on 8080 subtraction logic.
  *

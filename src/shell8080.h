@@ -45,4 +45,9 @@ uint8_t *getVideoRAM(State8080 *state);
  */
 void generateInterrupt(uint8_t interruptNum, State8080 *state);
 
+/**
+ * Iteratively tries to call all 8080 instructions in order
+ */
+void testAllOpcodes();
+
 #endif //INTEL_8080_EMULATOR_SHELL8080_H

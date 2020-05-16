@@ -15,6 +15,8 @@ int main(int argc, char **argv)
 {
     ArcadeState *arcade = initializeArcade();
 
+    testAllOpcodes();
+
     if(arcade != NULL){
         playSpaceInvaders(arcade);
         destroyArcade(arcade);

@@ -285,6 +285,12 @@ void MVI_R(uint8_t *destReg, uint8_t value, State8080 *state)
     state->cyclesCompleted += 7;
 }
 
+void NOP(State8080 *state)
+{
+    state->pc += 1;
+    state->cyclesCompleted += 4;
+}
+
 /**
  * INR R
  * Increment Register
@@ -370,6 +376,19 @@ void CMP_R(uint8_t data, State8080 *state)
     compareWithAccumulator(data, state);
     state->pc += 1;
     state->cyclesCompleted += 4;
+}
+
+/**
+ * LXI RP, D16
+ * Load immediate into register pair
+ * rh = byte 3 (high byte), rl = byte 2 (low byte)
+ */
+void LXI_RP(uint8_t *highReg, uint8_t *lowReg, uint16_t orderedOperands, State8080 *state)
+{
+    *highReg = (uint8_t)(orderedOperands>>8);
+    *lowReg = (uint8_t)orderedOperands;
+    state->pc += 3;
+    state->cyclesCompleted += 10;
 }
 
 uint16_t compareWithAccumulator(uint8_t subtrahend, State8080 *state)

@@ -15,6 +15,14 @@ ArcadeState *initializeArcade()
     arcade->window = NULL;
     arcade->renderer = NULL;
 
+    // Set default CPU input port values
+    arcade->inputPort0 = 0x0e;  // Bits 1-3 are always 1 by specification
+    arcade->inputPort1 = 0x09;  // Bit 3 always 1 by specification
+    arcade->inputPort2 = 0x00;
+    arcade->inputPort3 = 0x00;
+    synchronizeIO(arcade);
+
+
     // Setup SDL for communicating with host machine API
     if(initializeEnvironmentSDL(arcade) == 1){
         return arcade;
