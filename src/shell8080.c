@@ -137,7 +137,7 @@ uint8_t *getVideoRAM(State8080 *state)
 
 void generateInterrupt(uint8_t interruptNum, State8080 *state)
 {
-    if(interruptNum < 8){
+    if(interruptNum < 0x08){
         // Will need to trigger instruction RST n
         // n = interrupt num
 
@@ -146,7 +146,13 @@ void generateInterrupt(uint8_t interruptNum, State8080 *state)
         uint8_t interruptOpcode = 0xc7 | (interruptNum << 3);  // 0xc7 == (11000111)b
         uint8_t fakeOperands[2] = {0xff, 0xff};
 
-        executeInstructionByOpcode(interruptOpcode, fakeOperands, state);
+        if(state->interruptsEnabled){
+            // RST instr will push PC+1 to the stack
+            // Without this line, the instr pointed to by the current PC value will be skipped after the ISR is done.
+            state->pc -= 1;
+
+            executeInstructionByOpcode(interruptOpcode, fakeOperands, state);
+        }
     }else{
         logger("Warning: Invalid interrupt attempted!\n");
     }
@@ -279,8 +285,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t tempCarry;
     uint8_t memoryByte;
 
+    //logger("%d\n", numExec);
     if(false){
-        logger("%d\n", numExec);
+        //logger("%d\n", numExec);
         logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
         logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
                state->a, state->b, state->c, state->d, state->e, state->h, state->l);
@@ -335,6 +342,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // DCR B
             // B = B-1
             // Flags: zero, sign, parity, auxillary carry
+            // TODO: Is this the correct way to check AC for decrement?
             state->b = addWithCheckAC(state->b, -1, state);
             checkStandardArithmeticFlags(state->b, state);
             state->pc += 1;
@@ -427,7 +435,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x13: 
             // INX D
             // (D)(E) = (D)(E)+1
-            INX_RP(&state->d, &state->e, state);
+            INX_RP(&(state->d), &(state->e), state);
             break;
         case 0x14: 
             // INR D
@@ -955,9 +963,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x6F: 
             // MOV L, A
             // Move the contents of register A into register L
-            state->l = state->a;
-            state->pc += 1;
-            state->cyclesCompleted += 5;
+            MOV_R1_R2(&(state->l), &(state->a), state);
             break;
         case 0x70: 
             // MOV M, B
@@ -1440,6 +1446,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             }
             break;
         case 0xCD:
+            // CALL addr
             CALL(orderedOperands, state);
             break;
         case 0xCE: 
@@ -2605,7 +2612,7 @@ void initializeGlobals()
         "H <- byte 2",
         "special",
         "",
-        "HL = HL + HI",
+        "HL = HL + HL",
         "L <- (adr); H<-(adr+1)",
         "HL = HL-1",
         "L <- L+1",
@@ -2769,7 +2776,7 @@ void initializeGlobals()
         "if Z; PC <- adr",
         "",
         "if Z; CALL adr",
-        "(SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP+2;PC=adr",
+        "(SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr",
         "A <- A + data + CY",
         "CALL $8",
         "if NCY; RET",
