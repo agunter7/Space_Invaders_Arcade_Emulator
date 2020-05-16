@@ -318,8 +318,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     switch(opcode){
         case 0x00:
             // NOP
-            state->pc += 1;
-            state->cyclesCompleted += 4;
+            NOP(state);
             break;
         case 0x01: 
             // LXI B, D16
@@ -372,8 +371,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 4;
             break;
         case 0x08: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0x09: 
             // DAD B

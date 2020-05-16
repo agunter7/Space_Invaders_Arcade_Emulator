@@ -6,6 +6,8 @@ disassembler.o
 disassembler.exe
 g.exe
 output.txt
+output2.txt
+output3.txt
 bin/*
 emulatorShell.exe
 src/testEmu.c
