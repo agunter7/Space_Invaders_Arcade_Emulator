@@ -294,6 +294,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t tempCarry;
     uint8_t memoryByte;
     uint8_t portNumber;
+    uint16_t sourceAddress;
 
     //logger("%d\n", numExec);
     if(false){
@@ -379,9 +380,14 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Double-precision Add register pair BC to HL
             DAD_RP(state->b, state->c, state);
             break;
-        case 0x0A: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x0A:
+            // LDAX B
+            // Load Accumulator indirect from register pair B-C
+            // A = memory[(B)(C)]
+            sourceAddress = getValueBC(state);
+            state->a = readMem(sourceAddress, state);
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x0B: 
             printInstructionInfo(opcode);
@@ -483,7 +489,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Load Accumulator indirect from register pair D-E
             // A = memory[(D)(E)]
             ;  // workaround C99 quirk where a label cannot precede a declaration
-            uint16_t sourceAddress = getValueDE(state);
+            sourceAddress = getValueDE(state);
             state->a = readMem(sourceAddress, state);
             state->pc += 1;
             state->cyclesCompleted += 7;
