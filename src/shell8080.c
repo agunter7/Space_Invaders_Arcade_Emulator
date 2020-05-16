@@ -558,20 +558,20 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // (H)(L) = (H)(L)+1
             INX_RP(&state->h, &state->l, state);
             break;
-        case 0x24: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x24:
+            // INR H
+            // Increment register H
+            INR_R(&(state->h), state);
             break;
-        case 0x25: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x25:
+            // DCR H
+            // Decrement register H
+            DCR_R(&(state->h), state);
             break;
         case 0x26: 
             // MVI H, D8
             // MoVe Immediate into register H
-            state->h = operands[0];
-            state->pc += 2;
-            state->cyclesCompleted += 7;
+            MVI_R(&(state->h), operands[0], state);
             break;
         case 0x27:
             // DAA
@@ -604,6 +604,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
                 // Perform carry check
                 if(upperNibble > 0x0f){
                     state->flags.carry = 1;
+                }else{
+                    // Carry unaffected
                 }
                 // Place upper nibble back into Accumulator
                 upperNibble = upperNibble<<4;
@@ -616,8 +618,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 4;
             break;
         case 0x28: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0x29: 
             // DAD H
@@ -626,7 +628,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0x2A:
             // LHLD addr
-            // Load address into H and L directly
+            // Load memory at address into H and L directly
             // L = memory[addr]
             // H = memory[addr+1]
             state->l = readMem(orderedOperands, state);
@@ -639,25 +641,35 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Decrement HL
             DCX_RP(&(state->h), &(state->l), state);
             break;
-        case 0x2C: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x2C:
+            // INR L
+            // Increment register L
+            INR_R(&(state->l), state);
             break;
-        case 0x2D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x2D:
+            // DCR L
+            // Decrement register L
+            DCR_R(&(state->l), state);
             break;
         case 0x2E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MVI L, d8
+            // Move immediate into register L
+            MVI_R(&(state->l), operands[0], state);
             break;
-        case 0x2F: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x2F:
+            // CMA
+            // Complement Accumulator
+            // A = !A
+            state->a = ~(state->a);
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0x30: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // SIM
+            // Set Interrupt Mask
+            // Unimplemented on 8080, implemented on 8085
+            // Effectively NOP
+            NOP(state);
             break;
         case 0x31: 
             // LXI SP, D16
