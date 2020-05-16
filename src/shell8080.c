@@ -787,29 +787,35 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 1;
             state->cyclesCompleted += 4;
             break;
-        case 0x40: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x40:
+            // MOV B, B
+            // Move register B into register B
+            MOV_R1_R2(&(state->b), &(state->b), state);
             break;
-        case 0x41: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x41:
+            // MOV B, C
+            // Move the content of register C into register B
+            MOV_R1_R2(&(state->b), &(state->c), state);
             break;
-        case 0x42: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x42:
+            // MOV B, D
+            // Move the content of register D into register B
+            MOV_R1_R2(&(state->b), &(state->d), state);
             break;
-        case 0x43: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x43:
+            // MOV B, E
+            // Move the content of register E into register B
+            MOV_R1_R2(&(state->b), &(state->e), state);
             break;
-        case 0x44: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x44:
+            // MOV B, H
+            // Move the content of register H into register B
+            MOV_R1_R2(&(state->b), &(state->h), state);
             break;
         case 0x45: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV B, L
+            // Move the content of register L into register B
+            MOV_R1_R2(&(state->b), &(state->l), state);
             break;
         case 0x46:
             // MOV B, M
@@ -822,29 +828,29 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Move content of Accumulator into register B
             MOV_R1_R2(&(state->b), &(state->a), state);
             break;
-        case 0x48: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x48:
+            // MOV C, B
+            MOV_R1_R2(&(state->c), &(state->b), state);
             break;
         case 0x49: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV C, C
+            MOV_R1_R2(&(state->c), &(state->c), state);
             break;
-        case 0x4A: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x4A:
+            // MOV C, D
+            MOV_R1_R2(&(state->c), &(state->d), state);
             break;
         case 0x4B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV C, E
+            MOV_R1_R2(&(state->c), &(state->e), state);
             break;
-        case 0x4C: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x4C:
+            // MOV C, H
+            MOV_R1_R2(&(state->c), &(state->h), state);
             break;
-        case 0x4D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x4D:
+            // MOV C, L
+            MOV_R1_R2(&(state->c), &(state->l), state);
             break;
         case 0x4E: 
             // MOV C, M
@@ -854,25 +860,23 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x4F:
             // MOV C, A
             // Move the contents of register A into register C
-            state->c = state->a;
-            state->pc += 1;
-            state->cyclesCompleted += 5;
+            MOV_R1_R2(&(state->c), &(state->a), state);
             break;
-        case 0x50: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x50:
+            // MOV D, B
+            MOV_R1_R2(&(state->d), &(state->b), state);
             break;
-        case 0x51: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x51:
+            // MOV D, C
+            MOV_R1_R2(&(state->d), &(state->c), state);
             break;
         case 0x52: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV D, D
+            MOV_R1_R2(&(state->d), &(state->d), state);
             break;
         case 0x53: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV D, E
+            MOV_R1_R2(&(state->d), &(state->e), state);
             break;
         case 0x54: 
             // MOV D, H
@@ -881,8 +885,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             MOV_R1_R2(&(state->d), &(state->h), state);
             break;
         case 0x55: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV D, L
+            MOV_R1_R2(&(state->d), &(state->l), state);
             break;
         case 0x56: 
             // MOV D, M
@@ -891,32 +895,32 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             MOV_R_M(&(state->d), state);
             break;
         case 0x57: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV D, A
+            MOV_R1_R2(&(state->d), &(state->a), state);
             break;
         case 0x58: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV E, B
+            MOV_R1_R2(&(state->e), &(state->b), state);
             break;
         case 0x59: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV E, C
+            MOV_R1_R2(&(state->e), &(state->c), state);
             break;
         case 0x5A: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV E, D
+            MOV_R1_R2(&(state->e), &(state->d), state);
             break;
         case 0x5B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV E, E
+            MOV_R1_R2(&(state->e), &(state->e), state);
             break;
         case 0x5C: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV E, H
+            MOV_R1_R2(&(state->e), &(state->h), state);
             break;
         case 0x5D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV E, L
+            MOV_R1_R2(&(state->e), &(state->l), state);
             break;
         case 0x5E: 
             // MOV E, M
@@ -929,9 +933,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Move contents of accumulator into register E
             MOV_R1_R2(&(state->e), &(state->a), state);
             break;
-        case 0x60: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x60:
+            // MOV H, B
+            MOV_R1_R2(&(state->h), &(state->b), state);
             break;
         case 0x61: 
             // MOV H, C
@@ -939,20 +943,20 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             MOV_R1_R2(&(state->h), &(state->c), state);
             break;
         case 0x62: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV H, D
+            MOV_R1_R2(&(state->h), &(state->d), state);
             break;
         case 0x63: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV H, E
+            MOV_R1_R2(&(state->h), &(state->e), state);
             break;
         case 0x64: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV H, H
+            MOV_R1_R2(&(state->h), &(state->h), state);
             break;
         case 0x65: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV H, L
+            MOV_R1_R2(&(state->h), &(state->l), state);
             break;
         case 0x66: 
             // MOV H, M
@@ -971,16 +975,16 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             MOV_R1_R2(&(state->l), &(state->b), state);
             break;
         case 0x69: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV L, C
+            MOV_R1_R2(&(state->l), &(state->c), state);
             break;
         case 0x6A: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // MOV L, C
+            MOV_R1_R2(&(state->l), &(state->c), state);
             break;
-        case 0x6B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x6B:
+            // MOV L, E
+            MOV_R1_R2(&(state->l), &(state->e), state);
             break;
         case 0x6C: 
             // MOV L, H
@@ -989,7 +993,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0x6D:
             // MOV L, L
-            // Effectively a NOP
             MOV_R1_R2(&(state->l), &(state->l), state);
             break;
         case 0x6E: 
@@ -1014,25 +1017,35 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // memory[(H)(L)] = C
             MOV_M_R(state->c, state);
             break;
-        case 0x72: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x72:
+            // MOV M, D
+            // Move content of register D into memory
+            MOV_M_R(state->d, state);
             break;
-        case 0x73: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x73:
+            // MOV M, E
+            // Move content of register E into memory
+            MOV_M_R(state->e, state);
             break;
-        case 0x74: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x74:
+            // MOV M, H
+            // Move content of register H into memory
+            MOV_M_R(state->h, state);
             break;
-        case 0x75: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x75:
+            // MOV M, L
+            // Move content of register L into memory
+            MOV_M_R(state->l, state);
             break;
         case 0x76: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // HLT
+            // Halt
+            // The program counter is incremented to
+            // the address of the next sequential instruction. The CPU then
+            // enters the STOPPED state and no further activity takes
+            // place until an interrupt occurs.
+            // TODO: Implement this?
+            NOP(state);
             break;
         case 0x77: 
             // MOV M, A
@@ -1047,32 +1060,22 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x79:
             // MOV A, C
             // Move contents of register C into register A
-            state->a = state->c;
-            state->pc += 1;
-            state-> cyclesCompleted += 5;
+            MOV_R1_R2(&(state->a), &(state->c), state);
             break;
         case 0x7A: 
             // MOV A, D
             // Move contents of register D into register A
-            // A = D
-            state->a = state->d;
-            state->pc += 1;
-            state->cyclesCompleted += 5;
+            MOV_R1_R2(&(state->a), &(state->d), state);
             break;
         case 0x7B: 
             // MOV A, E
             // Move the contents of register E into register A
-            // A = E
-            state->a = state->e;
-            state->pc += 1;
-            state->cyclesCompleted += 5;
+            MOV_R1_R2(&(state->a), &(state->e), state);
             break;
         case 0x7C: 
             // MOV A, H
             // A = H
-            state->a = state->h;
-            state->pc += 1;
-            state->cyclesCompleted += 5;
+            MOV_R1_R2(&(state->a), &(state->h), state);
             break;
         case 0x7D: 
             // MOV A, L
