@@ -261,6 +261,18 @@ void MOV_M_R(uint8_t data, State8080 *state);
 void ADD_R(uint8_t data, State8080 *state);
 
 /**
+ * A set of 8080 instructions for adding registers to the Accumulator with a carry:
+ * ADC R
+ * R: A,B,C,D,E,H,L
+ *
+ * Flags: z,s,p,cy,ac
+ *
+ * @param data - Register value to add to accumulator (do not include carry)
+ * @param state - The 8080 state
+ */
+void ADC_R(uint8_t data, State8080 *state);
+
+/**
  * A set of 8080 instructions for comparing registers with the Accumulator:
  * CMP R
  * R: A,B,C,D,E,H,L

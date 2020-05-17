@@ -290,6 +290,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     // variable declaration for usage in some cases of switch
     uint8_t tempL;  // A temporary place to hold the value of the L register
     uint8_t tempH;  // A temporary place to hold the value of the H register
+    uint8_t tempA; // A temporary place to hold the Accumulator's value
     uint8_t subtrahend;
     uint8_t tempCarry;
     uint8_t memoryByte;
@@ -1095,29 +1096,34 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             MOV_R1_R2(&(state->a), &(state->a), state);
             break;
         case 0x80: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // ADD B
+            // ADD B to Accumulator
+            ADD_R(state->b, state);
             break;
         case 0x81:
             // ADD C
             // Add C to Accumulator
             ADD_R(state->c, state);
             break;
-        case 0x82: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x82:
+            // ADD D
+            // ADD D to Accumulator
+            ADD_R(state->d, state);
             break;
-        case 0x83: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x83:
+            // ADD E
+            // ADD E to Accumulator
+            ADD_R(state->e, state);
             break;
-        case 0x84: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x84:
+            // ADD H
+            // ADD H to Accumulator
+            ADD_R(state->h, state);
             break;
-        case 0x85: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x85:
+            // ADD L
+            // ADD L to Accumulator
+            ADD_R(state->l, state);
             break;
         case 0x86:
             // ADD M
@@ -1125,7 +1131,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = A + memory[(H)(L)]
             // Flags: z,s,p,cy,ac
             ;  // declaration after label workaround
-            uint8_t tempA = state->a;
+            tempA = state->a;
             moveDataFromHLMemory(&(state->a), state);  // Accumulator has memory value now
             addWithCheckAC(state->a, tempA, state);  // Do not store value, just for flag check
             state->a = addWithCheckCY(state->a, tempA, state);
@@ -1133,43 +1139,70 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->pc += 1;
             state->cyclesCompleted += 7;
             break;
-        case 0x87: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x87:
+            // ADD A
+            // ADD Accumulator to Accumulator
+            ADD_R(state->a, state);
             break;
         case 0x88: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // ADC B
+            // Add B to Accumulator with Carry
+            ADC_R(state->b, state);
             break;
-        case 0x89: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x89:
+            // ADC C
+            // Add C to Accumulator with Carry
+            ADC_R(state->c, state);
             break;
-        case 0x8A: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x8A:
+            // ADC D
+            // Add D to Accumulator with Carry
+            ADC_R(state->d, state);
             break;
-        case 0x8B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x8B:
+            // ADC E
+            // Add E to Accumulator with Carry
+            ADC_R(state->e, state);
             break;
-        case 0x8C: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x8C:
+            // ADC H
+            // Add H to Accumulator with Carry
+            ADC_R(state->h, state);
             break;
-        case 0x8D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x8D:
+            // ADC L
+            // Add L to Accumulator with Carry
+            ADC_R(state->l, state);
             break;
-        case 0x8E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x8E:
+            // ADC M
+            // Add memory to Accumulator with Carry
+            // A = A + memory[(H)(L)] + CY
+            // Flags: z,s,p,cy,ac
+            ;  // declaration after label workaround
+            moveDataFromHLMemory(&memoryByte, state);
+            if(memoryByte == 0xff && state->flags.carry == 1){
+                // Need to explicitly set carry, as this case will cause overflow in the addend
+                // Do not need to store value as we are adding 0
+                addWithCheckAC(state->a, 0x00, state);
+                checkStandardArithmeticFlags(state->a, state);
+                state->flags.carry = 1;
+            }else{
+                addWithCheckAC(state->a, memoryByte+1, state);  // Do not store value, just check flag
+                state->a = addWithCheckCY(state->a, memoryByte+1, state);
+                checkStandardArithmeticFlags(state->a, state);
+            }
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
-        case 0x8F: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x8F:
+            // ADC A
+            // Add Accumulator to Accumulator with Carry
+            ADC_R(state->a, state);
             break;
         case 0x90: 
+            // SUB B
+            // Subtract B from Accumulator
             printInstructionInfo(opcode);
             state->pc += instructionSizes[opcode];
             break;

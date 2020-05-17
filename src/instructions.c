@@ -366,6 +366,21 @@ void ADD_R(uint8_t data, State8080 *state)
 }
 
 /**
+ * ADC R
+ * Add Register to Accumulator with Carry
+ */
+void ADC_R(uint8_t data, State8080 *state)
+{
+    if(data == 0xff && state->flags.carry == 1){
+        // Explicitly set carry, as this case will cause overflow in the addend
+        ADD_R(0x00, state);
+        state->flags.carry = 1;
+    }else{
+        ADD_R(data+(state->flags.carry), state);
+    }
+}
+
+/**
  * CMP R
  * Compare Register with Accumulator
  * A - R
