@@ -1480,7 +1480,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // A - memory[(H)(L)]
             // Flags: z,s,p,cy,ac
             moveDataFromHLMemory(&subtrahend, state);
-            compareWithAccumulator(subtrahend, state);
+            CMP_R(subtrahend, state);
             state->cyclesCompleted += 3;
             break;
         case 0xBF:
