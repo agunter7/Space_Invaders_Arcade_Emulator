@@ -50,4 +50,18 @@ void generateInterrupt(uint8_t interruptNum, State8080 *state);
  */
 void testAllOpcodes();
 
+/**
+ * Returns a pointer to the stored binary derived from an input FILE
+ * @param romFile - pointer to FILE whose data should be stored
+ * @return - pointer to stored contents
+ */
+uint8_t *getRomBuffer(FILE *romFile);
+
+/**
+ * Execute the next instruction,
+ * i.e. the instruction pointed at by the program counter
+ * @param state - The 8080 state
+ */
+void executeNextInstruction(State8080 *state);
+
 #endif //INTEL_8080_EMULATOR_SHELL8080_H

@@ -30,7 +30,7 @@ State8080 *initializeCPU()
     // Open Space Invaders ROM file as binary-read-only and store contents in a buffer
     FILE *invadersFile = fopen("resources/invaders", "rb");
     if(invadersFile == NULL){
-        logger("Failed to open Space Invaders ROM.");
+        logger("Failed to open Space Invaders ROM.\n");
         return NULL;
     }
     romBuffer = getRomBuffer(invadersFile);
@@ -167,6 +167,11 @@ void testAllOpcodes()
     }
 }
 
+void runFromROM(State8080 *state)
+{
+
+}
+
 void runCodeFromBuffer(uint8_t *romBuffer)
 {
     State8080 state = {
@@ -252,6 +257,7 @@ uint8_t *getRomBuffer(FILE *romFile)
     fseek(romFile, 0, SEEK_SET);
 
     // Allocate memory for ROM
+    logger("Allocated %d bytes for a ROM file\n", romSizeInBytes);
     romBuffer = mallocSet(romSizeInBytes);
 
     // Read ROM into buffer
@@ -297,9 +303,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t portNumber;
     uint16_t sourceAddress;
 
-    //logger("%d\n", numExec);
-    if(false){
-        //logger("%d\n", numExec);
+    if(true){
+        logger("===\n");
+        logger("%d:\n", numExec);
         logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
         logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
                state->a, state->b, state->c, state->d, state->e, state->h, state->l);
@@ -312,6 +318,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         logger("%d\n", instructionSizes[opcode]);
         logger("%s\n", instructionFunctions[opcode]);
         logger("%s\n\n", instructionFlags[opcode]);
+        logger("===\n");
     }
     if(false){
         exit(0);
@@ -1235,9 +1242,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Subtract Memory from Accumulator
             // A = A - memory[(H)(L)]
             moveDataFromHLMemory(&memoryByte, state);
-            subFromAccumulator(memoryByte, state);
-            state->pc += 1;
-            state->cyclesCompleted += 7;
+            SUB_R(memoryByte, state);
+            state->cyclesCompleted += 3;
             break;
         case 0x97:
             // SUB A
@@ -1585,7 +1591,23 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xCD:
             // CALL addr
-            CALL(orderedOperands, state);
+            if(orderedOperands == 0x5){
+                if (state->c == 9){
+                    uint16_t offset = ((uint16_t)(state->d)<<8) | (state->e);
+                    char *str = (char*)(&(state->memory[offset+3]));  //skip the prefix bytes
+                    while (*str != '$'){
+                        logger("%c", *str++);
+                    }
+                    logger("\n");
+                }else if(state->c == 2){
+                    // saw this in the inspected code, never saw it called
+                    logger("print char routine called\n");
+                }
+            }else if (orderedOperands == 0){
+                exit(0);
+            }else{
+                CALL(orderedOperands, state);
+            }
             break;
         case 0xCE: 
             // ACI d8
@@ -1662,6 +1684,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Flags: z,s,p,cy,ac
             SUB_R(operands[0], state);
             state->pc += 1;
+            state->cyclesCompleted += 3;
             break;
         case 0xD7:
             // RST 2
