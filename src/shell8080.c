@@ -1614,8 +1614,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Add immediate to Accumulator with carry
             // A = d8 + CY
             // Flags: z,s,p,cy,ac
-            moveDataFromHLMemory(&memoryByte, state);
-            ADC_R(memoryByte, state);
+            ADC_R(operands[0], state);
+            state->pc += 1;
             state->cyclesCompleted += 3;
             break;
         case 0xCF:
