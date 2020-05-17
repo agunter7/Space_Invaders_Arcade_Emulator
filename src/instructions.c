@@ -539,6 +539,7 @@ void writeMem(uint16_t address, uint8_t value, State8080 *state)
         state->memory[address] = value;
         logger("Write -- Address 0x%04x; Value 0x%02x\n", address, value);
     }else{
+        state->memory[address] = value;
         logger("Warning: Attempted to write to invalid Intel 8080 memory! Write attempt rejected!\n");
         logger("Address 0x%04x; Value 0x%02x\n", address, value);
     }

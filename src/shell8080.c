@@ -451,6 +451,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Store Accumulator in memory location (D)(E)
             // memory[(D)(E)] = A
             moveDataToDEMemory(state->a, state);
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
         case 0x13: 
             // INX D
