@@ -15,8 +15,6 @@ int main(int argc, char **argv)
 {
     ArcadeState *arcade = initializeArcade();
 
-    testAllOpcodes();
-
     if(arcade != NULL){
         playSpaceInvaders(arcade);
         destroyArcade(arcade);
@@ -92,7 +90,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     //logger("Finished first half cycles\n");
 
     // Trigger mid-screen interrupt
-    generateInterrupt(0x01, arcade->cpu);  // mid-screen
+    //generateInterrupt(0x01, arcade->cpu);  // mid-screen
     //logger("Generated mid screen interrupt\n");
 
     // Emulate cpu up to the end of the frame
@@ -101,7 +99,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     //logger("Finished full frame cycles\n");
 
     //Trigger end-of-screen vertical blank interrupt
-    generateInterrupt(0x02, arcade->cpu);
+    //generateInterrupt(0x02, arcade->cpu);
     //logger("Generated full screen interrupt\n");
 
     //synchronizeIO(arcade);

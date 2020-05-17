@@ -162,7 +162,7 @@ void testAllOpcodes()
 {
     State8080 *testCpu = initializeCPU();
     uint8_t fakeOperands[2] = {0xff, 0xff};
-    for(uint16_t i = 0x00; i < 0x100; i++){
+    for(uint16_t i = 0x0000; i < 0x100; i++){
         executeInstructionByOpcode(i, fakeOperands, testCpu);
     }
 }
@@ -1203,68 +1203,89 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0x90: 
             // SUB B
             // Subtract B from Accumulator
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            SUB_R(state->b, state);
             break;
         case 0x91: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // SUB C
+            // Subtract C from Accumulator
+            SUB_R(state->c, state);
             break;
-        case 0x92: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x92:
+            // SUB D
+            // Subtract D from Accumulator
+            SUB_R(state->d, state);
             break;
-        case 0x93: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x93:
+            // SUB E
+            // Subtract E from Accumulator
+            SUB_R(state->e, state);
             break;
-        case 0x94: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x94:
+            // SUB H
+            // Subtract H from Accumulator
+            SUB_R(state->h, state);
             break;
-        case 0x95: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x95:
+            // SUB L
+            // Subtract L from Accumulator
+            SUB_R(state->l, state);
             break;
-        case 0x96: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x96:
+            // SUB M
+            // Subtract Memory from Accumulator
+            // A = A - memory[(H)(L)]
+            moveDataFromHLMemory(&memoryByte, state);
+            subFromAccumulator(memoryByte, state);
+            state->pc += 1;
+            state->cyclesCompleted += 7;
             break;
-        case 0x97: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x97:
+            // SUB A
+            // Subtract Accumulator from Accumulator
+            SUB_R(state->a, state);
             break;
         case 0x98: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // SBB B
+            // Subtract B from accumulator with borrow
+            SBB_R(state->b, state);
             break;
-        case 0x99: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x99:
+            // SBB C
+            // Subtract C from accumulator with borrow
+            SBB_R(state->c, state);
             break;
-        case 0x9A: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x9A:
+            // SBB D
+            // Subtract D from accumulator with borrow
+            SBB_R(state->d, state);
             break;
-        case 0x9B: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x9B:
+            // SBB E
+            // Subtract E from accumulator with borrow
+            SBB_R(state->e, state);
             break;
-        case 0x9C: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x9C:
+            // SBB H
+            // Subtract H from accumulator with borrow
+            SBB_R(state->h, state);
             break;
-        case 0x9D: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x9D:
+            // SBB L
+            // Subtract L from accumulator with borrow
+            SBB_R(state->l, state);
             break;
-        case 0x9E: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x9E:
+            // SBB M
+            // Subtract Memory from accumulator with borrow
+            // A = A - (memory[(H)(L)] + CY)
+            moveDataFromHLMemory(&memoryByte, state);
+            SBB_R(memoryByte, state);
+            state->cyclesCompleted += 3;
             break;
-        case 0x9F: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0x9F:
+            // SBB A
+            // Subtract A from accumulator with borrow
+            SBB_R(state->a, state);
             break;
         case 0xA0: 
             // ANA B
@@ -1274,28 +1295,43 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             ANA_R(state->b, state);
             break;
         case 0xA1: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // ANA C
+            // AND Accumulator with C
+            // Flags: z,s,p,cy(reset),ac
+            ANA_R(state->c, state);
             break;
-        case 0xA2: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xA2:
+            // ANA D
+            // AND Accumulator with D
+            // Flags: z,s,p,cy(reset),ac
+            ANA_R(state->d, state);
             break;
-        case 0xA3: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xA3:
+            // ANA E
+            // AND Accumulator with E
+            // Flags: z,s,p,cy(reset),ac
+            ANA_R(state->e, state);
             break;
-        case 0xA4: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xA4:
+            // ANA H
+            // AND Accumulator with H
+            // Flags: z,s,p,cy(reset),ac
+            ANA_R(state->h, state);
             break;
-        case 0xA5: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xA5:
+            // ANA L
+            // AND Accumulator with
+            // Flags: z,s,p,cy(reset),ac
+            ANA_R(state->l, state);
             break;
-        case 0xA6: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xA6:
+            // ANA M
+            // AND Accumulator with memory
+            // A = A AND memory[(H)(L)]
+            // Flags: z,s,p,cy(reset),ac
+            moveDataFromHLMemory(&memoryByte, state);
+            ANA_R(memoryByte, state);
+            state->cyclesCompleted += 3;
             break;
         case 0xA7:
             // ANA A
@@ -1311,25 +1347,35 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Flags: z,s,p,cy(reset),ac(reset);
             XRA_R(state->b, state);
             break;
-        case 0xA9: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xA9:
+            // XRA C
+            // Exclusive OR Accumulator with Register C
+            // Flags: z,s,p,cy(reset),ac(reset);
+            XRA_R(state->c, state);
             break;
-        case 0xAA: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xAA:
+            // XRA D
+            // Exclusive OR Accumulator with Register D
+            // Flags: z,s,p,cy(reset),ac(reset);
+            XRA_R(state->d, state);
             break;
-        case 0xAB: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xAB:
+            // XRA E
+            // Exclusive OR Accumulator with Register E
+            // Flags: z,s,p,cy(reset),ac(reset);
+            XRA_R(state->e, state);
             break;
-        case 0xAC: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xAC:
+            // XRA H
+            // Exclusive OR Accumulator with Register H
+            // Flags: z,s,p,cy(reset),ac(reset);
+            XRA_R(state->h, state);
             break;
-        case 0xAD: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xAD:
+            // XRA L
+            // Exclusive OR Accumulator with Register L
+            // Flags: z,s,p,cy(reset),ac(reset);
+            XRA_R(state->l, state);
             break;
         case 0xAE: 
             // XRA M
@@ -1338,12 +1384,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Flags: z,s,p,cy(reset),ac(reset)
             ;  // declaration after label workaround
             moveDataFromHLMemory(&memoryByte, state);
-            state->a = state->a ^ memoryByte;
-            checkStandardArithmeticFlags(state->a, state);
-            state->flags.carry = 0;
-            state->flags.auxiliaryCarry = 0;
-            state->pc += 1;
-            state->cyclesCompleted += 7;
+            XRA_R(memoryByte, state);
+            state->cyclesCompleted += 3;
             break;
         case 0xAF: 
             // XRA A
@@ -1357,73 +1399,88 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // OR Accumulator with register B
             ORA_R(state->b, state);
             break;
-        case 0xB1: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xB1:
+            // ORA C
+            // OR Accumulator with register C
+            ORA_R(state->c, state);
             break;
-        case 0xB2: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xB2:
+            // ORA D
+            // OR Accumulator with register D
+            ORA_R(state->d, state);
             break;
-        case 0xB3: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xB3:
+            // ORA E
+            // OR Accumulator with register E
+            ORA_R(state->e, state);
             break;
         case 0xB4: 
             // ORA H
             // OR Accumulator with register H
             ORA_R(state->h, state);
             break;
-        case 0xB5: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xB5:
+            // ORA L
+            // OR Accumulator with register L
+            ORA_R(state->l, state);
             break;
-        case 0xB6: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xB6:
+            // ORA M
+            // OR Accumulator with Memory
+            // A = A OR memory[(H)(L)]
+            // Flags: z,s,p,cy(reset),ac(reset)
+            moveDataFromHLMemory(&memoryByte, state);
+            ORA_R(memoryByte, state);
+            state->cyclesCompleted += 3;
             break;
-        case 0xB7: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xB7:
+            // ORA A
+            // OR Accumulator with register A
+            ORA_R(state->a, state);
             break;
         case 0xB8: 
             // CMP B
             // Compare register B with accumulator
             CMP_R(state->b, state);
             break;
-        case 0xB9: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xB9:
+            // CMP C
+            // Compare register C with accumulator
+            CMP_R(state->c, state);
             break;
-        case 0xBA: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xBA:
+            // CMP D
+            // Compare register d with accumulator
+            CMP_R(state->d, state);
             break;
-        case 0xBB: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xBB:
+            // CMP E
+            // Compare register E with accumulator
+            CMP_R(state->e, state);
             break;
-        case 0xBC: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xBC:
+            // CMP H
+            // Compare register H with accumulator
+            CMP_R(state->h, state);
             break;
-        case 0xBD: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xBD:
+            // CMP L
+            // Compare register L with accumulator
+            CMP_R(state->l, state);
             break;
         case 0xBE: 
             // CMP M
             // Compare Memory with Accumulator
+            // A - memory[(H)(L)]
             // Flags: z,s,p,cy,ac
-            ;  // declaration after label workaround
             moveDataFromHLMemory(&subtrahend, state);
             compareWithAccumulator(subtrahend, state);
-            state->pc += 1;
-            state->cyclesCompleted += 7;
+            state->cyclesCompleted += 3;
             break;
-        case 0xBF: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xBF:
+            // CMP A
+            // Compare accumulator with accumulator
+            CMP_R(state->a, state);
             break;
         case 0xC0:
             // RNZ
@@ -1444,7 +1501,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0xC2: 
             // JNZ addr
             // if NZ, PC = addr
-            if(!state->flags.zero){
+            if(!(state->flags.zero)){
                 JMP(orderedOperands, state);
 			}else{
                 state->pc += 3;
@@ -1456,8 +1513,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             JMP(orderedOperands, state);
             break;
         case 0xC4: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CNZ addr
+            // Call address if not zero
+            // if NZ; Call addr
+            if(!(state->flags.zero)){
+                CALL(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 11;
+            }
             break;
         case 0xC5: 
             // PUSH B
@@ -1466,7 +1530,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xC6: 
             // ADI D8
-            // Add Immediate to register A
+            // Add Immediate to Accumulator
             // A = A + D8
             // Flags: z,s,p,cy,ac
             addWithCheckAC(state->a, operands[0], state);
@@ -1506,8 +1570,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             }
             break;
         case 0xCB: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0xCC: 
             // CZ addr
@@ -1524,8 +1588,13 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             CALL(orderedOperands, state);
             break;
         case 0xCE: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // ACI d8
+            // Add immediate to Accumulator with carry
+            // A = d8 + CY
+            // Flags: z,s,p,cy,ac
+            moveDataFromHLMemory(&memoryByte, state);
+            ADC_R(memoryByte, state);
+            state->cyclesCompleted += 3;
             break;
         case 0xCF:
             // RST 1
@@ -1545,6 +1614,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xD1: 
             // POP D
+            // Pop register pair D-E from stack
             POP_RP(&state->d, &state->e, state);
             break;
         case 0xD2:
@@ -1555,7 +1625,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
                 JMP(orderedOperands, state);
             }else{
                 state->pc += 3;
-                state->cyclesCompleted +=10;
+                state->cyclesCompleted += 10;
             }
             break;
         case 0xD3: 
@@ -1573,10 +1643,10 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0xD4: 
             // CNC adr
             // Call address if No Carry
-            if(state->flags.carry == 0){
+            if(!(state->flags.carry)){
                 CALL(orderedOperands, state);
 		    }else{
-                state->pc += instructionSizes[opcode];
+                state->pc += 3;
                 state->cyclesCompleted += 11;
 		    }
             break;
@@ -1585,9 +1655,13 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // PUSH register pair D-E
             PUSH_RP(state->d, state->e, state);
             break;
-        case 0xD6: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+        case 0xD6:
+            // SUI d8
+            // Subtract immediate from Accumulator
+            // A = A - d8
+            // Flags: z,s,p,cy,ac
+            SUB_R(operands[0], state);
+            state->pc += 1;
             break;
         case 0xD7:
             // RST 2
@@ -1595,12 +1669,19 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             RST(2, state);
             break;
         case 0xD8: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // RC
+            // Return if Carry
+            if(state->flags.carry){
+                RET(state);
+                state->cyclesCompleted += 1;
+            }else{
+                state->pc += 1;
+                state->cyclesCompleted += 5;
+            }
             break;
         case 0xD9: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0xDA:
             // JC addr
@@ -1625,31 +1706,44 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 10;
             break;
         case 0xDC: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CC addr
+            // Call if Carry
+            // if CY, CALL addr
+            if(state->flags.carry){
+                CALL(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 11;
+            }
             break;
         case 0xDD: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0xDE: 
             // SBI D8
             // Subtract immediate from Accumulator with borrow
             // A = A - (D8 + CY)
             // Flags: z,s,p,cy,ac
-            ;  // declaration after label workaround
-            subtrahend = operands[0] + state->flags.carry;
-            subFromAccumulator(subtrahend, state);
-            state->pc += 2;
-            state->cyclesCompleted += 7;
+            SBB_R(operands[0], state);
+            state->pc += 1;
+            state->cyclesCompleted += 3;
             break;
         case 0xDF:
             // RST 3
             RST(3, state);
             break;
         case 0xE0: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // RPO
+            // Return if Parity ODD
+            // If PO, RET
+            if(!(state->flags.parity)){
+                RET(state);
+                state->cyclesCompleted += 1;
+            }else{
+                state->pc += 1;
+                state->cyclesCompleted += 5;
+            }
             break;
         case 0xE1: 
             // POP H
@@ -1657,8 +1751,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             POP_RP(&(state->h), &(state->l), state);
             break;
         case 0xE2: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // JPO addr
+            // Jump if Parity Odd
+            // if PO, JMP addr
+            if(!(state->flags.parity)){
+                JMP(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 10;
+            }
             break;
         case 0xE3:
             // XTHL
@@ -1676,8 +1777,15 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state-> cyclesCompleted += 18;
             break;
         case 0xE4: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CPO addr
+            // Call if Parity Odd
+            // if PO, CALL addr
+            if(!(state->flags.parity)){
+                CALL(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 11;
+            }
             break;
         case 0xE5: 
             // PUSH H
@@ -1686,23 +1794,28 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xE6: 
             // ANI D8
-            // AND register A with Immediate
-            // A = A & D8
+            // AND Accumulator with Immediate
+            // A = A AND D8
             //Flags: z,s,p,cy(reset),ac(reset)
-            state->a = state->a & operands[0];
-            checkStandardArithmeticFlags(state->a, state);
-            state->flags.carry = 0;
-            state->flags.auxiliaryCarry = 0;
-            state->pc += 2;
-            state->cyclesCompleted += 7;
+            ANA_R(operands[0], state);
+            state->pc += 1;
+            state->cyclesCompleted += 3;
             break;
         case 0xE7:
             // RST 4
             RST(4, state);
             break;
         case 0xE8: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // RPE
+            // Return if Parity Even
+            // if PE, RET
+            if(state->flags.parity){
+                RET(state);
+                state->cyclesCompleted += 1;
+            }else{
+                state->pc += 1;
+                state->cyclesCompleted += 5;
+            }
             break;
         case 0xE9:
             // PCHL
@@ -1751,20 +1864,33 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             }
             break;
         case 0xED: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0xEE: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // XRI d8
+            // Exclusive OR immediate with Accumulator
+            // A = A XOR d8
+            // Flags: z,s,p,cy(reset),ac(reset)
+            XRA_R(operands[0], state);
+            state->pc += 1;
+            state->cyclesCompleted += 3;
             break;
         case 0xEF:
             // RST 5
             RST(5, state);
             break;
         case 0xF0: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // RP
+            // Return if Positive
+            // if Pos, RET
+            if(!(state->flags.sign)){
+                RET(state);
+                state->cyclesCompleted += 1;
+            }else{
+                state->pc += 1;
+                state->cyclesCompleted += 5;
+            }
             break;
         case 0xF1: 
             // POP PSW
@@ -1774,16 +1900,33 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             POP_RP(&(state->a), (uint8_t*)&(state->flags), state);  // Treat flags as 8-bit uint to match function signature
             break;
         case 0xF2: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // JP addr
+            // Jump if Positive
+            // If pos, JMP addr
+            if(!(state->flags.sign)){
+                JMP(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 10;
+            }
             break;
         case 0xF3: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // DI
+            // Disable interrupts
+            state->interruptsEnabled = 0;
+            state->pc += 1;
+            state->cyclesCompleted += 4;
             break;
         case 0xF4: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CP addr
+            // Call address if Positive
+            // If pos, CALL addr
+            if(!(state->flags.sign)){
+                CALL(orderedOperands, state);
+            }else{
+                state->pc += 3;
+                state->cyclesCompleted += 11;
+            }
             break;
         case 0xF5: 
             // PUSH PSW
@@ -1793,20 +1936,38 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             PUSH_RP(state->a, flagsAsInt, state);
             break;
         case 0xF6: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // ORI d8
+            // OR immediate with Accumulator
+            // A = A OR d8
+            // Flags: z,s,p,cy(reset),ac(reset)
+            ORA_R(operands[0], state);
+            state->pc += 1;
+            state->cyclesCompleted += 3;
             break;
         case 0xF7:
             // RST 6
             RST(6, state);
             break;
         case 0xF8: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // RM
+            // Return if minus
+            // If S, RET
+            if(state->flags.sign){
+                RET(state);
+                state->cyclesCompleted += 1;
+            }else{
+                state->pc += 1;
+                state->cyclesCompleted += 5;
+            }
             break;
         case 0xF9: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // SPHL
+            // Set Stack Pointer to Register Pair H-L
+            // SP.hi = H
+            // SP.lo = L
+            state->sp = getValueHL(state);
+            state->pc += 1;
+            state->cyclesCompleted += 5;
             break;
         case 0xFA: 
             // JM Addr
@@ -1828,12 +1989,19 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             state->cyclesCompleted += 4;
             break;
         case 0xFC: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // CM addr
+            // Call address if Minus
+            // If S, CALL addr
+            if(state->flags.sign){
+                CALL(orderedOperands, state);
+            }else {
+                state->pc += 3;
+                state->cyclesCompleted += 11;
+            }
             break;
         case 0xFD: 
-            printInstructionInfo(opcode);
-            state->pc += instructionSizes[opcode];
+            // Unimplemented
+            NOP(state);
             break;
         case 0xFE: 
             // CPI D8
@@ -1842,9 +2010,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Flags: z,s,p,cy,ac
             // Note: result should not be stored anywhere, this just affects flags
             // System manual does not explicitly state this, but programmer's manual does
-            compareWithAccumulator(operands[0], state);
-            state->pc += 2;
-            state->cyclesCompleted += 7;
+            CMP_R(operands[0], state);
+            state->pc += 1;
+            state->cyclesCompleted += 3;
             break;
         case 0xFF:
             // RST 7
@@ -2888,7 +3056,7 @@ void initializeGlobals()
         "CALL $28",
         "if P; RET",
         "flags <- (sp); A <- (sp+1); sp <- sp+2",
-        "if P=1 PC <- adr",
+        "if S=0; PC <- adr",
         "special",
         "if P; PC <- adr",
         "(sp-2)<-flags; (sp-1)<-A; sp <- sp - 2",

@@ -158,6 +158,7 @@ void XRA_R(uint8_t data, State8080 *state)
  AND Accumulator with register
  A = A AND r
  Flags: z,s,p,cy(reset),ac
+ TODO: Check ac check... system manual says it should be affected, programmer manual implies otherwise
  */
 void ANA_R(uint8_t data, State8080 *state)
 {
@@ -406,6 +407,39 @@ void LXI_RP(uint8_t *highReg, uint8_t *lowReg, uint16_t orderedOperands, State80
     state->cyclesCompleted += 10;
 }
 
+/**
+ * SUB R
+ * Subtract Register from Accumulator
+ * A = A - R
+ * Flags: z,s,p,cy,ac
+ */
+void SUB_R(uint8_t data, State8080 *state)
+{
+    subFromAccumulator(data, state);
+    state->pc += 1;
+    state->cyclesCompleted += 4;
+}
+
+/**
+ * SBB R
+ * Subtract Register from Accumulator with borrow
+ * A = A - (R + CY)
+ * Flags: z,s,p,cy,ac
+ */
+void SBB_R(uint8_t data, State8080 *state)
+{
+    if(data == 0xff && state->flags.carry == 1){
+        // Overflow occurs here, carry out occurs, reset carry flag (due to subtraction logic)
+        subFromAccumulator(0x00, state);
+        state->flags.carry = 0;
+    }else{
+        subFromAccumulator(data+(state->flags.carry), state);
+    }
+
+    state->pc += 1;
+    state->cyclesCompleted += 4;
+}
+
 uint16_t compareWithAccumulator(uint8_t subtrahend, State8080 *state)
 {
     addWithCheckAC(state->a, twosComplement(subtrahend), state);  // Do not store result, just check AC
@@ -428,7 +462,7 @@ void orWithAccumulator(uint8_t data, State8080 *state)
     checkStandardArithmeticFlags(state->a, state);
 
     state->flags.carry = 0;
-    state->flags.auxiliaryCarry = 0; // TODO: Check this
+    state->flags.auxiliaryCarry = 0;
 }
 
 void xorWithAccumulator(uint8_t data, State8080 *state)
@@ -437,7 +471,7 @@ void xorWithAccumulator(uint8_t data, State8080 *state)
 
     checkStandardArithmeticFlags(state->a, state);
     state->flags.carry = 0;
-    state->flags.auxiliaryCarry = 0; // TODO: Check this
+    state->flags.auxiliaryCarry = 0;
 }
 
 /**
@@ -449,7 +483,9 @@ void andWithAccumulator(uint8_t data, State8080 *state)
 
     checkStandardArithmeticFlags(state->a, state);
     state->flags.carry = 0;
-    state->flags.auxiliaryCarry = 0;  // TODO: No clue if hard-resetting is correct, but I can't see how it would be set by AND
+
+    // TODO: No clue if hard-resetting is correct, but I can't see how it would be set by AND
+    state->flags.auxiliaryCarry = 0;
 }
 
 void moveDataToHLMemory(uint8_t data, State8080 *state)

@@ -304,6 +304,32 @@ void LXI_RP(uint8_t *highReg, uint8_t *lowReg, uint16_t orderedOperands, State80
  * @param state - The 8080 state
  */
 void NOP(State8080 *state);
+
+/**
+ * A set of 8080 instructions for subtracting a register from the Accumulator:
+ * SUB R
+ * R: A,B,C,D,E,H,L
+ *
+ * Flags: z,s,p,cy,ac
+ *
+ * @param data - The value to subtract from the accumulator
+ * @param state - The 8080 state
+ */
+void SUB_R(uint8_t data, State8080 *state);
+
+/**
+ * A set of 8080 instructions for subtracting a register from the accumulator with a borrow:
+ * SBB R
+ * R: A,B,C,D,E,H,L
+ *
+ * Flags: z,s,p,cy,ac
+ * subtraction logic on carry
+ *
+ * @param data - The register value to subtract (do not include carry)
+ * @param state - The 8080 state
+ */
+void SBB_R(uint8_t data, State8080 *state);
+
 /**
  * Subtracts a value from the Accumulator without changing the Accumulator.
  * Sets flags based on 8080 subtraction logic.
