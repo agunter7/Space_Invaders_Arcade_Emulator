@@ -321,7 +321,7 @@ void DCR_R(uint8_t *reg, State8080 *state)
     checkStandardArithmeticFlags(*reg, state);
 
     state->pc += 1;
-    state->pc += 5;
+    state->cyclesCompleted += 5;
 }
 
 /**
@@ -535,7 +535,7 @@ uint16_t getValueBC(State8080 *state)
 
 void writeMem(uint16_t address, uint8_t value, State8080 *state)
 {
-    if(address >= ROM_LIMIT_8080){
+    if(address >= (0x0100 + 1453)){
         state->memory[address] = value;
         logger("Write -- Address 0x%04x; Value 0x%02x\n", address, value);
     }else{
