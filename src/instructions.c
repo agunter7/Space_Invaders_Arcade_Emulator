@@ -535,18 +535,18 @@ uint16_t getValueBC(State8080 *state)
 
 void writeMem(uint16_t address, uint8_t value, State8080 *state)
 {
-    if(address >= ROM_LIMIT_8080 && address < 0x4000 && !(address >= 0x2300 && address < 0x23de) ){
+    if(address >= ROM_LIMIT_8080){
         state->memory[address] = value;
-        //logger("Write -- Address 0x%04x; Value 0x%02x\n", address, value);
+        logger("Write -- Address 0x%04x; Value 0x%02x\n", address, value);
     }else{
-        //logger("Warning: Attempted to write to invalid Intel 8080 memory! Write attempt rejected!\n");
-        //logger("Address 0x%04x; Value 0x%02x\n", address, value);
+        logger("Warning: Attempted to write to invalid Intel 8080 memory! Write attempt rejected!\n");
+        logger("Address 0x%04x; Value 0x%02x\n", address, value);
     }
 }
 
 uint8_t readMem(uint16_t address, State8080 *state)
 {
-    //logger("Read -- Address 0x%04x; Value 0x%02x\n", address, state->memory[address]);
+    logger("Read -- Address 0x%04x; Value 0x%02x\n", address, state->memory[address]);
     return state->memory[address];
 }
 
@@ -611,6 +611,14 @@ uint16_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state)
     }else{
         // No carry out occurred, a "borrow" occurred
         state->flags.carry = 1;
+    }
+
+    // If subtrahend is 0x00, twos complement process is
+    // 0000 0000 -> flip bits -> 1111 1111 -> +1 -> [1] 0000 0000
+    // Carry out means carry flag should be reset by subtraction logic
+    // This must be performed manually as the (minuend-subtrahend) operation alone will no do this
+    if(subtrahend == 0x00){
+        state->flags.carry = 0;
     }
 
     return result;
