@@ -987,8 +987,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             MOV_R1_R2(&(state->l), &(state->c), state);
             break;
         case 0x6A: 
-            // MOV L, C
-            MOV_R1_R2(&(state->l), &(state->c), state);
+            // MOV L, D
+            MOV_R1_R2(&(state->l), &(state->d), state);
             break;
         case 0x6B:
             // MOV L, E
