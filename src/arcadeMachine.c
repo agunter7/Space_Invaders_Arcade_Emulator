@@ -48,28 +48,23 @@ void playSpaceInvaders(ArcadeState *arcade)
 
         // Update screen
         SDL_RenderPresent(arcade->renderer);
-
-        // If frame time < (1/60)s, then stall
     }
 }
 
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
-    SDL_Event currentEvent;
-
     resetPortsIO(arcade);
 
-    // Receive user input
+    // Receive and process user input
+    SDL_Event currentEvent;
     while(SDL_PollEvent(&currentEvent) != 0){
-        // Events to check: quit, game input
-
         if(currentEvent.type == SDL_QUIT){
             logger("Quitting game\n");
             return 1;
         }
 
         // User inputs placed inside input ports
-        if(currentEvent.type == SDL_KEYDOWN && currentEvent.key.repeat == 0){  // key was pressed
+        if(currentEvent.type == SDL_KEYDOWN){  // key was pressed
             switch(currentEvent.key.keysym.sym){
                 case SDLK_LEFT:
                     arcade->inputPort0 |= MOVE_LEFT_MASK;
@@ -84,7 +79,6 @@ unsigned int handleGameEvents(ArcadeState *arcade)
                     arcade->inputPort1 |= SHOOT_MASK;
                     break;
                 case SDLK_0:
-                    logger("credit\n");
                     arcade->inputPort1 |= CREDIT_MASK;
                     break;
                 case SDLK_1:
@@ -97,7 +91,8 @@ unsigned int handleGameEvents(ArcadeState *arcade)
         }
     }
 
-    updateShiftRegister(arcade);  // also synchronizes I/O
+
+    updateShiftRegister(arcade);
 
     // Emulate cpu up to the known point of the mid-screen render interrupt
     // Screen width is used here, rather than height, as the Space Invaders screen is rotated 90degrees and is

@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include "sdl_sources/SDL.h"
 #include "helpers.h"
 #include "cpuStructures.h"

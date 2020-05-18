@@ -1721,7 +1721,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // IN d8
             // Read from input port
             // A = data
-            ;  // declaration after label workaround
             portNumber = operands[0];
             state->a = state->inputBuffers[portNumber];
             state->pc += 2;
