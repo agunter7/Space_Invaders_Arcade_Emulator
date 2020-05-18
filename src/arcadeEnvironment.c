@@ -15,11 +15,7 @@ ArcadeState *initializeArcade()
     arcade->window = NULL;
     arcade->renderer = NULL;
 
-    // Set default CPU input port values
-    arcade->inputPort0 = 0x0e;  // Bits 1-3 are always 1 by specification
-    arcade->inputPort1 = 0x09;  // Bit 3 always 1 by specification
-    arcade->inputPort2 = 0x00;
-    arcade->inputPort3 = 0x00;
+    resetPortsIO(arcade);
     synchronizeIO(arcade);
 
 
@@ -87,10 +83,6 @@ void destroyArcade(ArcadeState *arcade)
     SDL_Quit();
 }
 
-/**
- *
- * @param arcade
- */
 void synchronizeIO(ArcadeState *arcade)
 {
     // Grab shorthand reference to cpu
@@ -108,4 +100,20 @@ void synchronizeIO(ArcadeState *arcade)
     arcade->outputPort4 = cpu->outputBuffers[4];
     arcade->outputPort5 = cpu->outputBuffers[5];
     arcade->outputPort6 = cpu->outputBuffers[6];
+}
+
+void resetPortsIO(ArcadeState *arcade)
+{
+    // Set default CPU input port values
+    arcade->inputPort0 = 0x0e;  // Bits 1-3 are always 1 by specification
+    arcade->inputPort1 = 0x08;  // Bit 3 always 1 by specification
+    arcade->inputPort2 = 0x00;
+    arcade->inputPort3 = 0x00;
+
+    // Reset CPU output ports
+    arcade->outputPort2 = 0x00;
+    arcade->outputPort3 = 0x00;
+    arcade->outputPort4 = 0x00;
+    arcade->outputPort5 = 0x00;
+    arcade->outputPort6 = 0x00;
 }

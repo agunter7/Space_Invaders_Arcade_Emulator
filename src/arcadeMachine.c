@@ -29,45 +29,35 @@ void playSpaceInvaders(ArcadeState *arcade)
 
     uint32_t screenPixels[256][224];
     memset(screenPixels, 0xff, 256*224*4);
-    /*for(int j=0; j<256; j+=10){
-        for(int i=0; i< (224*4); i+=4){
-            memset(&(((uint8_t*)(screenPixels[j]))[i+2]), 0x00, 1);
-        }
-    }*/
     SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_RGBA32,
             SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS);
-    //logger("Entering loop\n");
+
     while (!quitGame){
         //Start timer
 
-        //logger("Attempting to handle game events\n");
         quitGame = handleGameEvents(arcade);
-        //logger("Handled game events\n");
 
         // Clear screen
         SDL_RenderClear(arcade->renderer);
-        //logger("Cleared screen\n");
 
         // Load/render window image
         SDL_UpdateTexture(texture, NULL, getCurrentFramePixels(arcade->cpu), SCREEN_WIDTH_PIXELS*BYTES_PER_PIXEL);
-        //logger("Updated texture\n");
         SDL_RenderCopy(arcade->renderer, texture, NULL, NULL);
-        //logger("Copied texture to renderer\n");
 
         // Play any sounds
 
         // Update screen
         SDL_RenderPresent(arcade->renderer);
-        //logger("Presented renderer\n");
 
         // If frame time < (1/60)s, then stall
-        //logger("Finished a main loop\n");
     }
 }
 
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
     SDL_Event currentEvent;
+
+    resetPortsIO(arcade);
 
     // Receive user input
     while(SDL_PollEvent(&currentEvent) != 0){
@@ -79,30 +69,51 @@ unsigned int handleGameEvents(ArcadeState *arcade)
         }
 
         // User inputs placed inside input ports
+        if(currentEvent.type == SDL_KEYDOWN && currentEvent.key.repeat == 0){  // key was pressed
+            switch(currentEvent.key.keysym.sym){
+                case SDLK_LEFT:
+                    arcade->inputPort0 |= MOVE_LEFT_MASK;
+                    arcade->inputPort1 |= MOVE_LEFT_MASK;
+                    break;
+                case SDLK_RIGHT:
+                    arcade->inputPort0 |= MOVE_RIGHT_MASK;
+                    arcade->inputPort1 |= MOVE_RIGHT_MASK;
+                    break;
+                case SDLK_SPACE:
+                    arcade->inputPort0 |= SHOOT_MASK;
+                    arcade->inputPort1 |= SHOOT_MASK;
+                    break;
+                case SDLK_0:
+                    logger("credit\n");
+                    arcade->inputPort1 |= CREDIT_MASK;
+                    break;
+                case SDLK_1:
+                    arcade->inputPort1 |= P1_START_MASK;
+                    break;
+                case SDLK_2:
+                    arcade->inputPort1 |= P2_START_MASK;
+                    break;
+            }
+        }
     }
+
+    synchronizeIO(arcade);
 
     // Emulate cpu up to the known point of the mid-screen render interrupt
     // Screen width is used here, rather than height, as the Space Invaders screen is rotated 90degrees and is
     // thus rendering vertical lines rather than horizontal lines
     unsigned int numCyclesFirstHalf = CYCLES_PER_FRAME*((float)MIDSCREEN_INTERRUPT_LINE/(float)SCREEN_WIDTH_PIXELS);
-    //logger("Attempting first half cycles\n");
     runForCycles(numCyclesFirstHalf, arcade->cpu);
-    //logger("Finished first half cycles\n");
 
     // Trigger mid-screen interrupt
-    //generateInterrupt(0x01, arcade->cpu);  // mid-screen
-    //logger("Generated mid screen interrupt\n");
+    generateInterrupt(0x01, arcade->cpu);  // mid-screen
 
     // Emulate cpu up to the end of the frame
     unsigned int numCyclesSecondHalf = CYCLES_PER_FRAME-numCyclesFirstHalf;
     runForCycles(numCyclesSecondHalf, arcade->cpu);
-    //logger("Finished full frame cycles\n");
 
     //Trigger end-of-screen vertical blank interrupt
-    //generateInterrupt(0x02, arcade->cpu);
-    //logger("Generated full screen interrupt\n");
-
-    //synchronizeIO(arcade);
+    generateInterrupt(0x02, arcade->cpu);
 
     return 0;
 }
@@ -152,7 +163,7 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
          |     -     |     -     |    -     |
     57120:  0  -57121: 256 -    ...   -57343:57088
     */
-    // The render-order pixels are on the left of each colon while the rotated versions from the 8080 VRAM
+    // The render-order pixel indices are on the left of each colon while the rotated versions from the 8080 VRAM
     // are on the right of each colon.
     // We can call the render-order indices I_2 and the rotated indices I_1
     // Thus our goal is to find a mapping function of the form I_1 = f(I_2)

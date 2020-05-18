@@ -29,8 +29,6 @@ void CALL(uint16_t address, State8080 *state)
     uint16_t pcToStore = (state->pc) + 3;
     uint16_t sp = state->sp;
 
-    logger("CALL 0x%04x -> 0x%04x\n", pcToStore, address);
-
     pcHigh = (uint8_t)(pcToStore >> 8);
     pcLow = (uint8_t)pcToStore;
 
@@ -198,12 +196,9 @@ void RST(uint8_t restartNumber, State8080 *state)
         state->pc = 8 * restartNumber;
         state->cyclesCompleted += 11;
 
-        logger("RST CALL 0x%04x -> 0x%04x\n", pcToStore, state->pc);
-
         // It is expected for interrupts to be disabled until end of ISR. Interrupts will be enabled at end of ISR
         state->interruptsEnabled = 0;
 
-        logger("Interrupt executed and disabled\n");
     }
 }
 
@@ -220,8 +215,6 @@ void RET(State8080 *state)
     uint8_t highByte = readMem((state->sp)+1, state);
     uint16_t newValuePC = (((uint16_t)highByte) << 8) | (uint16_t)lowByte;
     state->pc = newValuePC;
-
-    logger("RET 0x%04x\n", newValuePC);
 
     state->sp += 2;
     state->cyclesCompleted += 10;
@@ -535,19 +528,19 @@ uint16_t getValueBC(State8080 *state)
 
 void writeMem(uint16_t address, uint8_t value, State8080 *state)
 {
-    if(address >= (0x0100 + 1453)){
+    if(address >= ROM_LIMIT_8080){
         state->memory[address] = value;
-        logger("Write -- Address 0x%04x; Value 0x%02x\n", address, value);
+        //logger("Write -- Address 0x%04x; Value 0x%02x\n", address, value);
     }else{
         state->memory[address] = value;
-        logger("Warning: Attempted to write to invalid Intel 8080 memory! Write attempt rejected!\n");
+        logger("Warning: ROM Overwrite!\n");
         logger("Address 0x%04x; Value 0x%02x\n", address, value);
     }
 }
 
 uint8_t readMem(uint16_t address, State8080 *state)
 {
-    logger("Read -- Address 0x%04x; Value 0x%02x\n", address, state->memory[address]);
+    //logger("Read -- Address 0x%04x; Value 0x%02x\n", address, state->memory[address]);
     return state->memory[address];
 }
 

@@ -303,7 +303,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t portNumber;
     uint16_t sourceAddress;
 
-    if(true){
+    if(false){
         logger("===\n");
         logger("%d:\n", numExec);
         logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
@@ -1593,7 +1593,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xCD:
             // CALL addr
-            if(orderedOperands == 0x5){
+            /*if(orderedOperands == 0x5){
                 if (state->c == 9){
                     uint16_t offset = ((uint16_t)(state->d)<<8) | (state->e);
                     char *str = (char*)(&(state->memory[offset+3]));  //skip the prefix bytes
@@ -1609,7 +1609,8 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
                 exit(0);
             }else{
                 CALL(orderedOperands, state);
-            }
+            }*/
+            CALL(orderedOperands, state);
             break;
         case 0xCE: 
             // ACI d8
@@ -1622,7 +1623,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xCF:
             // RST 1
-            logger("RST 1 Attempt\n");
             RST(1, state);
             break;
         case 0xD0:
@@ -1660,7 +1660,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             ;  // declaration after label workaround
             portNumber = operands[0];
             state->outputBuffers[portNumber] = state->a;
-            logger("OUTPUT 0x%02x -- 0x%02x\n", operands[0], state->a);
             state->pc += 2;
             state->cyclesCompleted += 10;
             break;
@@ -1690,7 +1689,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xD7:
             // RST 2
-            logger("RST 2 Attempt\n");
             RST(2, state);
             break;
         case 0xD8: 
@@ -1726,7 +1724,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             ;  // declaration after label workaround
             portNumber = operands[0];
             state->a = state->inputBuffers[portNumber];
-            logger("INPUT 0x%02x -- 0x%02x\n", operands[0], state->a);
+            logger("INPUT %d -- 0x%02x\n", portNumber, state->a);
             state->pc += 2;
             state->cyclesCompleted += 10;
             break;
@@ -2008,7 +2006,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0xFB: 
             // EI
             // Enable Interrupt
-            logger("ENABLING INTERRUPTS\n");
             state->interruptsEnabled = 1;
             state->pc += 1;
             state->cyclesCompleted += 4;

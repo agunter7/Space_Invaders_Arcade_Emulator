@@ -21,6 +21,14 @@
 #define FPS 60
 #define CYCLES_PER_FRAME floor(CYCLES_PER_SECOND_8080/FPS)
 #define MIDSCREEN_INTERRUPT_LINE 96
+// Masks for setting 8080 input port bits for Space Invaders actions
+#define SHOOT_MASK 0x10  // For triggering player character to shoot
+#define MOVE_LEFT_MASK 0x20  // For moving player character left
+#define MOVE_RIGHT_MASK 0x40  // For moving player character right
+#define CREDIT_MASK 0x01  // Insert a coin
+#define P2_START_MASK 0x02  // Player 2 start playing
+#define P1_START_MASK 0x04  // Player 1 start playing
+
 
 
 /**
@@ -48,7 +56,7 @@ typedef struct ArcadeState{
 
 /**
  * Sets up an arcade for emulation
- * @return ArcadeState* - initialized arcade, or NULL if initialization failed
+ * @return - pointer to an initialized arcade, or NULL if initialization failed
  */
 ArcadeState *initializeArcade();
 
@@ -63,7 +71,7 @@ int initializeEnvironmentSDL(ArcadeState *arcade);
 /**
  * Tears down the SDL environment.
  * Should be called after all SDL actions are complete.
- * @param arcade - arcade machine parameters
+ * @param arcade - The arcade state
  * @return void
  */
 void destroyArcade(ArcadeState *arcade);
@@ -74,8 +82,15 @@ void destroyArcade(ArcadeState *arcade);
  * Data flow is:
  * Input - Arcade machine emulator -> Input port -> Input buffer -> 8080 CPU
  * Output - 8080 CPU -> Output buffer -> Output port -> Arcade machine emulator
- * @param arcade
+ * @param arcade - The arcade state
  */
 void synchronizeIO(ArcadeState *arcade);
+
+/**
+ * Reset arcade machine's input and output ports to default values.
+ * Does not synchronize with CPU I/O buffers
+ * @param arcade - The arcade state
+ */
+void resetPortsIO(ArcadeState *arcade);
 
 #endif //INTEL_8080_EMULATOR_ARCADEENVIRONMENT_H
