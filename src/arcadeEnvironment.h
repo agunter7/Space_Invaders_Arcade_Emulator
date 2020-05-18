@@ -38,7 +38,6 @@ typedef struct ArcadeState{
     State8080 *cpu;
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
-    SDL_Texture *prerenderTexture; /**< The texture to be drawn on prior to rendering to the game screen */
     // Input ports, read from by 8080
     uint8_t inputPort0;
     uint8_t inputPort1;
@@ -92,5 +91,19 @@ void synchronizeIO(ArcadeState *arcade);
  * @param arcade - The arcade state
  */
 void resetPortsIO(ArcadeState *arcade);
+
+/**
+ * Performs an I/O check and updates the shift register if necessary.
+ * @param arcade - The arcade state
+ */
+void updateShiftRegister(ArcadeState *arcade);
+
+/**
+ * Have an emulated 8080 CPU execute instructions up to the point of completing a certain number of clock cycles.
+ * May execute up to 17 more cycles than explicitly instructed.
+ * @param numCyclesToRun - Clock cycle threshold to execute
+ * @param state - The arcade state
+ */
+void runForCpuCycles(unsigned int numCyclesToRun, ArcadeState *arcade);
 
 #endif //INTEL_8080_EMULATOR_ARCADEENVIRONMENT_H

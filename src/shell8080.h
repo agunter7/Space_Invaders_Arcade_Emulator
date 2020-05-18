@@ -24,14 +24,6 @@ State8080 *initializeCPU();
 void destroyCPU(State8080 *state);
 
 /**
- * Have an emulated 8080 CPU execute instructions up to the point of completing a certain number of clock cycles.
- * May execute up to 17 more cycles than explicitly instructed.
- * @param numCyclesToRun - Clock cycle threshold to execute
- * @param state - The 8080 state
- */
-void runForCycles(unsigned int numCyclesToRun, State8080 *state);
-
-/**
  * Returns a pointer to a copy of the 8080's current VRAM
  * @param state - The 8080 state
  * @return VRAM copy pointer

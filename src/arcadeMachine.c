@@ -97,20 +97,20 @@ unsigned int handleGameEvents(ArcadeState *arcade)
         }
     }
 
-    synchronizeIO(arcade);
+    updateShiftRegister(arcade);  // also synchronizes I/O
 
     // Emulate cpu up to the known point of the mid-screen render interrupt
     // Screen width is used here, rather than height, as the Space Invaders screen is rotated 90degrees and is
     // thus rendering vertical lines rather than horizontal lines
     unsigned int numCyclesFirstHalf = CYCLES_PER_FRAME*((float)MIDSCREEN_INTERRUPT_LINE/(float)SCREEN_WIDTH_PIXELS);
-    runForCycles(numCyclesFirstHalf, arcade->cpu);
+    runForCpuCycles(numCyclesFirstHalf, arcade);
 
     // Trigger mid-screen interrupt
     generateInterrupt(0x01, arcade->cpu);  // mid-screen
 
     // Emulate cpu up to the end of the frame
     unsigned int numCyclesSecondHalf = CYCLES_PER_FRAME-numCyclesFirstHalf;
-    runForCycles(numCyclesSecondHalf, arcade->cpu);
+    runForCpuCycles(numCyclesSecondHalf, arcade);
 
     //Trigger end-of-screen vertical blank interrupt
     generateInterrupt(0x02, arcade->cpu);

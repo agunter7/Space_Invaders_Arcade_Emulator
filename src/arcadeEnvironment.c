@@ -117,3 +117,36 @@ void resetPortsIO(ArcadeState *arcade)
     arcade->outputPort5 = 0x00;
     arcade->outputPort6 = 0x00;
 }
+
+void updateShiftRegister(ArcadeState *arcade)
+{
+    synchronizeIO(arcade);  // Ensure sync with CPU
+
+    uint8_t shiftRegUpperByte = (uint8_t)((arcade->shiftRegister)>>8);
+    if(shiftRegUpperByte != arcade->outputPort4){
+        // Shift register needs to be updated
+
+        // Move shift reg upper byte to lower byte, then move output port 4 to shift reg upper byte
+        arcade->shiftRegister >>= 8;
+        arcade->shiftRegister |= (((uint16_t)(arcade->outputPort4))<<8);
+    }else{
+        // No change, no need to update
+    }
+
+    // Derive an offset value from shift register and place this value in input port 3
+    uint8_t offset = (arcade->outputPort2) & 0x07;  // shift amount contained in output port 2 bits 0-2
+    uint8_t result = (uint8_t)((arcade->shiftRegister)>>(8-offset));
+    arcade->inputPort3 = result;
+
+    // Re-sync with CPU
+    synchronizeIO(arcade);
+}
+
+void runForCpuCycles(unsigned int numCyclesToRun, ArcadeState *arcade)
+{
+    unsigned int startingCycles = arcade->cpu->cyclesCompleted;
+    while((arcade->cpu->cyclesCompleted - startingCycles) < numCyclesToRun){
+        updateShiftRegister(arcade);
+        executeNextInstruction(arcade->cpu);
+    }
+}
