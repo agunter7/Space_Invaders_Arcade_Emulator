@@ -32,8 +32,11 @@ void playSpaceInvaders(ArcadeState *arcade)
     SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_RGBA32,
             SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS);
 
+    unsigned long frame = 0;
     while (!quitGame){
-        //Start timer
+        if(((++frame)%10) == 0){
+            resetPortsIO(arcade);
+        }
 
         quitGame = handleGameEvents(arcade);
 
@@ -53,8 +56,6 @@ void playSpaceInvaders(ArcadeState *arcade)
 
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
-    resetPortsIO(arcade);
-
     // Receive and process user input
     SDL_Event currentEvent;
     while(SDL_PollEvent(&currentEvent) != 0){
@@ -89,15 +90,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
                     break;
             }
         }
-
-        if(currentEvent.type == SDL_WINDOWEVENT){
-            switch(currentEvent.window.event){
-                case SDL_WINDOWEVENT_SIZE_CHANGED:
-                break;
-            }
-        }
     }
-
 
     updateShiftRegister(arcade);
 
