@@ -89,6 +89,13 @@ unsigned int handleGameEvents(ArcadeState *arcade)
                     break;
             }
         }
+
+        if(currentEvent.type == SDL_WINDOWEVENT){
+            switch(currentEvent.window.event){
+                case SDL_WINDOWEVENT_SIZE_CHANGED:
+                break;
+            }
+        }
     }
 
 
