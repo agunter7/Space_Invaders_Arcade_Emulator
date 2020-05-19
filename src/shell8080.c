@@ -1723,9 +1723,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // A = data
             portNumber = operands[0];
             state->a = state->inputBuffers[portNumber];
-            if(portNumber == 0x01){
-                logger("0x%02x\n", state->a);
-            }
             state->pc += 2;
             state->cyclesCompleted += 10;
             break;

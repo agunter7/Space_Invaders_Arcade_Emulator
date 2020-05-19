@@ -34,9 +34,9 @@ void playSpaceInvaders(ArcadeState *arcade)
 
     unsigned long frame = 0;
     while (!quitGame){
-        if(((++frame)%10) == 0){
+        /*if(((++frame)%30) == 0){
             resetPortsIO(arcade);
-        }
+        }*/
 
         quitGame = handleGameEvents(arcade);
 
@@ -57,7 +57,32 @@ void playSpaceInvaders(ArcadeState *arcade)
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
     // Receive and process user input
+
+    resetPortsIO(arcade);
+
+    const uint8_t *keyboardState = SDL_GetKeyboardState(NULL);
+
+    if(keyboardState[SDL_SCANCODE_LEFT]){
+        arcade->inputPort0 |= MOVE_LEFT_MASK;
+        arcade->inputPort1 |= MOVE_LEFT_MASK;
+    }
+    if(keyboardState[SDL_SCANCODE_RIGHT]){
+        arcade->inputPort0 |= MOVE_RIGHT_MASK;
+        arcade->inputPort1 |= MOVE_RIGHT_MASK;
+    }
+    if(keyboardState[SDL_SCANCODE_SPACE]){
+        arcade->inputPort0 |= SHOOT_MASK;
+        arcade->inputPort1 |= SHOOT_MASK;
+    }
+    if(keyboardState[SDL_SCANCODE_0]){
+        arcade->inputPort1 |= CREDIT_MASK;
+    }
+    if(keyboardState[SDL_SCANCODE_1]){
+        arcade->inputPort1 |= P1_START_MASK;
+    }
+
     SDL_Event currentEvent;
+    bool keyIsDown = false;
     while(SDL_PollEvent(&currentEvent) != 0){
         if(currentEvent.type == SDL_QUIT){
             logger("Quitting game\n");
@@ -66,6 +91,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
 
         // User inputs placed inside input ports
         if(currentEvent.type == SDL_KEYDOWN){  // key was pressed
+            keyIsDown = true;
             switch(currentEvent.key.keysym.sym){
                 case SDLK_LEFT:
                     arcade->inputPort0 |= MOVE_LEFT_MASK;
