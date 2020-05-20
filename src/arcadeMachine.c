@@ -10,6 +10,7 @@
 void playSpaceInvaders(ArcadeState *arcade);
 unsigned int handleGameEvents(ArcadeState *arcade);
 uint32_t *getCurrentFramePixels(State8080 *cpu);
+void playSounds(ArcadeState *arcade);
 
 int main(int argc, char **argv)
 {
@@ -32,11 +33,7 @@ void playSpaceInvaders(ArcadeState *arcade)
     SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_RGBA32,
             SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS);
 
-    unsigned long frame = 0;
     while (!quitGame){
-        /*if(((++frame)%30) == 0){
-            resetPortsIO(arcade);
-        }*/
 
         quitGame = handleGameEvents(arcade);
 
@@ -48,6 +45,7 @@ void playSpaceInvaders(ArcadeState *arcade)
         SDL_RenderCopy(arcade->renderer, texture, NULL, NULL);
 
         // Play any sounds
+        playSounds(arcade);
 
         // Update screen
         SDL_RenderPresent(arcade->renderer);
@@ -56,12 +54,10 @@ void playSpaceInvaders(ArcadeState *arcade)
 
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
-    // Receive and process user input
-
     resetPortsIO(arcade);
 
+    // Get keyboard state to check for continuously-pressed keys
     const uint8_t *keyboardState = SDL_GetKeyboardState(NULL);
-
     if(keyboardState[SDL_SCANCODE_LEFT]){
         arcade->inputPort0 |= MOVE_LEFT_MASK;
         arcade->inputPort1 |= MOVE_LEFT_MASK;
@@ -81,8 +77,8 @@ unsigned int handleGameEvents(ArcadeState *arcade)
         arcade->inputPort1 |= P1_START_MASK;
     }
 
+    // Check for newly-pressed keys
     SDL_Event currentEvent;
-    bool keyIsDown = false;
     while(SDL_PollEvent(&currentEvent) != 0){
         if(currentEvent.type == SDL_QUIT){
             logger("Quitting game\n");
@@ -91,7 +87,6 @@ unsigned int handleGameEvents(ArcadeState *arcade)
 
         // User inputs placed inside input ports
         if(currentEvent.type == SDL_KEYDOWN){  // key was pressed
-            keyIsDown = true;
             switch(currentEvent.key.keysym.sym){
                 case SDLK_LEFT:
                     arcade->inputPort0 |= MOVE_LEFT_MASK;
@@ -137,6 +132,40 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     generateInterrupt(0x02, arcade->cpu);
 
     return 0;
+}
+
+void playSounds(ArcadeState *arcade)
+{
+    synchronizeIO(arcade);
+
+    if(((arcade->outputPort3) & UFO_MASK)  == UFO_MASK){
+        // Play UFO music if not playing
+        // Continue playing if already playing
+    }
+    if(((arcade->outputPort3) & PLAYER_SHOOT_MASK)  == PLAYER_SHOOT_MASK){
+        Mix_PlayChannel(-1, arcade->playerShootSfx, 0);
+    }
+    if(((arcade->outputPort3) & PLAYER_DIE_MASK)  == PLAYER_DIE_MASK){
+
+    }
+    if(((arcade->outputPort3) & INVADER_DIE_MASK)  == INVADER_DIE_MASK){
+
+    }
+    if(((arcade->outputPort5) & FLEET_MOVE_1_MASK)  == FLEET_MOVE_1_MASK){
+
+    }
+    if(((arcade->outputPort5) & FLEET_MOVE_2_MASK)  == FLEET_MOVE_2_MASK){
+
+    }
+    if(((arcade->outputPort5) & FLEET_MOVE_3_MASK)  == FLEET_MOVE_3_MASK){
+
+    }
+    if(((arcade->outputPort5) & FLEET_MOVE_4_MASK)  == FLEET_MOVE_4_MASK){
+
+    }
+    if(((arcade->outputPort5) & UFO_DIE_MASK)  == UFO_DIE_MASK){
+
+    }
 }
 
 /**

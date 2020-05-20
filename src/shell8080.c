@@ -289,9 +289,6 @@ void printInstructionInfo(uint8_t opcode)
 void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *state)
 {
     uint16_t orderedOperands = ((uint16_t)operands[1] << 8) | (uint16_t)operands[0];  // Convert from little-endian
-    uint16_t result = 0;  // For temporarily storing computational results losslessly
-    uint8_t resultByte = 0;  // For temporarily storing 8-bit results
-    char garbage[100];  // For reading from scanf, helps debugging
 
     // variable declaration for usage in some cases of switch
     uint8_t tempL;  // A temporary place to hold the value of the L register

@@ -20,7 +20,7 @@ ArcadeState *initializeArcade()
 
 
     // Setup SDL for communicating with host machine API
-    if(initializeEnvironmentSDL(arcade) == 1){
+    if(initializeEnvironmentSDL(arcade) == 1 && loadAudio(arcade) == 1){
         return arcade;
     }else{
         destroyCPU(arcade->cpu);
@@ -34,7 +34,7 @@ int initializeEnvironmentSDL(ArcadeState *arcade)
     int successfulInit = 1;
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0){
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0){
         logger( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
         successfulInit = 0;
     }
@@ -67,11 +67,89 @@ int initializeEnvironmentSDL(ArcadeState *arcade)
         }
     }
 
+    if(successfulInit){
+        // Initialize SDL_mixer
+        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0){
+            logger("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+            successfulInit = 0;
+        }
+    }
+
     return successfulInit;
+}
+
+int loadAudio(ArcadeState *arcade)
+{
+    arcade->ufoMusic = Mix_LoadMUS("resources/ufo_lowpitch.wav");
+    if(arcade->ufoMusic == NULL){
+        logger("Failed to load UFO music! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    arcade->playerShootSfx = Mix_LoadWAV("resources/shoot.wav");
+    if(arcade->playerShootSfx == NULL){
+        logger("Failed to load player shoot sfx! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    arcade->playerDieSfx = Mix_LoadWAV("resources/explosion.wav");
+    if(arcade->playerDieSfx == NULL){
+        logger("Failed to load player died sfx! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    arcade->invaderDieSfx = Mix_LoadWAV("resources/invaderkilled.wav");
+    if(arcade->invaderDieSfx == NULL){
+        logger("Failed to load invader died sfx! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    arcade->fleetMove1Music = Mix_LoadMUS("resources/fastinvader1.wav");
+    if(arcade->fleetMove1Music == NULL){
+        logger("Failed to load fleet move 1 music! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    arcade->fleetMove2Music = Mix_LoadMUS("resources/fastinvader2.wav");
+    if(arcade->fleetMove2Music == NULL){
+        logger("Failed to load fleet move 2 music! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    arcade->fleetMove3Music = Mix_LoadMUS("resources/fastinvader3.wav");
+    if(arcade->fleetMove3Music == NULL){
+        logger("Failed to load fleet move 3 music! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    arcade->fleetMove4Music = Mix_LoadMUS("resources/fastinvader4.wav");
+    if(arcade->fleetMove4Music == NULL){
+        logger("Failed to load fleet move 4 music! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    arcade->ufoDieSfx = Mix_LoadWAV("resources/explosion.wav");
+    if(arcade->ufoDieSfx == NULL){
+        logger("Failed to load UFO died sfx! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+
+    return 1;
 }
 
 void destroyArcade(ArcadeState *arcade)
 {
+    // Free audio
+    Mix_FreeMusic(arcade->ufoMusic);
+    arcade->ufoMusic = NULL;
+    Mix_FreeChunk(arcade->playerShootSfx);
+    arcade->playerShootSfx = NULL;
+    Mix_FreeChunk(arcade->playerDieSfx);
+    arcade->playerDieSfx = NULL;
+    Mix_FreeChunk(arcade->invaderDieSfx);
+    arcade->invaderDieSfx = NULL;
+    Mix_FreeMusic(arcade->fleetMove1Music);
+    arcade->fleetMove1Music = NULL;
+    Mix_FreeMusic(arcade->fleetMove2Music);
+    arcade->fleetMove2Music = NULL;
+    Mix_FreeMusic(arcade->fleetMove3Music);
+    arcade->fleetMove3Music = NULL;
+    Mix_FreeMusic(arcade->fleetMove4Music);
+    arcade->fleetMove4Music = NULL;
+    Mix_FreeChunk(arcade->ufoDieSfx);
+    arcade->ufoDieSfx = NULL;
     // Destroy window
     SDL_DestroyWindow(arcade->window);
     arcade->window = NULL;
@@ -80,6 +158,7 @@ void destroyArcade(ArcadeState *arcade)
     arcade->renderer = NULL;
 
     // Quit SDL and any related subsystems
+    Mix_Quit();
     SDL_Quit();
 }
 

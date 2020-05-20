@@ -14,6 +14,7 @@ C) The GNU Make tool for 64-bit mingw (minimum GNU for Windows) [https://gist.gi
 
 D) SDL2 (Simple DirectMedia Layer 2) 64-bit Developer Library source files (for mingw) [https://libsdl.org/download-2.0.php]
 
+E) SDL2 Mixer 64-bit Developer Library source files (for mingw) [https://www.libsdl.org/projects/SDL_mixer/]
 
 1) Install Git for Windows. This should be straightforward.
 2) Install mingw-w64 to the default Program Files path. Choose the latest version. "Architecture == x86_64" (64-bit). "threads == win32".
@@ -23,6 +24,8 @@ D) SDL2 (Simple DirectMedia Layer 2) 64-bit Developer Library source files (for 
 6) Copy all contents from the extraction to your "Git\mingw64\" folder inside your Git for Windows folder path (NOT the mingw-w64 install performed at step 2)
 7) In step 6, do not overwrite/replace any existing files
 8) Download the SDL2 Dev Library folder to the path "C:\Program Files\mingw_dev_lib\SDL2-2.0.12" (or any folder of your choosing if you edit the makefile)
+9) Download the SDL2 Mixer Library folder to to the path "C:\Program Files\mingw_dev_lib\SDL2_mixer-2.0.4" (or any folder of your choosing if you edit the makefile)
+10) Run the default makefile command or execute "make all" on a command-line
 
 # Usage
 Target display must be refreshing at 60Hz for the game to play correctly.

@@ -12,6 +12,7 @@
 #include <math.h>
 #include <time.h>
 #include "sdl_sources/SDL.h"
+#include "sdl_sources/SDL_mixer.h"
 #include "helpers.h"
 #include "cpuStructures.h"
 #include "shell8080.h"
@@ -29,6 +30,16 @@
 #define CREDIT_MASK 0x01  // Insert a coin
 #define P2_START_MASK 0x02  // Player 2 start playing
 #define P1_START_MASK 0x04  // Player 1 start playing
+// Masks for determining sounds to be played based on output port bits
+#define UFO_MASK 0x01
+#define PLAYER_SHOOT_MASK 0x02
+#define PLAYER_DIE_MASK 0x03
+#define INVADER_DIE_MASK 0x04
+#define FLEET_MOVE_1_MASK 0x01
+#define FLEET_MOVE_2_MASK 0x02
+#define FLEET_MOVE_3_MASK 0x04
+#define FLEET_MOVE_4_MASK 0x08
+#define UFO_DIE_MASK 0x10
 
 
 
@@ -36,7 +47,7 @@
  * Holds the parameters for the arcade machine
  */
 typedef struct ArcadeState{
-    State8080 *cpu;
+    State8080 *cpu;  /**< Intel 8080 CPU */
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
     // Input ports, read from by 8080
@@ -45,13 +56,24 @@ typedef struct ArcadeState{
     uint8_t inputPort2;
     uint8_t inputPort3;
     // Output ports, written to by 8080
-    uint8_t outputPort2;  /** Write ports start counting at 2 for some unknown reason
+    uint8_t outputPort2;  /**< Write ports start counting at 2 for some unknown reason
                              (Source: http://computerarcheology.com/Arcade/SpaceInvaders/Hardware.html) */
     uint8_t outputPort3;
     uint8_t outputPort4;
     uint8_t outputPort5;
     uint8_t outputPort6;
-    uint16_t shiftRegister;  /** Custom hardware, found in arcade cabinet, for performing multi-bit shifts */
+    uint16_t shiftRegister;  /**< Custom hardware, found in arcade cabinet, for performing multi-bit shifts */
+    // Audio data
+    Mix_Music *ufoMusic;  /**< Plays while UFO is present */
+    Mix_Chunk *playerShootSfx;  /**< Player has fired a shot */
+    Mix_Chunk *playerDieSfx;  /**< Player died */
+    Mix_Chunk *invaderDieSfx;  /**< Invader was destroyed */
+    Mix_Music *fleetMove1Music;  /**< Slowest music */
+    Mix_Music *fleetMove2Music;  /**< Slow music */
+    Mix_Music *fleetMove3Music;  /**< Fast music */
+    Mix_Music *fleetMove4Music;  /**< Fastest music */
+    Mix_Chunk *ufoDieSfx;  /**< UFO was destroyed */
+
 } ArcadeState;
 
 /**
@@ -63,10 +85,17 @@ ArcadeState *initializeArcade();
 /**
  * Sets up the SDL environment.
  * Must be called before any other SDL actions.
- * @param arcade - arcade machines parameters
+ * @param arcade - The arcade state
  * @return int - 1 if initialization was successful, 0 otherwise
  */
 int initializeEnvironmentSDL(ArcadeState *arcade);
+
+/**
+ * Attempts to load audio files for gameplay.
+ * @param arcade - The arcade state
+ * @return int - 1 if all loads successful, 0 otherwise
+ */
+int loadAudio(ArcadeState *arcade);
 
 /**
  * Tears down the SDL environment.
