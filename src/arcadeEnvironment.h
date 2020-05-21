@@ -68,10 +68,10 @@ typedef struct ArcadeState{
     Mix_Chunk *playerShootSfx;  /**< Player has fired a shot */
     Mix_Chunk *playerDieSfx;  /**< Player died */
     Mix_Chunk *invaderDieSfx;  /**< Invader was destroyed */
-    Mix_Music *fleetMove1Music;  /**< Slowest music */
-    Mix_Music *fleetMove2Music;  /**< Slow music */
-    Mix_Music *fleetMove3Music;  /**< Fast music */
-    Mix_Music *fleetMove4Music;  /**< Fastest music */
+    Mix_Chunk *fleetMove1Sfx;  /**< Lowest pitch */
+    Mix_Chunk *fleetMove2Sfx;  /**< Low pitch */
+    Mix_Chunk *fleetMove3Sfx;  /**< High pitch */
+    Mix_Chunk *fleetMove4Sfx;  /**< Highest pitch */
     Mix_Chunk *ufoDieSfx;  /**< UFO was destroyed */
 
 } ArcadeState;

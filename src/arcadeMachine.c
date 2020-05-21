@@ -117,6 +117,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     // Playing sfx on every frame a signal is high would lead to repeated noises
     // Hence, we check for rising edges (0 -> 1) to indicate that sfx needs to be played
     bool ufoRisingEdge = false;
+    bool ufoFallingEdge = false;  // UFO music loops, so a falling edge indicates music should stop
     bool playerShootRisingEdge = false;
     bool playerDieRisingEdge = false;
     bool invaderDieRisingEdge = false;
@@ -127,8 +128,12 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     bool ufoDieRisingEdge = false;
     // Get signals' states at start of frame
     // If signal low, assume rising edge and prove/disprove at end of frame
+    // UFO Music Only: If signal high, assume falling edge and prove/disprove at end of frame
     if(((arcade->outputPort3) & UFO_MASK)  == 0x00){
         ufoRisingEdge = true;
+    }
+    if(((arcade->outputPort3) & UFO_MASK)  == UFO_MASK){
+        ufoFallingEdge = true;
     }
     if(((arcade->outputPort3) & PLAYER_SHOOT_MASK)  == 0x00){
         playerShootRisingEdge = true;
@@ -144,6 +149,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     }
     if(((arcade->outputPort5) & FLEET_MOVE_2_MASK)  == 0x00){
         fleetMove2RisingEdge = true;
+    }else{
     }
     if(((arcade->outputPort5) & FLEET_MOVE_3_MASK)  == 0x00){
         fleetMove3RisingEdge = true;
@@ -173,7 +179,12 @@ unsigned int handleGameEvents(ArcadeState *arcade)
 
     // Play sounds if audio signal rising edges are confirmed
     if(ufoRisingEdge && (((arcade->outputPort3) & UFO_MASK)  == UFO_MASK)){
-
+        Mix_PlayMusic(arcade->ufoMusic, -1);
+    }
+    if(ufoFallingEdge && (((arcade->outputPort3) & UFO_MASK) == 0x00)){
+        if(Mix_PlayingMusic()){  // Check that music is playing, to be safe
+            Mix_HaltMusic();
+        }
     }
     if(playerShootRisingEdge && (((arcade->outputPort3) & PLAYER_SHOOT_MASK)  == PLAYER_SHOOT_MASK)){
         Mix_PlayChannel(-1, arcade->playerShootSfx, 0);
@@ -185,16 +196,16 @@ unsigned int handleGameEvents(ArcadeState *arcade)
         Mix_PlayChannel(-1, arcade->invaderDieSfx, 0);
     }
     if(fleetMove1RisingEdge && (((arcade->outputPort5) & FLEET_MOVE_1_MASK)  == FLEET_MOVE_1_MASK)){
-        fleetMove1RisingEdge = true;
+        Mix_PlayChannel(-1, arcade->fleetMove1Sfx, 0);
     }
     if(fleetMove2RisingEdge && (((arcade->outputPort5) & FLEET_MOVE_2_MASK)  == FLEET_MOVE_2_MASK)){
-        fleetMove2RisingEdge = true;
+        Mix_PlayChannel(-1, arcade->fleetMove2Sfx, 0);
     }
     if(fleetMove3RisingEdge && (((arcade->outputPort5) & FLEET_MOVE_3_MASK)  == FLEET_MOVE_3_MASK)){
-        fleetMove3RisingEdge = true;
+        Mix_PlayChannel(-1, arcade->fleetMove3Sfx, 0);
     }
     if(fleetMove4RisingEdge && (((arcade->outputPort5) & FLEET_MOVE_4_MASK)  == FLEET_MOVE_4_MASK)){
-        fleetMove4RisingEdge = true;
+        Mix_PlayChannel(-1, arcade->fleetMove4Sfx, 0);
     }
     if(ufoDieRisingEdge && (((arcade->outputPort5) & UFO_DIE_MASK)  == UFO_DIE_MASK)){
         Mix_PlayChannel(-1, arcade->ufoDieSfx, 0);

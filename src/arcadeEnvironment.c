@@ -100,27 +100,27 @@ int loadAudio(ArcadeState *arcade)
         logger("Failed to load invader died sfx! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->fleetMove1Music = Mix_LoadMUS("resources/fastinvader1.wav");
-    if(arcade->fleetMove1Music == NULL){
+    arcade->fleetMove1Sfx = Mix_LoadWAV("resources/fastinvader1.wav");
+    if(arcade->fleetMove1Sfx == NULL){
         logger("Failed to load fleet move 1 music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->fleetMove2Music = Mix_LoadMUS("resources/fastinvader2.wav");
-    if(arcade->fleetMove2Music == NULL){
+    arcade->fleetMove2Sfx = Mix_LoadWAV("resources/fastinvader2.wav");
+    if(arcade->fleetMove2Sfx == NULL){
         logger("Failed to load fleet move 2 music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->fleetMove3Music = Mix_LoadMUS("resources/fastinvader3.wav");
-    if(arcade->fleetMove3Music == NULL){
+    arcade->fleetMove3Sfx = Mix_LoadWAV("resources/fastinvader3.wav");
+    if(arcade->fleetMove3Sfx == NULL){
         logger("Failed to load fleet move 3 music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->fleetMove4Music = Mix_LoadMUS("resources/fastinvader4.wav");
-    if(arcade->fleetMove4Music == NULL){
+    arcade->fleetMove4Sfx = Mix_LoadWAV("resources/fastinvader4.wav");
+    if(arcade->fleetMove4Sfx == NULL){
         logger("Failed to load fleet move 4 music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->ufoDieSfx = Mix_LoadWAV("resources/explosion.wav");
+    arcade->ufoDieSfx = Mix_LoadWAV("resources/ufo_highpitch.wav");
     if(arcade->ufoDieSfx == NULL){
         logger("Failed to load UFO died sfx! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
@@ -140,14 +140,14 @@ void destroyArcade(ArcadeState *arcade)
     arcade->playerDieSfx = NULL;
     Mix_FreeChunk(arcade->invaderDieSfx);
     arcade->invaderDieSfx = NULL;
-    Mix_FreeMusic(arcade->fleetMove1Music);
-    arcade->fleetMove1Music = NULL;
-    Mix_FreeMusic(arcade->fleetMove2Music);
-    arcade->fleetMove2Music = NULL;
-    Mix_FreeMusic(arcade->fleetMove3Music);
-    arcade->fleetMove3Music = NULL;
-    Mix_FreeMusic(arcade->fleetMove4Music);
-    arcade->fleetMove4Music = NULL;
+    Mix_FreeChunk(arcade->fleetMove1Sfx);
+    arcade->fleetMove1Sfx = NULL;
+    Mix_FreeChunk(arcade->fleetMove2Sfx);
+    arcade->fleetMove2Sfx = NULL;
+    Mix_FreeChunk(arcade->fleetMove3Sfx);
+    arcade->fleetMove3Sfx = NULL;
+    Mix_FreeChunk(arcade->fleetMove4Sfx);
+    arcade->fleetMove4Sfx = NULL;
     Mix_FreeChunk(arcade->ufoDieSfx);
     arcade->ufoDieSfx = NULL;
     // Destroy window
