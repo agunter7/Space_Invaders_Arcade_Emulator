@@ -33,8 +33,8 @@
 // Masks for determining sounds to be played based on output port bits
 #define UFO_MASK 0x01
 #define PLAYER_SHOOT_MASK 0x02
-#define PLAYER_DIE_MASK 0x03
-#define INVADER_DIE_MASK 0x04
+#define PLAYER_DIE_MASK 0x04
+#define INVADER_DIE_MASK 0x08
 #define FLEET_MOVE_1_MASK 0x01
 #define FLEET_MOVE_2_MASK 0x02
 #define FLEET_MOVE_3_MASK 0x04

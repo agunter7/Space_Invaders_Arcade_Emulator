@@ -10,7 +10,6 @@
 void playSpaceInvaders(ArcadeState *arcade);
 unsigned int handleGameEvents(ArcadeState *arcade);
 uint32_t *getCurrentFramePixels(State8080 *cpu);
-void playSounds(ArcadeState *arcade);
 
 int main(int argc, char **argv)
 {
@@ -43,9 +42,6 @@ void playSpaceInvaders(ArcadeState *arcade)
         // Load/render window image
         SDL_UpdateTexture(texture, NULL, getCurrentFramePixels(arcade->cpu), SCREEN_WIDTH_PIXELS*BYTES_PER_PIXEL);
         SDL_RenderCopy(arcade->renderer, texture, NULL, NULL);
-
-        // Play any sounds
-        playSounds(arcade);
 
         // Update screen
         SDL_RenderPresent(arcade->renderer);
@@ -115,6 +111,50 @@ unsigned int handleGameEvents(ArcadeState *arcade)
 
     updateShiftRegister(arcade);
 
+    // The physical Space Invaders hardware used analog audio
+    // This means the signal triggering a given sfx was high (1) for
+    // the full duration of the sfx
+    // Playing sfx on every frame a signal is high would lead to repeated noises
+    // Hence, we check for rising edges (0 -> 1) to indicate that sfx needs to be played
+    bool ufoRisingEdge = false;
+    bool playerShootRisingEdge = false;
+    bool playerDieRisingEdge = false;
+    bool invaderDieRisingEdge = false;
+    bool fleetMove1RisingEdge = false;
+    bool fleetMove2RisingEdge = false;
+    bool fleetMove3RisingEdge = false;
+    bool fleetMove4RisingEdge = false;
+    bool ufoDieRisingEdge = false;
+    // Get signals' states at start of frame
+    // If signal low, assume rising edge and prove/disprove at end of frame
+    if(((arcade->outputPort3) & UFO_MASK)  == 0x00){
+        ufoRisingEdge = true;
+    }
+    if(((arcade->outputPort3) & PLAYER_SHOOT_MASK)  == 0x00){
+        playerShootRisingEdge = true;
+    }
+    if(((arcade->outputPort3) & PLAYER_DIE_MASK)  == 0x00){
+        playerDieRisingEdge = true;
+    }
+    if(((arcade->outputPort3) & INVADER_DIE_MASK)  == 0x00){
+        invaderDieRisingEdge = true;
+    }
+    if(((arcade->outputPort5) & FLEET_MOVE_1_MASK)  == 0x00){
+        fleetMove1RisingEdge = true;
+    }
+    if(((arcade->outputPort5) & FLEET_MOVE_2_MASK)  == 0x00){
+        fleetMove2RisingEdge = true;
+    }
+    if(((arcade->outputPort5) & FLEET_MOVE_3_MASK)  == 0x00){
+        fleetMove3RisingEdge = true;
+    }
+    if(((arcade->outputPort5) & FLEET_MOVE_4_MASK)  == 0x00){
+        fleetMove4RisingEdge = true;
+    }
+    if(((arcade->outputPort5) & UFO_DIE_MASK)  == 0x00){
+        ufoDieRisingEdge = true;
+    }
+
     // Emulate cpu up to the known point of the mid-screen render interrupt
     // Screen width is used here, rather than height, as the Space Invaders screen is rotated 90degrees and is
     // thus rendering vertical lines rather than horizontal lines
@@ -128,44 +168,39 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     unsigned int numCyclesSecondHalf = CYCLES_PER_FRAME-numCyclesFirstHalf;
     runForCpuCycles(numCyclesSecondHalf, arcade);
 
-    //Trigger end-of-screen vertical blank interrupt
+    // Trigger end-of-screen vertical blank interrupt
     generateInterrupt(0x02, arcade->cpu);
 
-    return 0;
-}
+    // Play sounds if audio signal rising edges are confirmed
+    if(ufoRisingEdge && (((arcade->outputPort3) & UFO_MASK)  == UFO_MASK)){
 
-void playSounds(ArcadeState *arcade)
-{
-    synchronizeIO(arcade);
-
-    if(((arcade->outputPort3) & UFO_MASK)  == UFO_MASK){
-        // Play UFO music if not playing
-        // Continue playing if already playing
     }
-    if(((arcade->outputPort3) & PLAYER_SHOOT_MASK)  == PLAYER_SHOOT_MASK){
+    if(playerShootRisingEdge && (((arcade->outputPort3) & PLAYER_SHOOT_MASK)  == PLAYER_SHOOT_MASK)){
         Mix_PlayChannel(-1, arcade->playerShootSfx, 0);
     }
-    if(((arcade->outputPort3) & PLAYER_DIE_MASK)  == PLAYER_DIE_MASK){
-
+    if(playerDieRisingEdge && (((arcade->outputPort3) & PLAYER_DIE_MASK)  == PLAYER_DIE_MASK)){
+        Mix_PlayChannel(-1, arcade->playerDieSfx, 0);
     }
-    if(((arcade->outputPort3) & INVADER_DIE_MASK)  == INVADER_DIE_MASK){
-
+    if(invaderDieRisingEdge && (((arcade->outputPort3) & INVADER_DIE_MASK)  == INVADER_DIE_MASK)){
+        Mix_PlayChannel(-1, arcade->invaderDieSfx, 0);
     }
-    if(((arcade->outputPort5) & FLEET_MOVE_1_MASK)  == FLEET_MOVE_1_MASK){
-
+    if(fleetMove1RisingEdge && (((arcade->outputPort5) & FLEET_MOVE_1_MASK)  == FLEET_MOVE_1_MASK)){
+        fleetMove1RisingEdge = true;
     }
-    if(((arcade->outputPort5) & FLEET_MOVE_2_MASK)  == FLEET_MOVE_2_MASK){
-
+    if(fleetMove2RisingEdge && (((arcade->outputPort5) & FLEET_MOVE_2_MASK)  == FLEET_MOVE_2_MASK)){
+        fleetMove2RisingEdge = true;
     }
-    if(((arcade->outputPort5) & FLEET_MOVE_3_MASK)  == FLEET_MOVE_3_MASK){
-
+    if(fleetMove3RisingEdge && (((arcade->outputPort5) & FLEET_MOVE_3_MASK)  == FLEET_MOVE_3_MASK)){
+        fleetMove3RisingEdge = true;
     }
-    if(((arcade->outputPort5) & FLEET_MOVE_4_MASK)  == FLEET_MOVE_4_MASK){
-
+    if(fleetMove4RisingEdge && (((arcade->outputPort5) & FLEET_MOVE_4_MASK)  == FLEET_MOVE_4_MASK)){
+        fleetMove4RisingEdge = true;
     }
-    if(((arcade->outputPort5) & UFO_DIE_MASK)  == UFO_DIE_MASK){
-
+    if(ufoDieRisingEdge && (((arcade->outputPort5) & UFO_DIE_MASK)  == UFO_DIE_MASK)){
+        Mix_PlayChannel(-1, arcade->ufoDieSfx, 0);
     }
+
+    return 0;
 }
 
 /**

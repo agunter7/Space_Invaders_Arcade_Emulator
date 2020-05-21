@@ -497,7 +497,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // LDAX D
             // Load Accumulator indirect from register pair D-E
             // A = memory[(D)(E)]
-            ;  // workaround C99 quirk where a label cannot precede a declaration
             sourceAddress = getValueDE(state);
             state->a = readMem(sourceAddress, state);
             state->pc += 1;
@@ -705,7 +704,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Increment Memory
             // memory[(H)(L)] = memory[(H)(L)] + 1
             // Flags: z,s,p,cy,ac
-            ;  // declaration after label workaround
             memoryByte = 0;
             moveDataFromHLMemory(&memoryByte, state);
             addWithCheckAC(memoryByte, 1, state);  // Do not store result, just check AC
@@ -1136,7 +1134,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Add memory to Accumulator
             // A = A + memory[(H)(L)]
             // Flags: z,s,p,cy,ac
-            ;  // declaration after label workaround
             tempA = state->a;
             moveDataFromHLMemory(&(state->a), state);  // Accumulator has memory value now
             addWithCheckAC(state->a, tempA, state);  // Do not store value, just for flag check
@@ -1185,7 +1182,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Add memory to Accumulator with Carry
             // A = A + memory[(H)(L)] + CY
             // Flags: z,s,p,cy,ac
-            ;  // declaration after label workaround
             moveDataFromHLMemory(&memoryByte, state);
             if(memoryByte == 0xff && state->flags.carry == 1){
                 // Need to explicitly set carry, as this case will cause overflow in the addend
@@ -1387,7 +1383,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // XOR Memory with Accumulator
             // A = A XOR memory[(H)(L)]
             // Flags: z,s,p,cy(reset),ac(reset)
-            ;  // declaration after label workaround
             moveDataFromHLMemory(&memoryByte, state);
             XRA_R(memoryByte, state);
             state->cyclesCompleted += 3;
@@ -1654,7 +1649,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Content of register A placed on 8-bit bi-directional data bus
             // for transmission to the port specified by D8
             // (data) = A
-            ;  // declaration after label workaround
             portNumber = operands[0];
             state->outputBuffers[portNumber] = state->a;
             state->pc += 2;
@@ -1784,7 +1778,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Exchange stack top with H and L
             // L <-> memory[SP]
             // H <-> memory[SP+1]
-            ;  // declaration after label workaround
             tempL = state->l;
             tempH = state->h;
             state->l = readMem(state->sp, state);
@@ -1859,7 +1852,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // eXCHanGe HL with DE
             // H = D; D = H 
             // L = E; E = L
-            ;  // label-declaration workaround
             tempH = state->h;
             tempL = state->l;
             
