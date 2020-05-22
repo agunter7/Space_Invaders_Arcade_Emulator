@@ -69,9 +69,6 @@ unsigned int handleGameEvents(ArcadeState *arcade)
         arcade->inputPort0 |= SHOOT_MASK;
         arcade->inputPort1 |= SHOOT_MASK;
     }
-    if(keyboardState[SDL_SCANCODE_0]){
-        arcade->inputPort1 |= CREDIT_MASK;
-    }
     if(keyboardState[SDL_SCANCODE_1]){
         arcade->inputPort1 |= P1_START_MASK;
     }
@@ -99,9 +96,6 @@ unsigned int handleGameEvents(ArcadeState *arcade)
                     arcade->inputPort0 |= SHOOT_MASK;
                     arcade->inputPort1 |= SHOOT_MASK;
                     break;
-                case SDLK_0:
-                    arcade->inputPort1 |= CREDIT_MASK;
-                    break;
                 case SDLK_1:
                     arcade->inputPort1 |= P1_START_MASK;
                     break;
@@ -128,6 +122,12 @@ unsigned int handleGameEvents(ArcadeState *arcade)
                     break;
                 case SDLK_9:
                     arcade->colourProfile = Spectrum4;
+                    break;
+                case SDLK_0:
+                    arcade->colourProfile = Rainbow;
+                    break;
+                case SDLK_c:
+                    arcade->inputPort1 |= CREDIT_MASK;
                     break;
                 case SDLK_d:
                     if(arcade->colourProfile > Original){
@@ -205,14 +205,15 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     // Trigger end-of-screen vertical blank interrupt
     generateInterrupt(0x02, arcade->cpu);
 
-    // Play sounds if audio signal rising edges are confirmed
-    if(ufoRisingEdge && (((arcade->outputPort3) & UFO_MASK)  == UFO_MASK)){
-        Mix_PlayMusic(arcade->ufoMusic, -1);
-    }
+    // Stop UFO background music if a falling edge is confirmed
     if(ufoFallingEdge && (((arcade->outputPort3) & UFO_MASK) == 0x00)){
         if(Mix_PlayingMusic()){  // Check that music is playing, to be safe
             Mix_HaltMusic();
         }
+    }
+    // Play sound clips or start UFO background music if audio signal rising edges are confirmed
+    if(ufoRisingEdge && (((arcade->outputPort3) & UFO_MASK)  == UFO_MASK)){
+        Mix_PlayMusic(arcade->ufoMusic, -1);
     }
     if(playerShootRisingEdge && (((arcade->outputPort3) & PLAYER_SHOOT_MASK)  == PLAYER_SHOOT_MASK)){
         Mix_PlayChannel(-1, arcade->playerShootSfx, 0);
@@ -444,6 +445,23 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
                     G <<= 16;
                     B <<= 8;
                     currentFramePixels[I_2] = R | G | B ;
+                    break;
+                case Rainbow:
+                    if(y < 36){
+                        currentFramePixels[I_2] = VIOLET_PIXEL;
+                    }else if(y <= 72){
+                        currentFramePixels[I_2] = INDIGO_PIXEL;
+                    }else if(y <= 108){
+                        currentFramePixels[I_2] = BLUE_PIXEL;
+                    }else if(y <= 144){
+                        currentFramePixels[I_2] = GREEN_PIXEL;
+                    }else if(y <= 180){
+                        currentFramePixels[I_2] = YELLOW_PIXEL;
+                    }else if(y <= 214){
+                        currentFramePixels[I_2] = ORANGE_PIXEL;
+                    }else{
+                        currentFramePixels[I_2] = RED_PIXEL;
+                    }
                     break;
             }
         }else{

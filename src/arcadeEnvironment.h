@@ -42,14 +42,18 @@
 #define FLEET_MOVE_4_MASK 0x08
 #define UFO_DIE_MASK 0x10
 // 32-bit RGBA colours
-#define WHITE_PIXEL 0xffffffff
+#define WHITE_PIXEL 0xffffff00
 #define BLACK_PIXEL 0x00000000
-#define RED_PIXEL 0xff0000ff
+#define RED_PIXEL 0xff000000
 #define GREEN_PIXEL 0x00ff0000
 #define BLUE_PIXEL 0x0000ff00
+#define ORANGE_PIXEL 0xff7f0000
+#define YELLOW_PIXEL 0xffff0000
+#define INDIGO_PIXEL 0x4b008200
+#define VIOLET_PIXEL 0x9400d300
 
 // Colour profile determines the colours to be rendered when the game is playing
-enum ColourProfile {BlackAndWhite, Inverted, Original, Spectrum1, Spectrum2, Spectrum3, Spectrum4};
+enum ColourProfile {BlackAndWhite, Inverted, Original, Spectrum1, Spectrum2, Spectrum3, Spectrum4, Rainbow};
 
 /**
  * Holds the parameters for the arcade machine
