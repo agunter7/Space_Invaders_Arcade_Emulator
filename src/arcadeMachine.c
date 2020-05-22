@@ -27,9 +27,12 @@ void playSpaceInvaders(ArcadeState *arcade)
 {
     unsigned int quitGame = 0;
 
-    uint32_t screenPixels[256][224];
-    memset(screenPixels, 0xff, 256*224*4);
-    SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_RGBA32,
+    // The texture below is initialized in ABGR32 pixel format,
+    // but this will actually lead to writing pixel data
+    // in RGBA32 format. Maybe due to endianness of the
+    // host machines video RAM?
+    // Is this platform-dependent?
+    SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_ABGR32,
             SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS);
 
     while (!quitGame){
@@ -112,20 +115,24 @@ unsigned int handleGameEvents(ArcadeState *arcade)
                     arcade->colourProfile = Original;
                     break;
                 case SDLK_5:
-                    arcade->colourProfile = Spectrum;
+                    arcade->colourProfile = Inverted;
                     break;
                 case SDLK_6:
-                    arcade->colourProfile = Spectrum;
+                    arcade->colourProfile = Spectrum1;
                     break;
                 case SDLK_7:
-                    arcade->colourProfile = Spectrum;
+                    arcade->colourProfile = Spectrum2;
                     break;
                 case SDLK_8:
-                    arcade->colourProfile = Spectrum;
+                    arcade->colourProfile = Spectrum3;
                     break;
                 case SDLK_9:
-                    arcade->colourProfile = Spectrum;
+                    arcade->colourProfile = Spectrum4;
                     break;
+                case SDLK_d:
+                    if(arcade->colourProfile > Original){
+                        arcade->darkModeOn = !(arcade->darkModeOn);
+                    }
             }
         }
     }
@@ -325,50 +332,130 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
 
         // Expand bit to 32 bits RGBA info
         // Insert colour data depending on active colour profile
-        switch(arcade->colourProfile){
+        if(currentPixelBit == 1){
+            // Pixel is on
             uint32_t R;
             uint32_t G;
             uint32_t B;
-            case BlackAndWhite:
-                if(currentPixelBit == 1){
+            switch(arcade->colourProfile){
+                case BlackAndWhite:
                     currentFramePixels[I_2] = WHITE_PIXEL;
-                }else{
+                    break;
+                case Inverted:
                     currentFramePixels[I_2] = BLACK_PIXEL;
-                }
-                break;
-            case Inverted:
-                if(currentPixelBit == 1){
-                    currentFramePixels[I_2] = BLACK_PIXEL;
-                }else{
-                    currentFramePixels[I_2] = WHITE_PIXEL;
-                }
-                break;
-            case Original:
-                if(currentPixelBit == 1){
-                    if(y<64 && y>32){  // UFO
+                    break;
+                case Original:
+                    if(y<64 && y > 31){  // UFO
                         currentFramePixels[I_2] = RED_PIXEL;
-                    }else if(y>180){  // Player and Shields
+                    }else if(y>191){  // Player and Shields
                         currentFramePixels[I_2] = GREEN_PIXEL;
                     }else{
-                        currentFramePixels[I_2] = BLACK_PIXEL;
+                        currentFramePixels[I_2] = WHITE_PIXEL;
                     }
-                }else{
-                    currentFramePixels[I_2] = WHITE_PIXEL;
-                }
-
-                break;
-            case Spectrum:
-                if(currentPixelBit == 1){
+                    break;
+                case Spectrum1:
                     R = ((uint32_t)y) << 24;
-                    G = (0x000000ff - (uint32_t)y) << 16;
-                    B = 0x000000A0 << 8;
-                    currentFramePixels[I_2] = R | G | B;
+                    G = (0x000000ff & ((((uint32_t)x) * 255)/223)) << 16;
+                    B = (((255.0-(float)y)) + ((223.0-(float)x))) * (255.0/478.0);
+                    if(B > 255.0){
+                        B = 0x0000ff00;
+                    }else{
+                        B = ((uint32_t)B) << 8;
+                    }
+                    currentFramePixels[I_2] = R | G | B ;
+                    break;
+                case Spectrum2:
+                    R = (0x000000ff & ((((uint32_t)x) * 255)/223)) << 24;
+                    G = (((255.0-(float)y)) + ((223.0-(float)x))) * (255.0/478.0);
+                    B = ((uint32_t)y) << 8;
+                    if(G > 255.0){
+                        G = 0x00ff0000;
+                    }else{
+                        G = ((uint32_t)G) << 16;
+                    }
+                    currentFramePixels[I_2] = R | G | B ;
+                    break;
+                case Spectrum3:
+                    R = (((255.0-(float)y)) + ((223.0-(float)x))) * (255.0/478.0);
+                    G = ((uint32_t)y) << 16;
+                    B = (0x000000ff & ((((uint32_t)x) * 255)/223)) << 8;
+                    if(R > 255.0){
+                        R = 0xff000000;
+                    }else{
+                        R = ((uint32_t)R) << 24;
+                    }
+                    currentFramePixels[I_2] = R | G | B ;
+                    break;
+                case Spectrum4:
+                    // Color Map
+                    //   y     R    G     B
+                    //   0    215   45   125
+                    //  20    255   85    85
+                    //  21    255   87    83
+                    //  62    173  169    1
+                    //  63    171  171    1
+                    //  105    87  255    85
+                    //  106    85  255    87
+                    //  148    1   171    171
+                    //  149    1   169    173
+                    //  190    83   87    255
+                    //  191    85   85    255
+                    //  233   169   1     171
+                    //  234   234   1     169
+                    //  255   213   43    127
+                    if(y <= 20){
+                        R = 215 + (2*y);
+                        G = 45 + (2*y);
+                        B = 125 - (2*y);
+                    }else if(y <= 62){
+                        R = 297 - (2*y);
+                        G = 45 + (2*y);
+                        B = 125 - (2*y);
+                    }else if(y <= 105){
+                        R = 297 - (2*y);
+                        G = 45 + (2*y);
+                        B = (-125) + (2*y);
+                    }else if(y <= 148){
+                        R = 297 - (2*y);
+                        G = 467 - (2*y);
+                        B = (-125) + (2*y);
+                    }else if(y <= 190){
+                        R = (-297) + (2*y);
+                        G = 467 - (2*y);
+                        B = (-125) + (2*y);
+                    }else if(y <= 233){
+                        R = (-297) + (2*y);
+                        G = 467 - (2*y);
+                        B = 637 - (2*y);
+                    }else{
+                        R = (-297) + (2*y);
+                        G = (-467) + (2*y);
+                        B = 637 - (2*y);
+                    }
+                    R <<= 24;
+                    G <<= 16;
+                    B <<= 8;
+                    currentFramePixels[I_2] = R | G | B ;
+                    break;
+            }
+        }else{
+            // Pixel is off
+            if(arcade->colourProfile == Inverted){
+                currentFramePixels[I_2] = WHITE_PIXEL;
+            }else if(arcade->colourProfile == BlackAndWhite){
+                currentFramePixels[I_2] = BLACK_PIXEL;
+            }else if(arcade->colourProfile == Original){
+                currentFramePixels[I_2] = BLACK_PIXEL;
+            }else{
+                if(arcade->darkModeOn){
+                    currentFramePixels[I_2] = BLACK_PIXEL;
                 }else{
                     currentFramePixels[I_2] = WHITE_PIXEL;
                 }
-                break;
+            }
         }
     }
+
 
     return currentFramePixels;
 }

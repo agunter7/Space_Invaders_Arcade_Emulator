@@ -44,12 +44,12 @@
 // 32-bit RGBA colours
 #define WHITE_PIXEL 0xffffffff
 #define BLACK_PIXEL 0x00000000
-#define RED_PIXEL 0xff000000
+#define RED_PIXEL 0xff0000ff
 #define GREEN_PIXEL 0x00ff0000
 #define BLUE_PIXEL 0x0000ff00
 
 // Colour profile determines the colours to be rendered when the game is playing
-enum ColourProfile {BlackAndWhite, Inverted, Original, Spectrum};
+enum ColourProfile {BlackAndWhite, Inverted, Original, Spectrum1, Spectrum2, Spectrum3, Spectrum4};
 
 /**
  * Holds the parameters for the arcade machine
@@ -59,6 +59,7 @@ typedef struct ArcadeState{
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
     enum ColourProfile colourProfile;  /**< Determines the on-screen colours */
+    bool darkModeOn;  /**< Determines default pixel colour */
     // Input ports, read from by 8080
     uint8_t inputPort0;
     uint8_t inputPort1;
