@@ -345,6 +345,7 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
                     currentFramePixels[I_2] = BLACK_PIXEL;
                     break;
                 case Original:
+                    // True to Space Invaders arcade machine with transparent colour overlays
                     if(y<64 && y > 31){  // UFO
                         currentFramePixels[I_2] = RED_PIXEL;
                     }else if(y>191){  // Player and Shields
@@ -354,6 +355,7 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
                     }
                     break;
                 case Spectrum1:
+                    // Vary R vertically, G horizontally, B diagonally
                     R = ((uint32_t)y) << 24;
                     G = (0x000000ff & ((((uint32_t)x) * 255)/223)) << 16;
                     B = (((255.0-(float)y)) + ((223.0-(float)x))) * (255.0/478.0);
@@ -365,6 +367,7 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
                     currentFramePixels[I_2] = R | G | B ;
                     break;
                 case Spectrum2:
+                    // Vary R horizontally, G diagonally, B vertically
                     R = (0x000000ff & ((((uint32_t)x) * 255)/223)) << 24;
                     G = (((255.0-(float)y)) + ((223.0-(float)x))) * (255.0/478.0);
                     B = ((uint32_t)y) << 8;
@@ -376,6 +379,7 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
                     currentFramePixels[I_2] = R | G | B ;
                     break;
                 case Spectrum3:
+                    // Vary R diagonally, G vertically, B horizontally
                     R = (((255.0-(float)y)) + ((223.0-(float)x))) * (255.0/478.0);
                     G = ((uint32_t)y) << 16;
                     B = (0x000000ff & ((((uint32_t)x) * 255)/223)) << 8;
@@ -403,6 +407,10 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
                     //  233   169   1     171
                     //  234   234   1     169
                     //  255   213   43    127
+                    //
+                    // For each colour dimension (R,G,B),
+                    // the value changes by either +2 or -2 between
+                    // adjacent vertical pixels. Rows are constant.
                     if(y <= 20){
                         R = 215 + (2*y);
                         G = 45 + (2*y);
