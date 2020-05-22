@@ -451,11 +451,11 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
                         currentFramePixels[I_2] = VIOLET_PIXEL;
                     }else if(y <= 72){
                         currentFramePixels[I_2] = INDIGO_PIXEL;
-                    }else if(y <= 108){
+                    }else if(y <= 106){
                         currentFramePixels[I_2] = BLUE_PIXEL;
-                    }else if(y <= 144){
+                    }else if(y <= 143){
                         currentFramePixels[I_2] = GREEN_PIXEL;
-                    }else if(y <= 180){
+                    }else if(y <= 178){
                         currentFramePixels[I_2] = YELLOW_PIXEL;
                     }else if(y <= 214){
                         currentFramePixels[I_2] = ORANGE_PIXEL;
