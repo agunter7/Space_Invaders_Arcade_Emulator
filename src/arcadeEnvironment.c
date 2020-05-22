@@ -14,6 +14,7 @@ ArcadeState *initializeArcade()
     arcade->cpu = initializeCPU();
     arcade->window = NULL;
     arcade->renderer = NULL;
+    arcade->colourProfile = Original;
 
     resetPortsIO(arcade);
     synchronizeIO(arcade);

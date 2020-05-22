@@ -257,7 +257,6 @@ uint8_t *getRomBuffer(FILE *romFile)
     fseek(romFile, 0, SEEK_SET);
 
     // Allocate memory for ROM
-    logger("Allocated %d bytes for a ROM file\n", romSizeInBytes);
     romBuffer = mallocSet(romSizeInBytes);
 
     // Read ROM into buffer

@@ -9,7 +9,7 @@
 
 void playSpaceInvaders(ArcadeState *arcade);
 unsigned int handleGameEvents(ArcadeState *arcade);
-uint32_t *getCurrentFramePixels(State8080 *cpu);
+uint32_t *getCurrentFramePixels(ArcadeState *arcade);
 
 int main(int argc, char **argv)
 {
@@ -40,7 +40,7 @@ void playSpaceInvaders(ArcadeState *arcade)
         SDL_RenderClear(arcade->renderer);
 
         // Load/render window image
-        SDL_UpdateTexture(texture, NULL, getCurrentFramePixels(arcade->cpu), SCREEN_WIDTH_PIXELS*BYTES_PER_PIXEL);
+        SDL_UpdateTexture(texture, NULL, getCurrentFramePixels(arcade), SCREEN_WIDTH_PIXELS*BYTES_PER_PIXEL);
         SDL_RenderCopy(arcade->renderer, texture, NULL, NULL);
 
         // Update screen
@@ -104,6 +104,27 @@ unsigned int handleGameEvents(ArcadeState *arcade)
                     break;
                 case SDLK_2:
                     arcade->inputPort1 |= P2_START_MASK;
+                    break;
+                case SDLK_3:
+                    arcade->colourProfile = BlackAndWhite;
+                    break;
+                case SDLK_4:
+                    arcade->colourProfile = Original;
+                    break;
+                case SDLK_5:
+                    arcade->colourProfile = Spectrum;
+                    break;
+                case SDLK_6:
+                    arcade->colourProfile = Spectrum;
+                    break;
+                case SDLK_7:
+                    arcade->colourProfile = Spectrum;
+                    break;
+                case SDLK_8:
+                    arcade->colourProfile = Spectrum;
+                    break;
+                case SDLK_9:
+                    arcade->colourProfile = Spectrum;
                     break;
             }
         }
@@ -216,14 +237,14 @@ unsigned int handleGameEvents(ArcadeState *arcade)
 
 /**
  * Returns a pointer to the 32-bits-per-pixel data for the current frame to be rendered (by extracting from 8080 VRAM)
- * @param cpu - The 8080 state
+ * @param arcade - The 8080 state
  * @return Pointer to pixel data, ready to be rendered directly by SDL
  */
-uint32_t *getCurrentFramePixels(State8080 *cpu)
+uint32_t *getCurrentFramePixels(ArcadeState *arcade)
 {
     // get rotated pixel data from cpu
     // 1 bit per pixel
-    uint8_t *rotatedPixels = getVideoRAM(cpu);
+    uint8_t *rotatedPixels = getVideoRAM(arcade->cpu);
 
     // At this point, a byte contains data for 8 pixels. However, the order of the bytes is counter-clockwise.
     // This is because the original Space Invaders cabinet used a rotated CRT, so the developers accounted for this.
@@ -278,7 +299,9 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
     uint32_t *currentFramePixels = mallocSet(numPixelBytes);  // Pointer to data describing 32-bit pixels for current frame
 
     // Get 32-bit pixel data for entire frame by iterating through pixels to be rendered on screen
-    unsigned int I_1 = 0;
+    unsigned int I_1;
+    unsigned int y;
+    unsigned int x;
     unsigned int W = SCREEN_WIDTH_PIXELS;
     unsigned int H = SCREEN_HEIGHT_PIXELS;
     uint8_t currentByte = 0x00;
@@ -288,7 +311,9 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
     // top-left pixel = index 0, top-right = index 223, bottom-right = 57,343
     for(unsigned int I_2 = 0; I_2 < numPixels; I_2++){
         // Get the rotated index for the desired bit in VRAM that corresponds with the current pixel
-        I_1 = ((I_2%W)+1)*H - (floor(I_2/W)+1);
+        x = I_2%W;
+        y = floor(I_2/W);
+        I_1 = (x+1)*H - (y+1);
 
         // Get the byte that contains the desired bit
         byteIndex = floor(I_1 / 8);
@@ -299,10 +324,49 @@ uint32_t *getCurrentFramePixels(State8080 *cpu)
         currentPixelBit = (currentByte >> bitIndexWithinByte) & 0x01;
 
         // Expand bit to 32 bits RGBA info
-        if(currentPixelBit == 1){
-            currentFramePixels[I_2] = 0xffffffff;
-        }else{
-            currentFramePixels[I_2] = 0x00000000;
+        // Insert colour data depending on active colour profile
+        switch(arcade->colourProfile){
+            uint32_t R;
+            uint32_t G;
+            uint32_t B;
+            case BlackAndWhite:
+                if(currentPixelBit == 1){
+                    currentFramePixels[I_2] = WHITE_PIXEL;
+                }else{
+                    currentFramePixels[I_2] = BLACK_PIXEL;
+                }
+                break;
+            case Inverted:
+                if(currentPixelBit == 1){
+                    currentFramePixels[I_2] = BLACK_PIXEL;
+                }else{
+                    currentFramePixels[I_2] = WHITE_PIXEL;
+                }
+                break;
+            case Original:
+                if(currentPixelBit == 1){
+                    if(y<64 && y>32){  // UFO
+                        currentFramePixels[I_2] = RED_PIXEL;
+                    }else if(y>180){  // Player and Shields
+                        currentFramePixels[I_2] = GREEN_PIXEL;
+                    }else{
+                        currentFramePixels[I_2] = BLACK_PIXEL;
+                    }
+                }else{
+                    currentFramePixels[I_2] = WHITE_PIXEL;
+                }
+
+                break;
+            case Spectrum:
+                if(currentPixelBit == 1){
+                    R = ((uint32_t)y) << 24;
+                    G = (0x000000ff - (uint32_t)y) << 16;
+                    B = 0x000000A0 << 8;
+                    currentFramePixels[I_2] = R | G | B;
+                }else{
+                    currentFramePixels[I_2] = WHITE_PIXEL;
+                }
+                break;
         }
     }
 

@@ -17,6 +17,7 @@
 #include "cpuStructures.h"
 #include "shell8080.h"
 
+// Hardware parameters
 #define SCREEN_WIDTH_PIXELS 224
 #define SCREEN_HEIGHT_PIXELS 256
 #define BYTES_PER_PIXEL 4
@@ -40,8 +41,15 @@
 #define FLEET_MOVE_3_MASK 0x04
 #define FLEET_MOVE_4_MASK 0x08
 #define UFO_DIE_MASK 0x10
+// 32-bit RGBA colours
+#define WHITE_PIXEL 0xffffffff
+#define BLACK_PIXEL 0x00000000
+#define RED_PIXEL 0xff000000
+#define GREEN_PIXEL 0x00ff0000
+#define BLUE_PIXEL 0x0000ff00
 
-
+// Colour profile determines the colours to be rendered when the game is playing
+enum ColourProfile {BlackAndWhite, Inverted, Original, Spectrum};
 
 /**
  * Holds the parameters for the arcade machine
@@ -50,6 +58,7 @@ typedef struct ArcadeState{
     State8080 *cpu;  /**< Intel 8080 CPU */
     SDL_Window *window;  /**< The game window */
     SDL_Renderer *renderer;  /**< The renderer for the game window */
+    enum ColourProfile colourProfile;  /**< Determines the on-screen colours */
     // Input ports, read from by 8080
     uint8_t inputPort0;
     uint8_t inputPort1;
