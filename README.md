@@ -2,7 +2,7 @@
 
 ![Gameplay Demo](gameplay_demo.gif)
 
-Emulates a Space Invaders arcade machine running on an Intel 8080 CPU, written in C.
+Emulates a Space Invaders arcade machine running on an Intel 8080 CPU. Written in C.
 Target OS is Windows 10.
 
 # Build
