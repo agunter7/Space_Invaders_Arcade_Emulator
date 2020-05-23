@@ -1,2 +1,2 @@
 make test
-./bin/cpuTest.exe
+./bin/cpu_test.exe

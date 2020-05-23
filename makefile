@@ -11,8 +11,8 @@ LINKER_FLAGS=-lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer
 SOURCES_EMULATOR=src/shell8080.c src/instructions.c src/helpers.c src/arcadeMachine.c src/arcadeEnvironment.c
 SOURCES_TEST=src/cpuTest.c src/shell8080.c src/instructions.c src/helpers.c
 # Final executable name
-EXE_NAME_EMU=bin/emulatorShell
-EXE_NAME_TEST=bin/cpuTest
+EXE_NAME_EMU=bin/space_invaders_arcade
+EXE_NAME_TEST=bin/cpu_test
 
 emu: $(SOURCES_EMULATOR)
 	$(CC) $(INCLUDE_PATHS) $(SOURCES_EMULATOR) $(LIBRARY_PATHS) $(GENERAL_FLAGS) $(LINKER_FLAGS) -o $(EXE_NAME_EMU)
@@ -21,6 +21,5 @@ test: $(SOURCES_TEST)
 	$(CC) $(SOURCES_TEST) $(GENERAL_FLAGS) -o $(EXE_NAME_TEST)
 
 clean:
-	rm output.txt
-	rm assembly.txt
-	rm g.exe
+	rm bin/space_invaders_arcade
+	rm bin/cpu_test

@@ -1,2 +1,2 @@
 make
-./bin/emulatorShell.exe
+./bin/space_invaders_arcade.exe
