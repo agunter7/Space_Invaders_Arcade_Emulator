@@ -1,9 +1,10 @@
 # Space Invaders (Intel 8080)
-A Windows emulator for the Space Invaders arcade machine running on an Intel 8080 CPU, written in C.
+Emulates a Space Invaders arcade machine running on an Intel 8080 CPU, written in C.
+Target OS is Windows 10.
 
 # Build
 The project uses a makefile to compile the C source files. 
-In a windows environment, this makefile will not be useable by default. 
+In a windows environment, this makefile will not be usable by default. 
 In order to use the makefile, you will need: 
 
 A) Git for Windows [https://gitforwindows.org/]
@@ -16,6 +17,7 @@ D) SDL2 (Simple DirectMedia Layer 2) 64-bit Developer Library source files (for 
 
 E) SDL2 Mixer 64-bit Developer Library source files (for mingw) [https://www.libsdl.org/projects/SDL_mixer/]
 
+Build Steps:
 1) Install Git for Windows. This should be straightforward.
 2) Install mingw-w64 to the default Program Files path. Choose the latest version. "Architecture == x86_64" (64-bit). "threads == win32".
 3) Add the 'bin' folder from your mingw-w64 install to your systems PATH environment variable. (There may be two bin folders in your install, try both)
@@ -25,14 +27,12 @@ E) SDL2 Mixer 64-bit Developer Library source files (for mingw) [https://www.lib
 7) In step 6, do not overwrite/replace any existing files
 8) Download the SDL2 Dev Library folder to the path "C:\Program Files\mingw_dev_lib\SDL2-2.0.12" (or any folder of your choosing if you edit the makefile)
 9) Download the SDL2 Mixer Library folder to to the path "C:\Program Files\mingw_dev_lib\SDL2_mixer-2.0.4" (or any folder of your choosing if you edit the makefile)
-10) Run the default makefile command or execute "make all" on a command-line
+10) Run the default makefile command or execute "make emu" on a command-line
 
 # Usage
 Target display must be refreshing at 60Hz for the game to play correctly.
 
 8080 Emulator - Use run.sh
-
-8080 Disassembler - Use disassemble.sh
 
 # Resources
 1) http://computerarcheology.com/Arcade/SpaceInvaders/

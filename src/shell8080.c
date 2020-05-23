@@ -27,7 +27,7 @@ State8080 *initializeCPU()
     initializeGlobals();
 
     // Open Space Invaders ROM file as binary-read-only and store contents in a buffer
-    FILE *invadersFile = fopen("resources/invaders", "rb");
+    FILE *invadersFile = fopen("../resources/invaders", "rb");
     if(invadersFile == NULL){
         logger("Failed to open Space Invaders ROM.\n");
         return NULL;

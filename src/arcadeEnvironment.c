@@ -81,47 +81,47 @@ int initializeEnvironmentSDL(ArcadeState *arcade)
 
 int loadAudio(ArcadeState *arcade)
 {
-    arcade->ufoMusic = Mix_LoadMUS("resources/ufo_lowpitch.wav");
+    arcade->ufoMusic = Mix_LoadMUS("../resources/ufo_lowpitch.wav");
     if(arcade->ufoMusic == NULL){
         logger("Failed to load UFO music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->playerShootSfx = Mix_LoadWAV("resources/shoot.wav");
+    arcade->playerShootSfx = Mix_LoadWAV("../resources/shoot.wav");
     if(arcade->playerShootSfx == NULL){
         logger("Failed to load player shoot sfx! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->playerDieSfx = Mix_LoadWAV("resources/explosion.wav");
+    arcade->playerDieSfx = Mix_LoadWAV("../resources/explosion.wav");
     if(arcade->playerDieSfx == NULL){
         logger("Failed to load player died sfx! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->invaderDieSfx = Mix_LoadWAV("resources/invaderkilled.wav");
+    arcade->invaderDieSfx = Mix_LoadWAV("../resources/invaderkilled.wav");
     if(arcade->invaderDieSfx == NULL){
         logger("Failed to load invader died sfx! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->fleetMove1Sfx = Mix_LoadWAV("resources/fastinvader1.wav");
+    arcade->fleetMove1Sfx = Mix_LoadWAV("../resources/fastinvader1.wav");
     if(arcade->fleetMove1Sfx == NULL){
         logger("Failed to load fleet move 1 music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->fleetMove2Sfx = Mix_LoadWAV("resources/fastinvader2.wav");
+    arcade->fleetMove2Sfx = Mix_LoadWAV("../resources/fastinvader2.wav");
     if(arcade->fleetMove2Sfx == NULL){
         logger("Failed to load fleet move 2 music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->fleetMove3Sfx = Mix_LoadWAV("resources/fastinvader3.wav");
+    arcade->fleetMove3Sfx = Mix_LoadWAV("../resources/fastinvader3.wav");
     if(arcade->fleetMove3Sfx == NULL){
         logger("Failed to load fleet move 3 music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->fleetMove4Sfx = Mix_LoadWAV("resources/fastinvader4.wav");
+    arcade->fleetMove4Sfx = Mix_LoadWAV("../resources/fastinvader4.wav");
     if(arcade->fleetMove4Sfx == NULL){
         logger("Failed to load fleet move 4 music! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
     }
-    arcade->ufoDieSfx = Mix_LoadWAV("resources/ufo_highpitch.wav");
+    arcade->ufoDieSfx = Mix_LoadWAV("../resources/ufo_highpitch.wav");
     if(arcade->ufoDieSfx == NULL){
         logger("Failed to load UFO died sfx! SDL_mixer Error: %s\n", Mix_GetError());
         return 0;
@@ -187,7 +187,7 @@ void resetPortsIO(ArcadeState *arcade)
     // Set default CPU input port values
     arcade->inputPort0 = 0x0e;  // Bits 1-3 are always 1 by specification
     arcade->inputPort1 = 0x08;  // Bit 3 always 1 by specification
-    arcade->inputPort2 = 0x00;
+    arcade->inputPort2 = 0x0b;  // Decimal value of bits 0,1 == # extra lives, bit 3 on = extra live at 1000 pts
     arcade->inputPort3 = 0x00;
 
     // Reset CPU output ports

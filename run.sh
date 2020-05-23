@@ -1,2 +1,4 @@
 make
-./bin/space_invaders_arcade.exe
+cd bin || exit
+./space_invaders_arcade.exe
+cd ..
