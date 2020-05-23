@@ -1,2 +1,2 @@
-make all
+make
 ./bin/emulatorShell.exe

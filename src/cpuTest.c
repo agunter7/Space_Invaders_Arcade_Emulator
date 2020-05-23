@@ -13,7 +13,6 @@
 int main(int argc, char **argv)
 {
     State8080 *state = initializeCPU();
-    logger("Initialized CPU\n");
 
     // Clear 8080 Memory
     memset(state->memory, 0, MEMORY_SIZE_8080);
@@ -23,11 +22,8 @@ int main(int argc, char **argv)
     if(cpudiag == NULL){
         logger("Failed to open cpudiag.bin\n");
         return 0;
-    }else{
-        logger("Opened cpudiag.bin\n");
     }
     uint8_t *romBuffer = getRomBuffer(cpudiag);
-    logger("Got ROM buffer\n");
     memcpy(&(state->memory[0x100]), romBuffer, CPUDIAG_SIZE);  // cpudiag starts at mem location 0x100
     state->pc = 0x100;  // cpudiag starts at 0x100
 
@@ -35,16 +31,14 @@ int main(int argc, char **argv)
     // cpudiag sets stack pointer to 0x06ad,
     // but our program offsets everything by 0x0100,
     // so we need to set the stack pointer to 0x07ad.
-    // Stack pointer upper byte data is at address 0x0070 in the cpudiag,
+    // Stack pointer upper byte data is at address 0x0070 in cpudiag,
     // which becomes address 0x0170 with our program's offset.
     // Hence, set address 0x0170 to have data value 0x07
     state->memory[0x0170] = 0x07;
 
     // Run test
-    logger("Running test\n");
     while(state->pc < ROM_LIMIT_8080){
         executeNextInstruction(state);
     }
-    logger("Diagnostic complete\n");
     return 0;
 }

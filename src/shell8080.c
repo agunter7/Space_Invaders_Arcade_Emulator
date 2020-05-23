@@ -1,5 +1,5 @@
 /***********************************************************************************
-* Emulates an Intel 8080 CPU's internal state and instruction execution
+* Emulates an Intel 8080 CPU's internal state, instruction execution, and I/O
 * @Author: Andrew Gunter
 ***********************************************************************************/
 
@@ -7,8 +7,9 @@
 #include "../src/cpuStructures.h"
 #include "../src/helpers.h"
 
+#define DEBUG 0
+
 // Global variable definitions and function prototypes
-bool debug = 0;
 char instructions[256][20];
 char instructionSizes[256];
 char instructionFlags[256][20];
@@ -16,10 +17,8 @@ char instructionFunctions[256][100];
 void initializeGlobals();
 uint8_t *getRomBuffer(FILE *romFile);
 void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *state);
-void runCodeFromBuffer(uint8_t *romBuffer);
-void printInstructionInfo(uint8_t opcode);
 void executeNextInstruction(State8080 *state);
-int numExec = 0;
+int numExec = 0;  // Counts number of executed instructions
 
 
 State8080 *initializeCPU()
@@ -70,21 +69,12 @@ void destroyCPU(State8080 *state)
     free(state);
 }
 
-void runForCycles(unsigned int numCyclesToRun, State8080 *state)
-{
-    unsigned int startingCycles = state->cyclesCompleted;
-    while((state->cyclesCompleted - startingCycles) < numCyclesToRun){
-        executeNextInstruction(state);
-    }
-}
-
 void executeNextInstruction(State8080 *state)
 {
     if(state->pc < ROM_LIMIT_8080){
         uint8_t operation = 0;  // next instruction opcode
         uint8_t operands[2] = {0xff, 0xff};  // next instruction operands, default 0xff as it would standout more than 0x00
         unsigned int instructionSize = 0;
-        bool loggerFlag = 0;
 
         // Get next operation
         operation = state->memory[state->pc];
@@ -96,27 +86,6 @@ void executeNextInstruction(State8080 *state)
         for(uint16_t operandAddress = state->pc+1; operandAddress <= lastOperandAddress; operandAddress++){
             operandNum = operandAddress-(state->pc+1);
             operands[operandNum] = state->memory[operandAddress];
-        }
-
-        // Perform some debugging logging if desired. Triggered by global flag.
-        if(debug){
-            /*logger("%d\n", instrCount);
-            if (instrCount == 100000){  // Helps to isolate a desired program section, just change value to meet needs
-                loggerFlag = 1;
-            }*/
-            loggerFlag = 1;
-            if(loggerFlag){
-                // Print some status info
-                logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
-                logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
-                       state->a, state->b, state->c, state->d, state->e, state->h, state->l);
-                logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state->pc, state->sp);
-                logger("%1x%1x%1x%1x%1x\n",
-                       state->flags.zero, state->flags.sign, state->flags.parity,
-                       state->flags.auxiliaryCarry, state->flags.carry);
-                /*char garbage[100];
-                scanf("%s", garbage);*/
-            }
         }
 
         executeInstructionByOpcode(operation, operands, state);
@@ -158,89 +127,6 @@ void generateInterrupt(uint8_t interruptNum, State8080 *state)
     }
 }
 
-void testAllOpcodes()
-{
-    State8080 *testCpu = initializeCPU();
-    uint8_t fakeOperands[2] = {0xff, 0xff};
-    for(uint16_t i = 0x0000; i < 0x100; i++){
-        executeInstructionByOpcode(i, fakeOperands, testCpu);
-    }
-}
-
-void runFromROM(State8080 *state)
-{
-
-}
-
-void runCodeFromBuffer(uint8_t *romBuffer)
-{
-    State8080 state = {
-        .memory = mallocSet(MEMORY_SIZE_8080),
-        .flags = {0},
-        .a = 0,
-        .b = 0,
-        .c = 0,
-        .d = 0,
-        .e = 0,
-        .h = 0,
-        .l = 0,
-        .sp = 0,
-        .pc = 0,
-    };  // Intel 8080 CPU initial state
-
-    // Place ROM buffer data into CPU memory
-    memcpy(state.memory, romBuffer, 0x2000);
-
-    // Get next instruction and execute
-    uint8_t operation = 0;
-    uint8_t operands[2] = {0, 0};
-    unsigned int instructionSize = 0;
-    unsigned int instrCount = 0;
-    bool loggerFlag = 0;
-    while(state.pc < 0x2000){  // Keep within bounds of ROM data for 8080 memory map
-        // Reset operands, 0xff chosen as it will likely standout as a reset value more than 0x00 would
-        operands[0] = 0xff;
-        operands[1] = 0xff;
-
-        // Get next operation
-        operation = romBuffer[state.pc];
-
-        // Get operands depending on instruction size
-        instructionSize = instructionSizes[operation];  // Array is ordered based on opcode
-        int lastOperandAddress = state.pc+instructionSize-1;
-        int operandNum;
-        for(int operandAddress = state.pc+1; operandAddress <= lastOperandAddress; operandAddress++){
-              operandNum = operandAddress-(state.pc+1);
-              operands[operandNum] = romBuffer[operandAddress];
-		}
-        
-        // Perform some debugging logging if desired. Triggered by global flag.
-        if(debug){
-            logger("%d\n", instrCount);
-            if (instrCount == 100000){  // Helps to isolate a desired program section, just change value to meet needs
-                loggerFlag = 1;
-		    }
-            if(loggerFlag){
-                // Print some status info
-                logger("Operation: 0x%02x  %02x %02x\n", operation, operands[0], operands[1]);
-                logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
-                        state.a, state.b, state.c, state.d, state.e, state.h, state.l);
-                logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state.pc, state.sp);
-                logger("%1x%1x%1x%1x%1x\n",
-                        state.flags.zero, state.flags.sign, state.flags.parity,
-                        state.flags.auxiliaryCarry, state.flags.carry);
-                char garbage[100];
-                scanf("%s", garbage);
-	        }
-        }
-
-        executeInstructionByOpcode(operation, operands, &state);
-        instrCount++;
-	}
-
-    free(state.memory);
-}
-
 /**
  * Returns a pointer to the stored binary derived from an input FILE
  * @param romFile - pointer to FILE whose data should be stored
@@ -266,23 +152,6 @@ uint8_t *getRomBuffer(FILE *romFile)
 }
 
 /**
- Prints information about an instruction (and immediately quits the program thereafter) 
- to help guide emulator development.
- Intended to be used to print out information for unimplemented instructions.
- 
- @param opcode - The opcode for the instruction to print info for
- */
-void printInstructionInfo(uint8_t opcode)
-{
-    logger("Opcode: 0x%02x\n", opcode);
-    logger("%s\n", instructions[opcode]);
-    logger("%d\n", instructionSizes[opcode]);
-    logger("%s\n", instructionFunctions[opcode]);
-    logger("%s\n\n", instructionFlags[opcode]);
-    exit(0);
-}
-
-/**
  * Given an opcode and operands, perform the resulting state changes of the 8080 CPU
  */
 void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *state)
@@ -297,15 +166,21 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
     uint8_t tempCarry;
     uint8_t memoryByte;
     uint8_t portNumber;
+    uint8_t lowerNibble;
+    uint8_t upperNibble;
+    uint8_t flagsAsInt;
     uint16_t sourceAddress;
+    uint16_t targetAddress;
+    uint16_t oldMemValue;
+    uint16_t newMemValue;
 
-    if(false){
+    if(DEBUG){
         logger("===\n");
         logger("%d:\n", numExec);
         logger("Operation: 0x%02x  %02x %02x\n", opcode, operands[0], operands[1]);
         logger("A: 0x%02x, B: 0x%02x, C: 0x%02x, D: 0x%02x, E: 0x%02x, H: 0x%02x, L: 0x%02x\n",
                state->a, state->b, state->c, state->d, state->e, state->h, state->l);
-        logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac, c): ", state->pc, state->sp);
+        logger("PC: 0x%04x, SP: 0x%04x, FLAGS (z,s,p,ac,cy): ", state->pc, state->sp);
         logger("%1x%1x%1x%1x%1x\n",
                state->flags.zero, state->flags.sign, state->flags.parity,
                state->flags.auxiliaryCarry, state->flags.carry);
@@ -315,9 +190,6 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         logger("%s\n", instructionFunctions[opcode]);
         logger("%s\n\n", instructionFlags[opcode]);
         logger("===\n");
-    }
-    if(false){
-        exit(0);
     }
 
     switch(opcode){
@@ -594,8 +466,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // IF a carry out of upper nibble occurs in step 2
             // THEN set carry
             // ELSE carry unaffected
-            ;  // declaration after label workaround
-            uint8_t lowerNibble = state->a & 0x0f;
+            lowerNibble = state->a & 0x0f;
             // Step 1
             if(lowerNibble > 9 || state->flags.auxiliaryCarry == 1){
                 state->a = (uint8_t)addWithCheckAC(state->a, 0x06, state);
@@ -603,7 +474,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
                 state->flags.auxiliaryCarry = 0;
             }
             // Step 2
-            uint8_t upperNibble = (state->a)>>4;
+            upperNibble = (state->a)>>4;
             if(upperNibble > 9 || state->flags.carry == 1){
                 upperNibble += 6;
                 // Perform carry check
@@ -717,10 +588,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             // Decrement memory
             // memory[(H)(L)] = memory[(H)(L)] - 1
             // Flags: z,s,p,ac
-            ;  // declaration after label workaround
-            uint16_t targetAddress = getValueHL(state);
-            uint16_t oldMemValue = readMem(targetAddress, state);
-            uint16_t newMemValue = addWithCheckAC(oldMemValue, (uint8_t)(-1), state);  // TODO: ac check correct?
+            targetAddress = getValueHL(state);
+            oldMemValue = readMem(targetAddress, state);
+            newMemValue = addWithCheckAC(oldMemValue, (uint8_t)(-1), state);
             writeMem(targetAddress, newMemValue, state);
             checkStandardArithmeticFlags(newMemValue, state);
             state->pc += 1;
@@ -1584,7 +1454,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
             break;
         case 0xCD:
             // CALL addr
-            /*if(orderedOperands == 0x5){
+            #ifdef CPU_DIAG
+            // Code snippet taken from http://www.emulator101.com/full-8080-emulation.html
+            if(orderedOperands == 0x5){
                 if (state->c == 9){
                     uint16_t offset = ((uint16_t)(state->d)<<8) | (state->e);
                     char *str = (char*)(&(state->memory[offset+3]));  //skip the prefix bytes
@@ -1600,8 +1472,11 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
                 exit(0);
             }else{
                 CALL(orderedOperands, state);
-            }*/
+            }
+            #endif
+            #ifndef CPU_DIAG
             CALL(orderedOperands, state);
+            #endif
             break;
         case 0xCE: 
             // ACI d8
@@ -1940,8 +1815,7 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
         case 0xF5: 
             // PUSH PSW
             // Push Processor Status Word (and accumulator) onto stack
-            ;
-            uint8_t flagsAsInt = *(uint8_t*)&(state->flags);  // Can't use ConditionCodes struct directly
+            flagsAsInt = *(uint8_t*)&(state->flags);  // Can't use ConditionCodes struct directly
             PUSH_RP(state->a, flagsAsInt, state);
             break;
         case 0xF6: 
@@ -2034,11 +1908,9 @@ void executeInstructionByOpcode(uint8_t opcode, uint8_t *operands, State8080 *st
 /**
 * Initialize global variables.
 * 
-* I do this here because the initializations are about 1000 lines.
-* I could do this elsewhere, but it would clutter the top of the file.
+* Do this here because the initializations are about 1000 lines.
+* This could be done elsewhere, but it would clutter the top of the file.
 * Delegate initialization to a function so it can happily remain at the bottom of the file.
-* 
-* I suppose doing this in another file was also an option, but this is most convenient.
 *
 * @return void
 */

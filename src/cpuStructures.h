@@ -17,7 +17,7 @@
 #define NUM_OUTPUT_DEVICES 256
 
 /**
-Intel 8080 condition codes can be thought of as existing in a 8-bit register.
+Intel 8080 condition codes can be thought of as existing in an 8-bit register.
 This doesn't seem to actually be the case, but simplifies organization in emulation.
 The various bits of this register correspond with different flags/conditions.
 */
@@ -33,10 +33,10 @@ typedef struct ConditionCodes {
 
 typedef struct State8080 {
     uint8_t *memory;
-    ConditionCodes flags;
+    ConditionCodes flags;  /**< Each bit represents some condition state of the 8080 */
     // I/O Buffers - For communicating with emulated I/O devices
-    uint8_t *inputBuffers;
-    uint8_t *outputBuffers;
+    uint8_t *inputBuffers;  /**< For receiving input data from external devices */
+    uint8_t *outputBuffers;  /**< For transmitting output data to external devices */
     // Registers
     uint8_t    a;    
     uint8_t    b;    
@@ -45,9 +45,10 @@ typedef struct State8080 {
     uint8_t    e;    
     uint8_t    h;    
     uint8_t    l;    
-    uint16_t    sp;
-    uint16_t    pc;
-    unsigned int cyclesCompleted;
+    uint16_t    sp;  /**< Stack Pointer */
+    uint16_t    pc;  /**< Program Counter */
+    // CPU variables
+    unsigned int cyclesCompleted;  /**< Number of clock cycles executed since instantiation */
     bool interruptsEnabled;
 } State8080;
 

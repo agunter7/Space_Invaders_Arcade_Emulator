@@ -1,10 +1,10 @@
 /**
  * Implements functions for Intel 8080 emulated instructions
- * Capitalized names indicate a function that implements a full 8080 instructions
+ * Capitalized names indicate a function that implements a full 8080 instruction's functionality
  * camelCase names indicate a function that implements a portion of an instruction's effect(s)
  *
  * By convention, only fully-implemented 8080 functions (Capitalized names) will update the program counter and
- * increase the number of machine cycles completed
+ * increase the number of clock cycles completed
  *
  * @author Andrew Gunter
  */
@@ -156,7 +156,6 @@ void XRA_R(uint8_t data, State8080 *state)
  AND Accumulator with register
  A = A AND r
  Flags: z,s,p,cy(reset),ac
- TODO: Check ac check... system manual says it should be affected, programmer manual implies otherwise
  */
 void ANA_R(uint8_t data, State8080 *state)
 {
@@ -290,7 +289,6 @@ void NOP(State8080 *state)
  * Increment Register
  * R = R + 1
  * Flags: z,s,p,ac
- * TODO: Check that this is correct AC check behaviour
  */
 void INR_R(uint8_t *reg, State8080 *state)
 {
@@ -306,7 +304,6 @@ void INR_R(uint8_t *reg, State8080 *state)
  * Decrement Register
  * R = R - 1
  * Flags: z,s,p,ac
- * TODO: Check that this is correct AC check behaviour
  */
 void DCR_R(uint8_t *reg, State8080 *state)
 {
@@ -467,9 +464,6 @@ void xorWithAccumulator(uint8_t data, State8080 *state)
     state->flags.auxiliaryCarry = 0;
 }
 
-/**
- * TODO: Figure out AC check
- */
 void andWithAccumulator(uint8_t data, State8080 *state)
 {
     state->a = state->a & data;
@@ -477,7 +471,6 @@ void andWithAccumulator(uint8_t data, State8080 *state)
     checkStandardArithmeticFlags(state->a, state);
     state->flags.carry = 0;
 
-    // TODO: No clue if hard-resetting is correct, but I can't see how it would be set by AND
     state->flags.auxiliaryCarry = 0;
 }
 
@@ -530,7 +523,6 @@ void writeMem(uint16_t address, uint8_t value, State8080 *state)
 {
     if(address >= ROM_LIMIT_8080){
         state->memory[address] = value;
-        //logger("Write -- Address 0x%04x; Value 0x%02x\n", address, value);
     }else{
         state->memory[address] = value;
         logger("Warning: ROM Overwrite!\n");
@@ -540,7 +532,6 @@ void writeMem(uint16_t address, uint8_t value, State8080 *state)
 
 uint8_t readMem(uint16_t address, State8080 *state)
 {
-    //logger("Read -- Address 0x%04x; Value 0x%02x\n", address, state->memory[address]);
     return state->memory[address];
 }
 
@@ -581,11 +572,6 @@ uint16_t addWithCheckCY(uint8_t op1, uint8_t op2, State8080 *state)
  *   If no carry out occurs, the carry flag is set
  *
  * Source: Intel 8080 Programmer's Manual pg.13 and pg.18
- *
- * @param minuend - The number being subtracted from
- * @param subtrahend - The value being subtracted
- * @param state - The 8080 state
- * @return
  */
 uint16_t subWithCheckCY(int8_t minuend, int8_t subtrahend, State8080 *state)
 {

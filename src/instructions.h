@@ -1,9 +1,10 @@
 /**
  * Declares functions for Intel 8080 emulated instructions
- * Capitalized names indicate a function that implements a full 8080 instructions
+ * Capitalized names indicate a function that implements a full 8080 instruction's functionality
  * camelCase names indicate a function that implements a portion of an instruction's effect(s)
  *
- * By convention, only fully-implemented 8080 functions (Capitalized names) will update the program counter.
+ * By convention, only fully-implemented 8080 functions (Capitalized names) will update the program counter and
+ * increase the number of clock cycles completed.
  *
  * @author Andrew Gunter
  */

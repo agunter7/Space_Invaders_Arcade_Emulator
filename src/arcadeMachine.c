@@ -23,6 +23,10 @@ int main(int argc, char **argv)
     return 0;
 }
 
+/**
+ * Starts the main game loop.
+ * @param arcade - The arcade state
+ */
 void playSpaceInvaders(ArcadeState *arcade)
 {
     unsigned int quitGame = 0;
@@ -30,7 +34,7 @@ void playSpaceInvaders(ArcadeState *arcade)
     // The texture below is initialized in ABGR32 pixel format,
     // but this will actually lead to writing pixel data
     // in RGBA32 format. Maybe due to endianness of the
-    // host machines video RAM?
+    // host machine's video RAM?
     // Is this platform-dependent?
     SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_ABGR32,
             SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS);
@@ -51,6 +55,11 @@ void playSpaceInvaders(ArcadeState *arcade)
     }
 }
 
+/**
+ * Processes all game actions for a single frame.
+ * @param arcade
+ * @return
+ */
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
     resetPortsIO(arcade);
@@ -190,7 +199,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     }
 
     // Emulate cpu up to the known point of the mid-screen render interrupt
-    // Screen width is used here, rather than height, as the Space Invaders screen is rotated 90degrees and is
+    // Screen width is used here, rather than height, as the Space Invaders screen is rotated 90 degrees and is
     // thus rendering vertical lines rather than horizontal lines
     unsigned int numCyclesFirstHalf = CYCLES_PER_FRAME*((float)MIDSCREEN_INTERRUPT_LINE/(float)SCREEN_WIDTH_PIXELS);
     runForCpuCycles(numCyclesFirstHalf, arcade);
@@ -244,7 +253,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
 }
 
 /**
- * Returns a pointer to the 32-bits-per-pixel data for the current frame to be rendered (by extracting from 8080 VRAM)
+ * Returns a pointer to data (32-bits-per-pixel) for the current frame to be rendered (by extracting from 8080 VRAM)
  * @param arcade - The 8080 state
  * @return Pointer to pixel data, ready to be rendered directly by SDL
  */

@@ -38,11 +38,6 @@ uint8_t *getVideoRAM(State8080 *state);
 void generateInterrupt(uint8_t interruptNum, State8080 *state);
 
 /**
- * Iteratively tries to call all 8080 instructions in order
- */
-void testAllOpcodes();
-
-/**
  * Returns a pointer to the stored binary derived from an input FILE
  * @param romFile - pointer to FILE whose data should be stored
  * @return - pointer to stored contents
