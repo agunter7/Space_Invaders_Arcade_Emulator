@@ -69,17 +69,23 @@ unsigned int handleGameEvents(ArcadeState *arcade)
     if(keyboardState[SDL_SCANCODE_LEFT]){
         arcade->inputPort0 |= MOVE_LEFT_MASK;
         arcade->inputPort1 |= MOVE_LEFT_MASK;
+        arcade->inputPort2 |= MOVE_LEFT_MASK;
     }
     if(keyboardState[SDL_SCANCODE_RIGHT]){
         arcade->inputPort0 |= MOVE_RIGHT_MASK;
         arcade->inputPort1 |= MOVE_RIGHT_MASK;
+        arcade->inputPort2 |= MOVE_RIGHT_MASK;
     }
     if(keyboardState[SDL_SCANCODE_SPACE]){
         arcade->inputPort0 |= SHOOT_MASK;
         arcade->inputPort1 |= SHOOT_MASK;
+        arcade->inputPort2 |= SHOOT_MASK;
     }
     if(keyboardState[SDL_SCANCODE_1]){
         arcade->inputPort1 |= P1_START_MASK;
+    }
+    if(keyboardState[SDL_SCANCODE_2]){
+        arcade->inputPort1 |= P2_START_MASK;
     }
 
     // Check for newly-pressed keys
@@ -96,14 +102,17 @@ unsigned int handleGameEvents(ArcadeState *arcade)
                 case SDLK_LEFT:
                     arcade->inputPort0 |= MOVE_LEFT_MASK;
                     arcade->inputPort1 |= MOVE_LEFT_MASK;
+                    arcade->inputPort2 |= MOVE_LEFT_MASK;
                     break;
                 case SDLK_RIGHT:
                     arcade->inputPort0 |= MOVE_RIGHT_MASK;
                     arcade->inputPort1 |= MOVE_RIGHT_MASK;
+                    arcade->inputPort2 |= MOVE_RIGHT_MASK;
                     break;
                 case SDLK_SPACE:
                     arcade->inputPort0 |= SHOOT_MASK;
                     arcade->inputPort1 |= SHOOT_MASK;
+                    arcade->inputPort2 |= SHOOT_MASK;
                     break;
                 case SDLK_1:
                     arcade->inputPort1 |= P1_START_MASK;

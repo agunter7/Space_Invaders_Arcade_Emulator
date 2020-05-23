@@ -1,4 +1,7 @@
 # Space Invaders (Intel 8080)
+
+![Gameplay Demo](gameplay_demo.gif)
+
 Emulates a Space Invaders arcade machine running on an Intel 8080 CPU, written in C.
 Target OS is Windows 10.
 
@@ -32,24 +35,38 @@ Build Steps:
 # Usage
 Target display must be refreshing at 60Hz for the game to play correctly.
 
-8080 Emulator - Use run.sh
+Use "run.sh" or directly open "bin/space_invaders_arcade.exe"
 
+Controls:
+
+Left Arrow -- Move left
+
+Right Arrow -- Move right
+
+Space bar -- Shoot
+
+C -- Insert coin
+
+1 -- 1-Player game start
+
+2 -- 2-Player game start
+
+3-0 -- Change game colour profile
+
+D -- Dark mode toggle
 # Resources
-1) http://computerarcheology.com/Arcade/SpaceInvaders/
-2) http://www.emulator101.com/welcome.html
-3) http://www.nj7p.info/Manuals/PDFs/Intel/9800153B.pdf
-4) https://altairclone.com/downloads/manuals/8080%20Programmers%20Manual.pdf
+1) https://altairclone.com/downloads/manuals/8080%20Programmers%20Manual.pdf
+2) http://www.nj7p.info/Manuals/PDFs/Intel/9800153B.pdfhttp://www.emulator101.com/welcome.html
+3) http://computerarcheology.com/Arcade/SpaceInvaders/
+4) http://www.emulator101.com/welcome.html
 5) http://lazyfoo.net/tutorials/SDL/index.php
 
 # Assumptions (for the bits that were not 100% clear during development)
 1) Clock speed is 2 MHz (or 0.5μs clock period). The 8080 is capable of up to 3.125 MHz, but this was seemingly not 
-the case for the Space Invaders Arcade Machine
+the case for the Space Invaders Arcade Machine.
 
 2) One clock period marks a CPU "state". A single instruction constitutes multiple states throughout its execution.
 This is based off of information from the 8080 programmer's manual.
-
-3) The I/O ports for Space Invaders are separate rather than joined.
-E.g. Read Port 2 and Write Port 2 are separate entities.
 
 # Miscellaneous Notes
 - Register A == 8080 "Accumulator"
