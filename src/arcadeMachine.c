@@ -57,8 +57,8 @@ void playSpaceInvaders(ArcadeState *arcade)
 
 /**
  * Processes all game actions for a single frame.
- * @param arcade
- * @return
+ * @param arcade - The arcade state
+ * @return - 1 if the game should end, 0 otherwise
  */
 unsigned int handleGameEvents(ArcadeState *arcade)
 {
@@ -263,7 +263,7 @@ unsigned int handleGameEvents(ArcadeState *arcade)
 
 /**
  * Returns a pointer to data (32-bits-per-pixel) for the current frame to be rendered (by extracting from 8080 VRAM)
- * @param arcade - The 8080 state
+ * @param arcade - The arcade state
  * @return Pointer to pixel data, ready to be rendered directly by SDL
  */
 uint32_t *getCurrentFramePixels(ArcadeState *arcade)
