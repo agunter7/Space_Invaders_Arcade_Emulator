@@ -17,9 +17,6 @@ EXE_NAME_TEST=bin/cpu_test
 emu: $(SOURCES_EMULATOR)
 	$(CC) $(INCLUDE_PATHS) $(SOURCES_EMULATOR) $(LIBRARY_PATHS) $(GENERAL_FLAGS) $(LINKER_FLAGS) -o $(EXE_NAME_EMU)
 
-test: $(SOURCES_TEST)
-	$(CC) $(SOURCES_TEST) $(GENERAL_FLAGS) -o $(EXE_NAME_TEST)
-
 clean:
 	rm bin/space_invaders_arcade
 	rm bin/cpu_test
