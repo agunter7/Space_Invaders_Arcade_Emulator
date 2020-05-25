@@ -39,6 +39,7 @@ void playSpaceInvaders(ArcadeState *arcade)
     SDL_Texture *texture = SDL_CreateTexture(arcade->renderer, SDL_PIXELFORMAT_ABGR32,
             SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS);
 
+    uint32_t *currentFramePixels;
     while (!quitGame){
 
         quitGame = handleGameEvents(arcade);
@@ -47,8 +48,10 @@ void playSpaceInvaders(ArcadeState *arcade)
         SDL_RenderClear(arcade->renderer);
 
         // Load/render window image
-        SDL_UpdateTexture(texture, NULL, getCurrentFramePixels(arcade), SCREEN_WIDTH_PIXELS*BYTES_PER_PIXEL);
+        currentFramePixels = getCurrentFramePixels(arcade);
+        SDL_UpdateTexture(texture, NULL, currentFramePixels, SCREEN_WIDTH_PIXELS*BYTES_PER_PIXEL);
         SDL_RenderCopy(arcade->renderer, texture, NULL, NULL);
+        free(currentFramePixels);
 
         // Update screen
         SDL_RenderPresent(arcade->renderer);
@@ -500,6 +503,6 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
         }
     }
 
-    free(currentFramePixels);
+    free(rotatedPixels);
     return currentFramePixels;
 }

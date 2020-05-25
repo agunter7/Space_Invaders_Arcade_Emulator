@@ -33,7 +33,6 @@ typedef struct ConditionCodes {
 
 typedef struct State8080 {
     uint8_t *memory;
-    uint8_t *vram;  /**< Video RAM mirror */
     ConditionCodes flags;  /**< Each bit represents some condition state of the 8080 */
     // I/O Buffers - For communicating with emulated I/O devices
     uint8_t *inputBuffers;  /**< For receiving input data from external devices */

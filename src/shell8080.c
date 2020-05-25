@@ -38,7 +38,6 @@ State8080 *initializeCPU()
     State8080 *state = mallocSet(sizeof(State8080));
 
     state->memory = mallocSet(MEMORY_SIZE_8080);  // Intel 8080 uses 16-bit byte-addressable memory, 2^16=65536
-    state->vram = mallocSet(VRAM_SIZE_8080);;
     ConditionCodes cc = {0};
     state->flags = cc;
     state->inputBuffers = mallocSet(NUM_INPUT_DEVICES);
@@ -65,7 +64,6 @@ State8080 *initializeCPU()
 void destroyCPU(State8080 *state)
 {
     free(state->memory);
-    free(state->vram);
     free(state->inputBuffers);
     free(state->outputBuffers);
     free(state);
@@ -99,9 +97,11 @@ void executeNextInstruction(State8080 *state)
 
 uint8_t *getVideoRAM(State8080 *state)
 {
-    memcpy(state->vram, &(state->memory[VRAM_START_ADDR_8080]), VRAM_SIZE_8080);
+    uint8_t *vramContents = mallocSet(VRAM_SIZE_8080);
 
-    return state->vram;
+    memcpy(vramContents, &(state->memory[VRAM_START_ADDR_8080]), VRAM_SIZE_8080);
+
+    return vramContents;
 }
 
 void generateInterrupt(uint8_t interruptNum, State8080 *state)
