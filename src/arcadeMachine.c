@@ -500,6 +500,6 @@ uint32_t *getCurrentFramePixels(ArcadeState *arcade)
         }
     }
 
-
+    free(currentFramePixels);
     return currentFramePixels;
 }
